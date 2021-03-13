@@ -47,7 +47,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         # calling `idfx` without any argument is equivalent to `idfx --help`
         # except that the return value non zero.
         parser.print_help(sys.stderr)
-        sys.exit(1)
+        exit(1)
 
     if args.command == "clean":
         return clean(args.directory, args.all, args.dry)
