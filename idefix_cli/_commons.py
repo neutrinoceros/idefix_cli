@@ -1,6 +1,5 @@
 import contextlib
 import os
-import sys
 from functools import wraps
 from multiprocessing import cpu_count
 from subprocess import check_call
@@ -11,7 +10,7 @@ def requires_idefix(func):
     def _func(*args, **kwargs):
         if os.getenv("IDEFIX_DIR") is None:
             print("This requires $IDEFIX_DIR to be defined.")
-            sys.exit(1)
+            exit(1)
         return func(*args, **kwargs)
 
     return _func
