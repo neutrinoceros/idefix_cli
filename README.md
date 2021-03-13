@@ -188,7 +188,8 @@ Prints key data for reproduction and development to stdout.
 
 ```shell
 $ idfx stamp
-v0.5-182-g9985a45
+v0.5
+daff799bb64b0993f058f50779873d594376d5bf
 Sat Jan 16 16:15:28 2021
 f-dahu
 lesurg
@@ -206,7 +207,8 @@ Additionnally, one can get the underlying data in json-serializable format
 ```shell
 $ idfx stamp --json
 {
-  "idefix_git_tag": "v0.5-182-g9985a45",
+  "tag": "v0.5",
+  "sha": "daff799bb64b0993f058f50779873d594376d5bf",
   "date": "Sat Jan 16 16:15:54 2021",
   "host": "f-dahu",
   "user": "glesur"
