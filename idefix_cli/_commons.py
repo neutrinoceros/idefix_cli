@@ -16,22 +16,6 @@ def requires_idefix(func):
     return _func
 
 
-def always_iterable(obj, base_type=(str, bytes)):
-    # this is directly ported from more_itertools
-    # https://github.com/more-itertools/more-itertools
-    # Licence MIT
-    if obj is None:
-        return iter(())
-
-    if (base_type is not None) and isinstance(obj, base_type):
-        return iter((obj,))
-
-    try:
-        return iter(obj)
-    except TypeError:
-        return iter((obj,))
-
-
 @contextlib.contextmanager
 def pushd(new_dir):
     previous_dir = os.getcwd()
