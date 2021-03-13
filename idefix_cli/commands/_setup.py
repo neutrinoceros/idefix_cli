@@ -3,7 +3,7 @@ import os
 import re
 from pathlib import Path
 
-from idefix_helper._commons import _make, pushd, requires_idefix
+from idefix_cli._commons import _make, pushd, requires_idefix
 
 cpuarch = frozenset(("HSW", "BDW", "SKX", "EPYC"))
 

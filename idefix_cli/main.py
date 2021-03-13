@@ -1,16 +1,17 @@
 import argparse
 import sys
+from typing import Optional
 
-from idefix_helper import __version__
-from idefix_helper.commands._clean import _add_clean_args, clean
-from idefix_helper.commands._read import _add_read_args, read
-from idefix_helper.commands._run import _add_run_args, run
-from idefix_helper.commands._setup import _add_setup_args, setup
-from idefix_helper.commands._stamp import _add_stamp_args, stamp
-from idefix_helper.commands._write import _add_write_args, write
+from idefix_cli import __version__
+from idefix_cli.commands._clean import _add_clean_args, clean
+from idefix_cli.commands._read import _add_read_args, read
+from idefix_cli.commands._run import _add_run_args, run
+from idefix_cli.commands._setup import _add_setup_args, setup
+from idefix_cli.commands._stamp import _add_stamp_args, stamp
+from idefix_cli.commands._write import _add_write_args, write
 
 
-def main() -> int:
+def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(prog="idfx")
     parser.add_argument("-v", "--version", action="version", version=__version__)
 
@@ -40,7 +41,7 @@ def main() -> int:
     )
     _add_write_args(write_parser)
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if len(sys.argv) == 1:
         # calling `idfx` without any argument is equivalent to `idfx --help`
