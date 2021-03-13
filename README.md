@@ -188,10 +188,11 @@ Prints key data for reproduction and development to stdout.
 
 ```shell
 $ idfx stamp
-v0.5-182-g9985a45
-Sat Jan 16 16:15:28 2021
-f-dahu
+v0.5
+daff799bb64b0993f058f50779873d594376d5bf
 lesurg
+f-dahu
+Sat Jan 16 16:15:28 2021
 ```
 Which is roughly equivalent (and slightly more portable) to
 ```shell
@@ -206,10 +207,11 @@ Additionnally, one can get the underlying data in json-serializable format
 ```shell
 $ idfx stamp --json
 {
-  "idefix_git_tag": "v0.5-182-g9985a45",
-  "date": "Sat Jan 16 16:15:54 2021",
-  "host": "f-dahu",
+  "tag": "v0.5",
+  "sha": "daff799bb64b0993f058f50779873d594376d5bf",
   "user": "glesur"
+  "host": "f-dahu",
+  "date": "Sat Jan 16 16:15:54 2021",
 }
 ```
 This is helpful to quickly store important metadata next to one's datafiles. The git tag
