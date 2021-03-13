@@ -1,6 +1,5 @@
 import json
 import os
-from collections import OrderedDict
 from datetime import datetime
 from getpass import getuser
 from socket import gethostname
@@ -26,16 +25,15 @@ def stamp(todict: bool = False):
     """
     Print idefix latest version tag-(git hash) and current time to stdout.
     """
-    data = (
-        OrderedDict()
-    )  # support old versions of python where dict doesn't retain entries order
-    repo = git.Repo(os.getenv("IDEFIX_DIR"))
+    repo = git.Repo(os.environ["IDEFIX_DIR"])
+    data = {
+        "tag": str(repo.tags[-1]),
+        "sha": repo.head.object.hexsha,
+        "user": getuser(),
+        "host": gethostname(),
+        "date": ctime(datetime.now().timestamp()),
+    }
 
-    data["tag"] = repo.tags[-1]
-    data["sha"] = repo.head.object.hexsha
-    data["date"] = ctime(datetime.now().timestamp())
-    data["host"] = gethostname()
-    data["user"] = getuser()
     if todict:
         text = json.dumps(data, indent=2)
     else:
