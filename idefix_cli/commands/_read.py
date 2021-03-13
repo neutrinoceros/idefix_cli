@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from idefix_helper.inifile_io import IdefixConf
+from inifix import load
 
 
 def _add_read_args(parser):
@@ -16,5 +16,5 @@ def read(inifile: str, indent: int = None):
     if not inifile.is_file():
         print("Error: not a file {}".format(inifile))
         return 1
-    print(json.dumps(IdefixConf(inifile), indent=indent))
+    print(json.dumps(load(inifile), indent=indent))
     return 0

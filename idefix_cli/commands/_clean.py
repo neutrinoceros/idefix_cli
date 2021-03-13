@@ -3,7 +3,7 @@ from glob import glob
 from itertools import chain
 from pathlib import Path
 
-from idefix_helper._commons import pushd
+from idefix_cli._commons import pushd
 
 # bpatterns are those targeted by `make clean`, which is equivalent to
 # rm -f *.o *.cuda *.host

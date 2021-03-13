@@ -2,8 +2,9 @@ from pathlib import Path
 from subprocess import check_call
 from uuid import uuid4
 
-from idefix_helper._commons import _make, pushd
-from idefix_helper.inifile_io import IdefixConf
+from inifix.idefix_conf import IdefixConf
+
+from idefix_cli._commons import _make, pushd
 
 
 def _add_run_args(parser):

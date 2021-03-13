@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 
-from idefix_helper.inifile_io import IdefixConf
+from inifix import dump
 
 
 def _add_write_args(parser):
@@ -30,5 +30,5 @@ def write(dest: str, source, force: bool = False):
             "Error: destination {} is a file (use -f/--force to overwrite)".format(dest)
         )
         return 1
-    IdefixConf(json.load(source)).write(dest)
+    dump(json.load(source), dest)
     return 0

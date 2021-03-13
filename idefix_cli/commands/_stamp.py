@@ -7,7 +7,7 @@ from socket import gethostname
 from subprocess import PIPE, run
 from time import ctime
 
-from idefix_helper._commons import pushd, requires_idefix
+from idefix_cli._commons import pushd, requires_idefix
 
 
 def _add_stamp_args(parser):
