@@ -9,7 +9,7 @@ def test_read_not_a_file(tmp_path, capsys):
     assert ret != 0
     out, err = capsys.readouterr()
     assert out == ""
-    assert err == f"Error: no such file `{target.absolute()}`.\n"
+    assert err == f"ERROR no such file {target.absolute()}\n"
 
 
 def test_read(inifile, capsys):

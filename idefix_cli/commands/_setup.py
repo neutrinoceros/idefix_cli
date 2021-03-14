@@ -3,7 +3,7 @@ import os
 import re
 from pathlib import Path
 
-from idefix_cli._commons import _make, pushd, requires_idefix
+from idefix_cli._commons import _make, print_err, pushd, requires_idefix
 
 cpuarch = frozenset(("HSW", "BDW", "SKX", "EPYC"))
 
@@ -84,7 +84,7 @@ def setup(
         if not vals:
             continue
         if len(vals) > 1:
-            print("Error: received more than one {} arch: {} ".format(core_type, vals))
+            print_err(f"received more than one {core_type} arch: {vals} ")
             return 1
         selected_archs[core_type] = vals[0]
 
