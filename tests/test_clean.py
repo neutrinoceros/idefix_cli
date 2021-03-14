@@ -8,6 +8,41 @@ def replace_wildcards(names):
     return [name.replace("*", "a") for name in names]
 
 
+@pytest.fixture()
+def clean_tmp_dir(tmp_path):
+    targets = []
+    survivors = [
+        tmp_path / name for name in ("setup.py", "README.md", "idefix.ini", "pluto.ini")
+    ]
+
+    for name in survivors:
+        name.touch()
+
+    return tmp_path, targets, survivors
+
+
+@pytest.fixture()
+def dirty_tmp_dir(clean_tmp_dir):
+    tmp_path, _, survivors = clean_tmp_dir
+    targets = [tmp_path / name for name in replace_wildcards(kokkos_files)]
+
+    for name in targets:
+        name.touch()
+
+    return tmp_path, targets, survivors
+
+
+@pytest.fixture()
+def messy_tmp_dir(dirty_tmp_dir):
+    tmp_path, targets, survivors = dirty_tmp_dir
+    killable = [tmp_path / name for name in replace_wildcards(gpatterns)]
+
+    for name in killable:
+        name.touch()
+
+    return tmp_path, targets, killable, survivors
+
+
 def test_patterns():
     assert not kokkos_files.intersection(gpatterns)
 
@@ -20,28 +55,75 @@ def test_clean_wildcards(pattern, tmp_path):
     assert not list(tmp_path.iterdir())
 
 
-def test_clean_only_kokkos(tmp_path):
-    for name in replace_wildcards(kokkos_files.union(gpatterns)):
-        (tmp_path / name).touch()
+def test_clean_only_kokkos(dirty_tmp_dir):
+    tmp_path, targets, survivors = dirty_tmp_dir
 
     main(["clean", str(tmp_path.absolute())])
 
-    for name in replace_wildcards(kokkos_files):
-        assert not (tmp_path / name).is_file()
-    for name in replace_wildcards(gpatterns):
-        assert (tmp_path / name).is_file()
+    for name in targets:
+        assert not name.is_file()
+    for name in survivors:
+        assert name.is_file()
 
 
-def test_clean_all(tmp_path):
-    targets = replace_wildcards(kokkos_files.union(gpatterns))
-    survivors = ["setup.py", "README.md", "idefix.ini", "pluto.ini"]
-
-    for name in targets + survivors:
-        (tmp_path / name).touch()
+def test_clean_all(messy_tmp_dir):
+    tmp_path, targets, killable, survivors = messy_tmp_dir
 
     main(["clean", str(tmp_path.absolute()), "--all"])
 
-    for name in targets:
-        assert not (tmp_path / name).is_file()
+    for name in targets + killable:
+        assert not name.is_file()
     for name in survivors:
-        assert (tmp_path / name).is_file()
+        assert name.is_file()
+
+
+@pytest.mark.parametrize(
+    "flags", [("--dry",), ("--dry-run",), ("--dry", "--all"), ("--dry-run", "--all")]
+)
+def test_drymode_noop(flags, clean_tmp_dir, capsys):
+    tmp_path, targets, survivors = clean_tmp_dir
+
+    ret = main(["clean", *flags, str(tmp_path.absolute())])
+    assert ret == 0
+    out, err = capsys.readouterr()
+    assert out == "Nothing to remove.\n"
+    assert err == ""
+
+
+@pytest.mark.parametrize("flag", ["--dry", "--dry-run"])
+def test_drymode_dirty(flag, dirty_tmp_dir, capsys):
+    tmp_path, targets, survivors = dirty_tmp_dir
+
+    ret = main(["clean", flag, str(tmp_path.absolute())])
+    assert ret == 0
+
+    out, err = capsys.readouterr()
+    file_list = "\n".join([str(t) for t in sorted(targets)])
+    assert out == f"The following files would be removed.\n{file_list}\n"
+    assert err == ""
+
+
+@pytest.mark.parametrize("flag", ["--dry", "--dry-run"])
+def test_drymode_messy(flag, messy_tmp_dir, capsys):
+    tmp_path, targets, killable, survivors = messy_tmp_dir
+
+    ret = main(["clean", flag, str(tmp_path.absolute())])
+    assert ret == 0
+
+    out, err = capsys.readouterr()
+    file_list = "\n".join([str(t) for t in sorted(targets)])
+    assert out == f"The following files would be removed.\n{file_list}\n"
+    assert err == ""
+
+
+@pytest.mark.parametrize("flag", ["--dry", "--dry-run"])
+def test_drymode_messy_all(flag, messy_tmp_dir, capsys):
+    tmp_path, targets, killable, survivors = messy_tmp_dir
+
+    ret = main(["clean", str(tmp_path.absolute()), flag, "--all"])
+    assert ret == 0
+
+    out, err = capsys.readouterr()
+    file_list = "\n".join([str(t) for t in sorted(targets + killable)])
+    assert out == f"The following files would be removed.\n{file_list}\n"
+    assert err == ""
