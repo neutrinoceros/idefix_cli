@@ -43,11 +43,11 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     args = parser.parse_args(argv)
 
-    if len(sys.argv) == 1:
+    if args.command is None:
         # calling `idfx` without any argument is equivalent to `idfx --help`
         # except that the return value non zero.
         parser.print_help(sys.stderr)
-        exit(1)
+        return 1
 
     if args.command == "clean":
         return clean(args.directory, args.all, args.dry)
