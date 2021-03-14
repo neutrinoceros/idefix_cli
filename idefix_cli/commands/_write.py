@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 
-from inifix import dump
+import inifix
 
 
 def _add_write_args(parser):
@@ -24,11 +24,25 @@ def _add_write_args(parser):
 
 
 def write(dest: str, source, force: bool = False):
+    try:
+        data = json.load(source)
+    except json.decoder.JSONDecodeError:
+        print("Error: input is not valid json.", file=sys.stderr)
+        return 1
+
+    try:
+        inifix.validate_inifile_schema(data)
+    except ValueError:
+        print("Error: input is not Pluto inifile format compliant.", file=sys.stderr)
+        return 1
+
     dest = Path(dest)
     if dest.is_file() and not force:
         print(
-            "Error: destination {} is a file (use -f/--force to overwrite)".format(dest)
+            f"Error: destination file {dest} already exists. Use -f/--force to overwrite.",
+            file=sys.stderr,
         )
         return 1
-    dump(json.load(source), dest)
+
+    inifix.dump(data, dest)
     return 0
