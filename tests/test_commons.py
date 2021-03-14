@@ -19,7 +19,7 @@ def test_requires_idefix_undef(capsys, monkeypatch):
 
     out, err = capsys.readouterr()
     assert out == ""
-    assert err == "Error: this functionality requires $IDEFIX_DIR to be defined.\n"
+    assert err == "ERROR this functionality requires $IDEFIX_DIR to be defined.\n"
 
 
 def test_requires_idefix_def(capsys, monkeypatch, tmp_path):

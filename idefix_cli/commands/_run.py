@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from inifix.idefix_conf import IdefixConf
 
-from idefix_cli._commons import _make, pushd
+from idefix_cli._commons import _make, print_err, pushd
 
 
 def _add_run_args(parser):
@@ -82,8 +82,8 @@ def run(
         if inifile.is_file():
             break
     else:
-        print("Error: could not find inifile {}".format(input_inifile))
-        exit(1)
+        print_err("could not find inifile {input_inifile}")
+        return 1
     if one_step:
         if time_step is None:
             time_step = IdefixConf(inifile)["TimeIntegrator"]["first_dt"]
@@ -92,7 +92,7 @@ def run(
     d = Path(directory)
     if not (d / "idefix").is_file():
         if not (d / "Makefile").is_file():
-            print(
+            print_err(
                 "No idefix instance or Makefile found in the target directory. "
                 "Run `idfx setup` first."
             )

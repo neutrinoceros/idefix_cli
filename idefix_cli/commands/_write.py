@@ -5,6 +5,8 @@ from pathlib import Path
 
 import inifix
 
+from idefix_cli._commons import print_err
+
 
 def _add_write_args(parser):
     parser.add_argument("dest", type=str, help="dest inifile")
@@ -27,20 +29,19 @@ def write(dest: str, source, force: bool = False):
     try:
         data = json.load(source)
     except json.decoder.JSONDecodeError:
-        print("Error: input is not valid json.", file=sys.stderr)
+        print_err("input is not valid json.")
         return 1
 
     try:
         inifix.validate_inifile_schema(data)
     except ValueError:
-        print("Error: input is not Pluto inifile format compliant.", file=sys.stderr)
+        print_err("input is not Pluto inifile format compliant.")
         return 1
 
     dest = Path(dest)
     if dest.is_file() and not force:
-        print(
-            f"Error: destination file {dest} already exists. Use -f/--force to overwrite.",
-            file=sys.stderr,
+        print_err(
+            f"destination file {dest} already exists. Use -f/--force to overwrite."
         )
         return 1
 
