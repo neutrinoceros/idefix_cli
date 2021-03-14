@@ -211,9 +211,9 @@ $ idfx stamp --json
 {
   "tag": "v0.5",
   "sha": "daff799bb64b0993f058f50779873d594376d5bf",
-  "user": "glesur"
+  "user": "glesur",
   "host": "f-dahu",
-  "date": "Sat Jan 16 16:15:54 2021",
+  "date": "Sat Jan 16 16:15:54 2021"
 }
 ```
 This is helpful to quickly store important metadata next to one's datafiles. The git tag
