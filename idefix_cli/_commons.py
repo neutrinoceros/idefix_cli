@@ -17,6 +17,11 @@ def print_err(message: str) -> None:
     err_console.print(f"[bold white on red]ERROR[/] {message}")
 
 
+def print_warning(message: str) -> None:
+    err_console = Console(width=500, file=sys.stderr)
+    err_console.print(f"[red]WARNING[/] {message}")
+
+
 def requires_idefix(func):
     @wraps(func)
     def _func(*args, **kwargs):
