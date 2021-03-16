@@ -2,7 +2,7 @@ from pathlib import Path
 from subprocess import check_call
 from uuid import uuid4
 
-from inifix.idefix_conf import IdefixConf
+import inifix
 
 from idefix_cli._commons import _make, print_err, pushd
 
@@ -47,7 +47,7 @@ def _get_patched_inifile(
     duration: float = None,
     time_step: float = None,
 ) -> Path:
-    conf = IdefixConf(inifile)
+    conf = inifix.load(inifile)
 
     # conf["Output"]["dmp"] = 0.0  # force dump file to be written at every timestep
 
@@ -86,7 +86,7 @@ def run(
         return 1
     if one_step:
         if time_step is None:
-            time_step = IdefixConf(inifile)["TimeIntegrator"]["first_dt"]
+            time_step = inifix.load(inifile)["TimeIntegrator"]["first_dt"]
         duration = time_step
 
     d = Path(directory)
