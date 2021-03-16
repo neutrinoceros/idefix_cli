@@ -95,7 +95,8 @@ def test_invalid_json(capsys, tmp_path, monkeypatch):
 
 
 def test_invalid_inifile(capsys, tmp_path, monkeypatch):
-    monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps({1: 2})))
+    invalid_json = json.dumps({"section": {"subsection": {"subsubsection": 2}}})
+    monkeypatch.setattr("sys.stdin", io.StringIO(invalid_json))
 
     target = tmp_path / "idefix.mod.ini"
 
