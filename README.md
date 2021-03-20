@@ -71,20 +71,11 @@ $ idfx run --help
 
 ### `idfx setup`
 
-> `idfx setup` is based of `idefix/configure.py` and aims to replace it.
+> `idfx setup` is a thin wrapper around `$IDEFIX_DIR/configure.py`
+> all arguments and flags are directly passed down to _that_ script.
 
 `idfx setup` creates a valid `Makefile` at the specified location and with the speficied
 parameters (CPU/GPU ? HD/MHD ? ... set `idfx setup --help`).
-
-```shell
-$ idfx setup . -mhd -gpu
-```
-
-`idfx setup` also takes a `--make` (aliased to `--compile`) flag which will run
-```shell
-$ make -j <N_CPUS>
-```
-where `<N_CPUS>` is the number of cpus available (up to 8).
 
 ### `idfx run`
 

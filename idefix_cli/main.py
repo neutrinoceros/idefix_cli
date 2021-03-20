@@ -3,10 +3,11 @@ import sys
 from typing import Optional
 
 from idefix_cli import __version__
+from idefix_cli._commons import print_err
 from idefix_cli.commands._clean import _add_clean_args, clean
 from idefix_cli.commands._read import _add_read_args, read
 from idefix_cli.commands._run import _add_run_args, run
-from idefix_cli.commands._setup import _add_setup_args, setup
+from idefix_cli.commands._setup import setup
 from idefix_cli.commands._stamp import _add_stamp_args, stamp
 from idefix_cli.commands._write import _add_write_args, write
 
@@ -28,8 +29,13 @@ def main(argv: Optional[list[str]] = None) -> int:
     run_parser = subparsers.add_parser("run", help="run an Idefix problem")
     _add_run_args(run_parser)
 
-    setup_parser = subparsers.add_parser("setup", help="setup an Idefix problem")
-    _add_setup_args(setup_parser)
+    # this is a thin wrapper, we don't add any argument (atm)
+    # so the reference isn't used, but we'll keep it for symetry
+    setup_parser = subparsers.add_parser(  # noqa: F841
+        "setup",
+        help="setup an Idefix problem",
+        add_help=False,  # because it's a wrapper, we want to pass down even the "--help" flag
+    )
 
     stamp_parser = subparsers.add_parser(
         "stamp", help="print relevant data for reproduction to stdout"
@@ -41,7 +47,11 @@ def main(argv: Optional[list[str]] = None) -> int:
     )
     _add_write_args(write_parser)
 
-    args = parser.parse_args(argv)
+    args, rest = parser.parse_known_args(argv)
+
+    if rest and args.command != "setup":
+        print_err(f"unknown arguments ({', '.join(rest)}).")
+        return 1
 
     if args.command is None:
         # calling `idfx` without any argument is equivalent to `idfx --help`
@@ -65,16 +75,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         )
 
     if args.command == "setup":
-        return setup(
-            args.directory,
-            args.arch,
-            args.use_gpu,
-            args.cxx,
-            args.openmp,
-            args.mpi,
-            args.mhd,
-            args.make,
-        )
+        return setup(rest)
 
     if args.command == "stamp":
         return stamp(args.todict)
