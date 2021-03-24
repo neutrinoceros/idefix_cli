@@ -5,7 +5,7 @@ import pytest
 from idefix_cli._commons import requires_idefix
 
 
-@requires_idefix
+@requires_idefix()
 def noop():
     print("hello stdout")
     print("hello stderr", file=sys.stderr)

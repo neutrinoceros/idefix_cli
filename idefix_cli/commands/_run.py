@@ -1,5 +1,6 @@
 from pathlib import Path
 from subprocess import check_call
+from typing import Optional, Union
 from uuid import uuid4
 
 import inifix
@@ -43,13 +44,12 @@ def _add_run_args(parser):
 
 def _get_patched_inifile(
     directory: str,
-    inifile: str = "idefix.ini",
-    duration: float = None,
-    time_step: float = None,
+    inifile: Union[str, Path] = "idefix.ini",
+    duration: Optional[float] = None,
+    time_step: Optional[float] = None,
 ) -> Path:
+    inifile = Path(inifile)
     conf = inifix.load(inifile)
-
-    # conf["Output"]["dmp"] = 0.0  # force dump file to be written at every timestep
 
     to_write = False
     if time_step not in (None, conf["TimeIntegrator"]["first_dt"]):
@@ -71,22 +71,22 @@ def _get_patched_inifile(
 def run(
     directory: str,
     inifile: str = "idefix.ini",
-    duration: float = None,
-    time_step: float = None,
-    one_step: bool = False,
+    duration: Optional[float] = None,
+    time_step: Optional[float] = None,
+    one_step: Optional[bool] = False,
 ) -> int:
 
     input_inifile = inifile
     for loc in [Path.cwd(), Path(directory)]:
-        inifile = (loc / input_inifile).resolve()
-        if inifile.is_file():
+        pinifile = (loc / input_inifile).resolve()
+        if pinifile.is_file():
             break
     else:
         print_err("could not find inifile {input_inifile}")
         return 1
     if one_step:
         if time_step is None:
-            time_step = inifix.load(inifile)["TimeIntegrator"]["first_dt"]
+            time_step = inifix.load(pinifile)["TimeIntegrator"]["first_dt"]
         duration = time_step
 
     d = Path(directory)
@@ -100,11 +100,11 @@ def run(
         _make(directory)
 
     if (duration, time_step) != (None, None):
-        ninifile = _get_patched_inifile(directory, inifile, duration, time_step)
-        if ninifile != inifile:
-            inifile = ninifile
-            print(f"Running patched inifile {inifile}")
+        ninifile = _get_patched_inifile(directory, pinifile, duration, time_step)
+        if ninifile != pinifile:
+            pinifile = ninifile
+            print(f"Running patched inifile {pinifile}")
 
     with pushd(d):
-        check_call(["./idefix", "-i", inifile])
+        check_call(["./idefix", "-i", str(pinifile.name)])
     return 0

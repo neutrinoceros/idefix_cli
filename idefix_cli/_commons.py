@@ -4,8 +4,29 @@ import sys
 from functools import wraps
 from multiprocessing import cpu_count
 from subprocess import check_call
+from typing import Any, Callable, TypeVar, cast
 
 from rich.console import Console
+
+# workaround mypy not being confortable around decorator preserving signatures
+# adapted from
+# https://github.com/python/mypy/issues/1551#issuecomment-253978622
+TFun = TypeVar("TFun", bound=Callable[..., Any])
+
+
+class requires_idefix:
+    def __call__(self, f: TFun) -> TFun:
+        @wraps(f)
+        def wrapper(*args, **kwargs) -> Any:
+            if os.getenv("IDEFIX_DIR") is None:
+                print_err(
+                    "this functionality requires $IDEFIX_DIR to be defined.",
+                )
+                return 10
+            return f(*args, **kwargs)
+
+        return cast(TFun, wrapper)
+
 
 # setup a very large console to prevent rich from wrapping long error messages
 # since it usually has the side effect of truncating file names.
@@ -20,19 +41,6 @@ def print_err(message: str) -> None:
 def print_warning(message: str) -> None:
     err_console = Console(width=500, file=sys.stderr)
     err_console.print(f"[red]WARNING[/] {message}")
-
-
-def requires_idefix(func):
-    @wraps(func)
-    def _func(*args, **kwargs):
-        if os.getenv("IDEFIX_DIR") is None:
-            print_err(
-                "this functionality requires $IDEFIX_DIR to be defined.",
-            )
-            exit(1)
-        return func(*args, **kwargs)
-
-    return _func
 
 
 @contextlib.contextmanager

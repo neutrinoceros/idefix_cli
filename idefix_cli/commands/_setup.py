@@ -19,7 +19,7 @@ def wrap_outputs(stdout, stderr) -> None:
                 print(line, file=sys.stderr)
 
 
-@requires_idefix
+@requires_idefix()
 def setup(args) -> int:
     cmd = ["python3", os.path.join(os.environ["IDEFIX_DIR"], "configure.py"), *args]
     ret = subprocess.run(cmd, capture_output=True)
