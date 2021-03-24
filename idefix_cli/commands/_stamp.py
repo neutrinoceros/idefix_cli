@@ -20,8 +20,8 @@ def _add_stamp_args(parser):
     )
 
 
-@requires_idefix
-def stamp(todict: bool = False):
+@requires_idefix()
+def stamp(todict: bool = False) -> int:
     """
     Print idefix latest version tag-(git hash) and current time to stdout.
     """

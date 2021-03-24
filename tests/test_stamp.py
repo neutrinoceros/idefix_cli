@@ -41,8 +41,9 @@ def test_stamp_no_idefix(flag, capsys, monkeypatch):
     argv = ["stamp"]
     if flag:
         argv.append(flag)
-    with pytest.raises(SystemExit):
-        main(argv)
+
+    ret = main(argv)
+    assert ret == 10
 
     out, err = capsys.readouterr()
     assert out == ""

@@ -25,7 +25,7 @@ def _add_write_args(parser):
     )
 
 
-def write(dest: str, source, force: bool = False):
+def write(dest: str, source, force: bool = False) -> int:
     try:
         data = json.load(source)
     except json.decoder.JSONDecodeError:

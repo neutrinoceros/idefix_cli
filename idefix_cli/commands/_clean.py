@@ -40,7 +40,7 @@ def _add_clean_args(parser):
     )
 
 
-def clean(directory, clean_all: bool = False, dry: bool = False):
+def clean(directory, clean_all: bool = False, dry: bool = False) -> int:
     with pushd(directory):
         patterns = bpatterns.union(kokkos_files)
         if clean_all:

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Optional
 
 from inifix import load
 
@@ -13,7 +14,7 @@ def _add_read_args(parser):
     )
 
 
-def read(inifile: str, indent: int = None):
+def read(inifile: str, indent: Optional[int] = None) -> int:
     inifile = Path(inifile)
     if not inifile.is_file():
         print_err(f"no such file {inifile}")
