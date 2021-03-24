@@ -61,7 +61,7 @@ def _get_patched_inifile(
 
     if not to_write:
         return Path(inifile)
-    name = "{}_{}.ini_".format(inifile.stem, uuid4())
+    name = f"{inifile.stem}_{uuid4()}.ini_"
     new_inifile = Path(directory) / name
 
     conf.write(new_inifile)
@@ -103,7 +103,7 @@ def run(
         ninifile = _get_patched_inifile(directory, inifile, duration, time_step)
         if ninifile != inifile:
             inifile = ninifile
-            print("Running patched inifile {}".format(inifile))
+            print(f"Running patched inifile {inifile}")
 
     with pushd(d):
         check_call(["./idefix", "-i", inifile])
