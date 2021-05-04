@@ -1,10 +1,11 @@
 from idefix_cli.main import main
 
-HELP_MESSAGE = """usage: idfx [-h] [-v] {clean,read,run,setup,stamp,write} ...
+HELP_MESSAGE = """usage: idfx [-h] [-v] {clean,clone,read,run,setup,stamp,write} ...
 
 positional arguments:
-  {clean,read,run,setup,stamp,write}
+  {clean,clone,read,run,setup,stamp,write}
     clean               clean up generated files
+    clone               clone a problem directory
     read                read an Idefix inifile and print it to json format
     run                 run an Idefix problem
     setup               setup an Idefix problem

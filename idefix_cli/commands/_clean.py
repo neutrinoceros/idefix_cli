@@ -1,9 +1,7 @@
 import os
-from glob import glob
-from itertools import chain
 from pathlib import Path
 
-from idefix_cli._commons import pushd
+from idefix_cli._commons import files_from_patterns, pushd
 
 # bpatterns are those targeted by `make clean`, which is equivalent to
 # rm -f *.o *.cuda *.host
@@ -46,9 +44,7 @@ def clean(directory, clean_all: bool = False, dry: bool = False) -> int:
         if clean_all:
             patterns = patterns.union(gpatterns)
 
-        targets = sorted(
-            chain.from_iterable(glob(str(Path.cwd() / p)) for p in patterns)
-        )
+        targets = files_from_patterns(Path.cwd(), *patterns)
 
         if dry:
             if not targets:

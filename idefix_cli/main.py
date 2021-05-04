@@ -5,6 +5,7 @@ from typing import Optional
 from idefix_cli import __version__
 from idefix_cli._commons import print_err
 from idefix_cli.commands._clean import _add_clean_args, clean
+from idefix_cli.commands._clone import _add_clone_args, clone
 from idefix_cli.commands._read import _add_read_args, read
 from idefix_cli.commands._run import _add_run_args, run
 from idefix_cli.commands._setup import setup
@@ -20,6 +21,9 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     clean_parser = subparsers.add_parser("clean", help="clean up generated files")
     _add_clean_args(clean_parser)
+
+    clone_parser = subparsers.add_parser("clone", help="clone a problem directory")
+    _add_clone_args(clone_parser)
 
     read_parser = subparsers.add_parser(
         "read", help="read an Idefix inifile and print it to json format"
@@ -61,6 +65,14 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     if args.command == "clean":
         return clean(args.directory, args.all, args.dry)
+
+    if args.command == "clone":
+        return clone(
+            source=args.source,
+            dest=args.dest,
+            shallow=args.shallow,
+            extra=args.extra,
+        )
 
     if args.command == "read":
         return read(args.inifile, args.indent)
