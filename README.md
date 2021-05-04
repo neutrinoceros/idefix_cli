@@ -19,6 +19,7 @@ boring and repetetive tasks such as setup and cleanup in a single tool.
   * [bleeding-edge](#bleeding-edge)
 - [Internal documentation](#internal-documentation)
 - [Commands](#commands)
+  * [`idfx clone`](#idfx-clone)
   * [`idfx setup`](#idfx-setup)
   * [`idfx run`](#idfx-run)
     + [minimal example: run a test sequentially](#minimal-example-run-a-test-sequentially)
@@ -68,6 +69,18 @@ $ idfx run --help
 ```
 
 ## Commands
+
+### `idfx clone`
+
+Clone an idefix problem directory by either copying the main source files
+(`definitions.hpp`, `setup.cpp`, `idefix.ini`).
+```shell
+$ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI
+```
+
+Files can be symbolically linked to instead of copied, with `--shallow`.
+Additional files may be included in the clone using the `--extra` argument. They
+can be specified either by name or POSIX pattern.
 
 ### `idfx setup`
 

@@ -2,6 +2,8 @@ import contextlib
 import os
 import sys
 from functools import wraps
+from glob import glob
+from itertools import chain
 from multiprocessing import cpu_count
 from subprocess import check_call
 from typing import Any, Callable, TypeVar, cast
@@ -57,3 +59,7 @@ def _make(directory):
     ncpus = str(min(8, cpu_count()))
     with pushd(directory):
         check_call(["make", "-j", ncpus])
+
+
+def files_from_patterns(source, *patterns):
+    return sorted(chain.from_iterable(glob(os.path.join(source, p)) for p in patterns))
