@@ -61,7 +61,10 @@ def clone(
                 os.symlink(file, fdest)
             else:
                 shutil.copy(file, fdest)
-        os.replace(tmpdir, dest)
+        # using shutil.move over os.replace because the former works with
+        # cross-devices links while the latter doesn't, which is important in
+        # large facilities.
+        shutil.move(tmpdir, dest)
 
     if shallow:
         objs = f"symlinks to {source}"
