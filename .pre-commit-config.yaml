@@ -17,10 +17,12 @@ repos:
       - id: pyupgrade
         args: ["--py39-plus"]
 
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
-    rev: v1.1.1
-    hooks:
-      - id: markdown-toc
+  # this hook is broken since I introduced a CHANGELOG.md, see
+  # https://github.com/Lucas-C/pre-commit-hooks-nodejs/issues/8
+  #- repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
+  #  rev: v1.1.1
+  #  hooks:
+  #    - id: markdown-toc
 
   - repo: https://github.com/asottile/setup-cfg-fmt
     rev: v1.17.0
