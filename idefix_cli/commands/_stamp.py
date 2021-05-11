@@ -5,9 +5,7 @@ from getpass import getuser
 from socket import gethostname
 from time import ctime
 
-import git
-
-from idefix_cli._commons import requires_idefix
+from idefix_cli._commons import print_warning, requires_idefix
 
 
 def _add_stamp_args(parser):
@@ -25,14 +23,24 @@ def stamp(todict: bool = False) -> int:
     """
     Print idefix latest version tag-(git hash) and current time to stdout.
     """
-    repo = git.Repo(os.environ["IDEFIX_DIR"])
+    # this import may fail in envs where the git executable is not present,
+    # so we'll avoid keeping it at the top level to minimize breakage
+
     data = {
-        "tag": str(repo.tags[-1]),
-        "sha": repo.head.object.hexsha,
         "user": getuser(),
         "host": gethostname(),
         "date": ctime(datetime.now().timestamp()),
     }
+    try:
+        import git
+    except ImportError as exc:
+        print_warning(f"failed to load gitpython (got 'ImportError: {exc}')")
+    else:
+        repo = git.Repo(os.environ["IDEFIX_DIR"])
+        data = {
+            "tag": str(repo.tags[-1]),
+            "sha": repo.head.object.hexsha,
+        } | data
 
     if todict:
         text = json.dumps(data, indent=2)
