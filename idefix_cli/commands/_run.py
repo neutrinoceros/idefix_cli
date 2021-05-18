@@ -97,7 +97,9 @@ def run(
                 "Run `idfx setup` first."
             )
             return 1
-        _make(directory)
+
+        if (ret := _make(directory)) != 0:
+            return ret
 
     if (duration, time_step) != (None, None):
         ninifile = _get_patched_inifile(directory, pinifile, duration, time_step)

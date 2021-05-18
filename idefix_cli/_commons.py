@@ -5,7 +5,7 @@ from functools import wraps
 from glob import glob
 from itertools import chain
 from multiprocessing import cpu_count
-from subprocess import check_call
+from subprocess import CalledProcessError, check_call
 from typing import Any, Callable, TypeVar, cast
 
 from rich.console import Console
@@ -55,10 +55,15 @@ def pushd(new_dir):
         os.chdir(previous_dir)
 
 
-def _make(directory):
-    ncpus = str(min(8, cpu_count()))
-    with pushd(directory):
-        check_call(["make", "-j", ncpus])
+@requires_idefix()
+def _make(directory) -> int:
+    ncpus = str(min(8, cpu_count() // 2))
+    try:
+        with pushd(directory):
+            return check_call(["make", "-j", ncpus])
+    except CalledProcessError as exc:
+        print_err("failed to compile idefix")
+        return exc.returncode
 
 
 def files_from_patterns(source, *patterns):
