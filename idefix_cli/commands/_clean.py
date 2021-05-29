@@ -23,7 +23,9 @@ gpatterns = frozenset(("*.ini_", "Makefile", "idefix"))
 
 
 def _add_clean_args(parser):
-    parser.add_argument("directory", help="the root directory to clean")
+    parser.add_argument(
+        "directory", nargs="?", default=".", help="the root directory to clean"
+    )
     parser.add_argument(
         "--all",
         action="store_true",
