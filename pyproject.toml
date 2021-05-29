@@ -18,4 +18,5 @@ addopts = "--doctest-modules"
 omit = [
   "setup.py",
   "idefix_cli/__main__.py",
+  "idefix_cli/commands/_setup.py",
 ]
