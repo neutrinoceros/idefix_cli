@@ -1,5 +1,5 @@
 from pathlib import Path
-from subprocess import check_call
+from subprocess import call
 from typing import Optional, Union
 from uuid import uuid4
 
@@ -108,5 +108,7 @@ def run(
             print(f"Running patched inifile {pinifile}")
 
     with pushd(d):
-        check_call(["./idefix", "-i", str(pinifile.name)])
-    return 0
+        ret = call(["./idefix", "-i", str(pinifile.name)])
+        if ret != 0:
+            print_err("idefix terminated with an error.")
+        return ret

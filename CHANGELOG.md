@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 - UX: add default values for the `directory` positional argument in `idfx clean` and `idfx run`
-
+- UX: display a clean error message in case idefix itself errors out in `idfx run`
 
 ## [0.3.3] - 2021-05-18
 
