@@ -10,7 +10,7 @@ from idefix_cli._commons import _make, print_err, pushd
 
 def _add_run_args(parser):
 
-    parser.add_argument("directory", help="target directory")
+    parser.add_argument("directory", nargs="?", default=".", help="target directory")
     parser.add_argument(
         "-i",
         dest="inifile",
