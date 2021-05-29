@@ -1,7 +1,7 @@
 from pathlib import Path
 from subprocess import call
-from typing import Optional, Union
-from uuid import uuid4
+from tempfile import NamedTemporaryFile
+from typing import Optional
 
 import inifix
 
@@ -42,32 +42,6 @@ def _add_run_args(parser):
     )
 
 
-def _get_patched_inifile(
-    directory: str,
-    inifile: Union[str, Path] = "idefix.ini",
-    duration: Optional[float] = None,
-    time_step: Optional[float] = None,
-) -> Path:
-    inifile = Path(inifile)
-    conf = inifix.load(inifile)
-
-    to_write = False
-    if time_step not in (None, conf["TimeIntegrator"]["first_dt"]):
-        conf["TimeIntegrator"]["first_dt"] = time_step
-        to_write = True
-    if duration not in (None, conf["TimeIntegrator"]["tstop"]):
-        conf["TimeIntegrator"]["tstop"] = duration
-        to_write = True
-
-    if not to_write:
-        return Path(inifile)
-    name = f"{inifile.stem}_{uuid4()}.ini_"
-    new_inifile = Path(directory) / name
-
-    conf.write(new_inifile)
-    return new_inifile
-
-
 def run(
     directory: str,
     inifile: str = "idefix.ini",
@@ -82,7 +56,7 @@ def run(
         if pinifile.is_file():
             break
     else:
-        print_err("could not find inifile {input_inifile}")
+        print_err(f"could not find inifile {input_inifile}")
         return 1
     if one_step:
         if time_step is None:
@@ -101,14 +75,15 @@ def run(
         if (ret := _make(directory)) != 0:
             return ret
 
-    if (duration, time_step) != (None, None):
-        ninifile = _get_patched_inifile(directory, pinifile, duration, time_step)
-        if ninifile != pinifile:
-            pinifile = ninifile
-            print(f"Running patched inifile {pinifile}")
+    conf = inifix.load(pinifile)
+    if time_step is not None:
+        conf["TimeIntegrator"]["first_dt"] = time_step
+    if duration is not None:
+        conf["TimeIntegrator"]["tstop"] = duration
 
-    with pushd(d):
-        ret = call(["./idefix", "-i", str(pinifile.name)])
+    with pushd(d), NamedTemporaryFile() as tmp_inifile:
+        conf.write(tmp_inifile.name)
+        ret = call(["./idefix", "-i", tmp_inifile.name])
         if ret != 0:
             print_err("idefix terminated with an error.")
-        return ret
+    return ret

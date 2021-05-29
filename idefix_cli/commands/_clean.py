@@ -19,7 +19,7 @@ kokkos_files = frozenset(
 )
 
 # only cleared if `--all` flag is passed
-gpatterns = frozenset(("*.ini_", "Makefile", "idefix"))
+gpatterns = frozenset(("Makefile", "idefix"))
 
 
 def _add_clean_args(parser):
