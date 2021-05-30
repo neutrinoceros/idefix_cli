@@ -87,7 +87,10 @@ def main(argv: Optional[list[str]] = None) -> int:
         )
 
     if args.command == "setup":
-        return setup(rest)
+        # this one doesn't return because it yields control
+        # to a different process.
+        # and it's not testable for the same reason
+        setup(rest)  # pragma: no cover
 
     if args.command == "stamp":
         return stamp(args.todict)
