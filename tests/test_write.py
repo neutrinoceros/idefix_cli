@@ -4,6 +4,7 @@ import re
 import subprocess
 
 import pytest
+from pytest import assume
 
 from idefix_cli.main import main
 
@@ -25,18 +26,18 @@ def normalise_whitespace(s):
 def test_write_simple_conf(inifile, monkeypatch, tmp_path, capsys):
     monkeypatch.setattr("sys.stdin", io.StringIO(simple_conf))
     ret = main(["read", str(inifile.absolute())])
-    assert ret == 0
+    assume(ret == 0)
     out, err = capsys.readouterr()
 
     target = tmp_path / "idefix.mod.ini"
     ret = main(["write", str(target.absolute())])
-    assert ret == 0
+    assume(ret == 0)
 
     out, err = capsys.readouterr()
-    assert out == ""
-    assert err == ""
-    assert target.is_file()
-    assert normalise_whitespace(target.read_text()) == simple_conf_as_ini
+    assume(out == "")
+    assume(err == "")
+    assume(target.is_file())
+    assume(normalise_whitespace(target.read_text()) == simple_conf_as_ini)
 
 
 def test_write_file_exists(tmp_path, capsys, monkeypatch):
@@ -47,14 +48,14 @@ def test_write_file_exists(tmp_path, capsys, monkeypatch):
     # a minimalist configuration respecting Idefix inifile format
 
     ret = main(["write", str(target.absolute())])
-    assert ret != 0
+    assume(ret != 0)
     out, err = capsys.readouterr()
-    assert out == ""
-    assert (
+    assume(out == "")
+    assume(
         err
         == f"ERROR destination file {target} already exists. Use -f/--force to overwrite.\n"
     )
-    assert target.read_text() == ""
+    assume(target.read_text() == "")
 
 
 @pytest.mark.parametrize("flag", ["-f", "--force"])
@@ -65,13 +66,13 @@ def test_write_file_exists_force(flag, tmp_path, capsys, monkeypatch):
     target.touch()
 
     ret = main(["write", str(target.absolute()), flag])
-    assert ret == 0
+    assume(ret == 0)
 
     out, err = capsys.readouterr()
-    assert out == ""
-    assert err == ""
-    assert target.is_file()
-    assert normalise_whitespace(target.read_text()) == simple_conf_as_ini
+    assume(out == "")
+    assume(err == "")
+    assume(target.is_file())
+    assume(normalise_whitespace(target.read_text()) == simple_conf_as_ini)
 
 
 def test_invalid_json(capsys, tmp_path, monkeypatch):
@@ -80,18 +81,18 @@ def test_invalid_json(capsys, tmp_path, monkeypatch):
     target = tmp_path / "idefix.mod.ini"
 
     ret = main(["write", str(target.absolute())])
-    assert ret != 0
+    assume(ret != 0)
     out, err = capsys.readouterr()
-    assert out == ""
-    assert err == "ERROR input is not valid json.\n"
+    assume(out == "")
+    assume(err == "ERROR input is not valid json.\n")
 
     # test that this is still what happens even if the target file exists
     target.touch()
     ret = main(["write", str(target.absolute())])
-    assert ret != 0
+    assume(ret != 0)
     out, err = capsys.readouterr()
-    assert out == ""
-    assert err == "ERROR input is not valid json.\n"
+    assume(out == "")
+    assume(err == "ERROR input is not valid json.\n")
 
 
 def test_invalid_inifile(capsys, tmp_path, monkeypatch):
@@ -101,7 +102,7 @@ def test_invalid_inifile(capsys, tmp_path, monkeypatch):
     target = tmp_path / "idefix.mod.ini"
 
     ret = main(["write", str(target.absolute())])
-    assert ret != 0
+    assume(ret != 0)
     out, err = capsys.readouterr()
-    assert out == ""
-    assert err == "ERROR input is not Pluto inifile format compliant.\n"
+    assume(out == "")
+    assume(err == "ERROR input is not Pluto inifile format compliant.\n")

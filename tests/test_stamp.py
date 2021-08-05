@@ -4,6 +4,7 @@ from getpass import getuser
 from socket import gethostname
 
 import pytest
+from pytest import assume
 
 from idefix_cli.main import main
 
@@ -43,11 +44,11 @@ def test_stamp_no_idefix(flag, capsys, monkeypatch):
         argv.append(flag)
 
     ret = main(argv)
-    assert ret == 10
+    assume(ret == 10)
 
     out, err = capsys.readouterr()
-    assert out == ""
-    assert err == "ERROR this functionality requires $IDEFIX_DIR to be defined.\n"
+    assume(out == "")
+    assume(err == "ERROR this functionality requires $IDEFIX_DIR to be defined.\n")
 
 
 def test_stamp_simple(capsys, monkeypatch, tmp_path):
@@ -55,11 +56,11 @@ def test_stamp_simple(capsys, monkeypatch, tmp_path):
     monkeypatch.setattr("git.Repo", MockRepo)
 
     ret = main(["stamp"])
-    assert ret == 0
+    assume(ret == 0)
     out, err = capsys.readouterr()
     # skiping the last line as it contains a date and I'm not sure how to test it.
-    assert out.splitlines()[:-1] == [v for v in mock_data.values()]
-    assert err == ""
+    assume(out.splitlines()[:-1] == [v for v in mock_data.values()])
+    assume(err == "")
 
 
 @pytest.mark.parametrize("flag", ["-d", "--json"])
@@ -68,8 +69,8 @@ def test_stamp_json(flag, capsys, monkeypatch, tmp_path):
     monkeypatch.setattr("git.Repo", MockRepo)
 
     ret = main(["stamp", flag])
-    assert ret == 0
+    assume(ret == 0)
     out, err = capsys.readouterr()
     # json validataion
     json.loads(out)
-    assert err == ""
+    assume(err == "")
