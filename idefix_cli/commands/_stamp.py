@@ -23,8 +23,6 @@ def stamp(todict: bool = False) -> int:
     """
     Print idefix latest version tag-(git hash) and current time to stdout.
     """
-    # this import may fail in envs where the git executable is not present,
-    # so we'll avoid keeping it at the top level to minimize breakage
 
     data = {
         "user": getuser(),
@@ -32,6 +30,8 @@ def stamp(todict: bool = False) -> int:
         "date": ctime(datetime.now().timestamp()),
     }
     try:
+        # this import may fail in envs where the git executable is not present,
+        # so we'll avoid keeping it at the top level to minimize breakage
         import git
     except ImportError as exc:
         print_warning(f"failed to load gitpython (got 'ImportError: {exc}')")
