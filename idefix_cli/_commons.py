@@ -20,11 +20,16 @@ class requires_idefix:
     def __call__(self, f: TFun) -> TFun:
         @wraps(f)
         def wrapper(*args, **kwargs) -> Any:
-            if os.getenv("IDEFIX_DIR") is None:
+            if (IDEFIX_DIR := os.getenv("IDEFIX_DIR")) is None:
                 print_err(
                     "this functionality requires $IDEFIX_DIR to be defined.",
                 )
                 return 10
+            elif not os.path.isdir(IDEFIX_DIR):
+                print_err(
+                    f"env variable $IDEFIX_DIR isn't properly defined: {IDEFIX_DIR} is not a directory.",
+                )
+                return 20
             return f(*args, **kwargs)
 
         return cast(TFun, wrapper)
