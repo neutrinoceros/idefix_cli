@@ -1,3 +1,5 @@
+from pytest import assume
+
 from idefix_cli.main import main
 
 HELP_MESSAGE = """usage: idfx [-h] [-v] {clean,clone,read,run,setup,stamp,write} ...
@@ -20,8 +22,8 @@ optional arguments:
 
 def test_no_command_passed(capsys):
     ret = main([])
-    assert ret != 0
+    assume(ret != 0)
     out, err = capsys.readouterr()
-    assert out == ""
+    assume(out == "")
     # skip the first lines because they differ between macos and linux
-    assert err.splitlines()[2:] == HELP_MESSAGE.splitlines()[2:]
+    assume(err.splitlines()[2:] == HELP_MESSAGE.splitlines()[2:])

@@ -1,5 +1,7 @@
 import sys
 
+from pytest import assume
+
 from idefix_cli._commons import requires_idefix
 
 
@@ -14,19 +16,19 @@ def noop() -> int:
 def test_requires_idefix_undef(capsys, monkeypatch):
     monkeypatch.delenv("IDEFIX_DIR", raising=False)
     ret = noop()
-    assert ret == 10
+    assume(ret == 10)
 
     out, err = capsys.readouterr()
-    assert out == ""
-    assert err == "ERROR this functionality requires $IDEFIX_DIR to be defined.\n"
+    assume(out == "")
+    assume(err == "ERROR this functionality requires $IDEFIX_DIR to be defined.\n")
 
 
 def test_requires_idefix_def(capsys, monkeypatch, tmp_path):
     monkeypatch.setenv("IDEFIX_DIR", str(tmp_path / "idefix"))
 
     ret = noop()
-    assert ret == 0
+    assume(ret == 0)
 
     out, err = capsys.readouterr()
-    assert out == "hello stdout\n"
-    assert err == "hello stderr\n"
+    assume(out == "hello stdout\n")
+    assume(err == "hello stderr\n")
