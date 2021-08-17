@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2021-17-08
+
+UX: add colored logging and refactor idfx clone to use os.replace for atomicity
+
 ## [0.4.1] - 2021-08-05
 
 UX: add a more specific error message when IDEFIX_DIR exists but isn't valid.
