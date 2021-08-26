@@ -43,7 +43,7 @@ repos:
           --ignore-init-module-imports,
           --remove-all-unused-imports,
         ]
-  
+
   - repo: https://github.com/psf/black
     rev: 21.6b0
     hooks:

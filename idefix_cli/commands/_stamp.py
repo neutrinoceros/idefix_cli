@@ -5,7 +5,8 @@ from getpass import getuser
 from socket import gethostname
 from time import ctime
 
-from idefix_cli._commons import print_warning, requires_idefix
+from idefix_cli._commons import print_warning
+from idefix_cli._commons import requires_idefix
 
 
 def _add_stamp_args(parser):

@@ -5,8 +5,12 @@ from functools import wraps
 from glob import glob
 from itertools import chain
 from multiprocessing import cpu_count
-from subprocess import CalledProcessError, check_call
-from typing import Any, Callable, TypeVar, cast
+from subprocess import CalledProcessError
+from subprocess import check_call
+from typing import Any
+from typing import Callable
+from typing import cast
+from typing import TypeVar
 
 from rich.console import Console
 

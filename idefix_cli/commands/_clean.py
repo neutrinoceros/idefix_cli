@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
 
-from idefix_cli._commons import files_from_patterns, pushd
+from idefix_cli._commons import files_from_patterns
+from idefix_cli._commons import pushd
 
 # bpatterns are those targeted by `make clean`, which is equivalent to
 # rm -f *.o *.cuda *.host

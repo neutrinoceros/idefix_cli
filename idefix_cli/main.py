@@ -4,13 +4,19 @@ from typing import Optional
 
 from idefix_cli import __version__
 from idefix_cli._commons import print_err
-from idefix_cli.commands._clean import _add_clean_args, clean
-from idefix_cli.commands._clone import _add_clone_args, clone
-from idefix_cli.commands._read import _add_read_args, read
-from idefix_cli.commands._run import _add_run_args, run
+from idefix_cli.commands._clean import _add_clean_args
+from idefix_cli.commands._clean import clean
+from idefix_cli.commands._clone import _add_clone_args
+from idefix_cli.commands._clone import clone
+from idefix_cli.commands._read import _add_read_args
+from idefix_cli.commands._read import read
+from idefix_cli.commands._run import _add_run_args
+from idefix_cli.commands._run import run
 from idefix_cli.commands._setup import setup
-from idefix_cli.commands._stamp import _add_stamp_args, stamp
-from idefix_cli.commands._write import _add_write_args, write
+from idefix_cli.commands._stamp import _add_stamp_args
+from idefix_cli.commands._stamp import stamp
+from idefix_cli.commands._write import _add_write_args
+from idefix_cli.commands._write import write
 
 
 def main(argv: Optional[list[str]] = None) -> int:
