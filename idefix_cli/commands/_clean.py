@@ -18,8 +18,11 @@ kokkos_files = frozenset(
     )
 )
 
+# TODO: need to decide what part to remove without --all
+cmake_dirs = frozenset("CMakeFiles")
+
 # only cleared if `--all` flag is passed
-gpatterns = frozenset(("Makefile", "idefix"))
+gpatterns = frozenset(("Makefile", "idefix", "*.cmake", "CMakeCache.txt"))
 
 
 def _add_clean_args(parser):
@@ -42,9 +45,9 @@ def _add_clean_args(parser):
 
 def clean(directory, clean_all: bool = False, dry: bool = False) -> int:
     with pushd(directory):
-        patterns = bpatterns.union(kokkos_files)
+        patterns = bpatterns | kokkos_files
         if clean_all:
-            patterns = patterns.union(gpatterns)
+            patterns |= gpatterns
 
         targets = files_from_patterns(Path.cwd(), *patterns)
 
