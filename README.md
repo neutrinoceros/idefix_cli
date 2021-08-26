@@ -1,5 +1,5 @@
 [![PyPI](https://img.shields.io/pypi/v/idefix_cli)](https://pypi.org/project/idefix-cli/)
-![PyPI](https://img.shields.io/pypi/pyversions/idefix_cli?logo=python&logoColor=white&label=Python)
+![PyPI](https://img.shields.io/pypi/pyversions/idefix_cli/0.4.0?logo=python&logoColor=white&label=Python)
 [![codecov](https://codecov.io/gh/neutrinoceros/idefix_cli/branch/main/graph/badge.svg)](https://codecov.io/gh/neutrinoceros/idefix_cli)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/neutrinoceros/idefix_cli/main.svg)](https://results.pre-commit.ci/badge/github/neutrinoceros/idefix_cli/main.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
