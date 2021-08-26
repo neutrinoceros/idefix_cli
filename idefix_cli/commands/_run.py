@@ -5,7 +5,9 @@ from typing import Optional
 
 import inifix
 
-from idefix_cli._commons import _make, print_err, pushd
+from idefix_cli._commons import _make
+from idefix_cli._commons import print_err
+from idefix_cli._commons import pushd
 
 
 def _add_run_args(parser):

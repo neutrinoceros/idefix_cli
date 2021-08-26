@@ -6,7 +6,8 @@ from typing import Optional
 
 from rich import print
 
-from idefix_cli._commons import files_from_patterns, print_err
+from idefix_cli._commons import files_from_patterns
+from idefix_cli._commons import print_err
 
 minimal_target = frozenset(
     (
