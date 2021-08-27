@@ -15,6 +15,7 @@ minversion = "6.0"
 addopts = "--doctest-modules"
 
 [tool.coverage.run]
+branch = true
 omit = [
   "setup.py",
   "idefix_cli/__main__.py",
