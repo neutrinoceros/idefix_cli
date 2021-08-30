@@ -9,7 +9,7 @@ from pytest import assume
 from idefix_cli.main import main
 
 mock_data = {
-    "tag": "v100.248.mock",
+    "latest ancestor version": "unknown version",
     "sha": "864e17a23eebbccMOCKSHA1e3db466325d54b51a",
     "user": getuser(),
     "host": gethostname(),
@@ -32,7 +32,7 @@ class MockRepo:
     # with the test id. This is likely a bug on their side but for now I'll just work around it.
     slot: str
     head: MockHead = MockHead()
-    tags: tuple[str] = (mock_data["tag"],)
+    tags: tuple[str] = (mock_data["latest ancestor version"],)
 
 
 @pytest.mark.parametrize("flag", ["", "-d", "--json"])
@@ -59,7 +59,7 @@ def test_stamp_simple(capsys, monkeypatch, tmp_path):
     assume(ret == 0)
     out, err = capsys.readouterr()
     # skiping the last line as it contains a date and I'm not sure how to test it.
-    assume(out.splitlines()[:-1] == [v for v in mock_data.values()])
+    assert out.splitlines()[:-1] == [v for v in mock_data.values()]
     assume(err == "")
 
 
@@ -73,4 +73,4 @@ def test_stamp_json(flag, capsys, monkeypatch, tmp_path):
     out, err = capsys.readouterr()
     # json validataion
     json.loads(out)
-    assume(err == "")
+    assert err == ""
