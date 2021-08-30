@@ -1,6 +1,7 @@
 import contextlib
 import os
 import platform
+import re
 import sys
 from configparser import ConfigParser
 from datetime import datetime
@@ -20,8 +21,6 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
-from git.exc import InvalidGitRepositoryError
-from packaging.version import parse as parse_version
 from packaging.version import Version
 from rich.console import Console
 
@@ -30,6 +29,11 @@ from rich.console import Console
 # https://github.com/python/mypy/issues/1551#issuecomment-253978622
 TFun = TypeVar("TFun", bound=Callable[..., Any])
 
+VERSION_STR = r"\d+\.\d+\.\d+"
+VERSION_REGEXP = re.compile(VERSION_STR)
+# This is how sections are formatted in the changelog,
+# e.g., '## [0.8.1] - 2021-06-24'
+VERSECT_REGEXP = re.compile(fr"## \[{VERSION_STR}\] - \d\d\d\d-\d\d-\d\d\s*\n")
 
 if platform.system().lower().startswith("win"):
     # Windows
@@ -124,31 +128,40 @@ def get_git_data() -> dict[str, str]:
     else:
         repo = git.Repo(os.environ["IDEFIX_DIR"])
         data = {
-            "tag": str(repo.tags[-1]),
             "sha": repo.head.object.hexsha,
         } | data
-
+    if (version := get_idefix_version()) is None:
+        version_str = "unknown version"
+    else:
+        version_str = str(version)
+    data = {"latest ancestor version": version_str} | data
     return data
 
 
 @requires_idefix()
-def get_idefix_version() -> Version:
-    default_version = parse_version("unknown")
-    try:
-        git_data = get_git_data()
-        return parse_version(git_data["tag"])
-    except InvalidGitRepositoryError:
-        print_warning(
-            "couldn't determine idefix version. "
-            "$IDEFIX_DIR seems to point to a directory that's not a git repository. "
-            "A patch is needed in idefix_cli"
-        )
-        return default_version
-    except KeyError:  # pragma: no cover
-        # This is an easter egg. I can think of *one* way to reach this with
-        # a sane copy of idefix, but I don't expect it will ever be used.
-        print_warning("Congratulations, you've reached the center of the maze.")
-        return default_version
+def get_idefix_version() -> Optional[Version]:
+    # We rely on parsing the CHANGELOG file to determine the most recent release at
+    # any given point. This is more reliable than checking for the closest ancestor
+    # in git tags because the development branch usually doesn't decend from releases.
+    # Another reason why this seems reasonable is that tarball releases are supposed
+    # to ship a CHANGELOG file as well.
+    changelog = os.path.join(os.environ["IDEFIX_DIR"], "CHANGELOG.md")
+    if not os.path.isfile(changelog):
+        # this is inevitable if the user is checked in a version that predates
+        # the introduction of a changelog (Idefix v0.7.0)
+        return None
+
+    with open(changelog) as fh:
+        for line in fh:
+            if not re.match(VERSECT_REGEXP, line):
+                continue
+            match = re.search(VERSION_REGEXP, line)
+            assert match is not None
+            return Version(match.group())
+
+    raise RuntimeError(
+        "Something went wrong while trying to determine Idefix's version."
+    )
 
 
 def get_user_config_file() -> Optional[str]:

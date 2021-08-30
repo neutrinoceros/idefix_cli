@@ -4,11 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.4.4] - 2021-30-08
 
 - ENH: add preliminary support for cmake via additional globals and functions in
   idefix_cli._commons module https://github.com/neutrinoceros/idefix_cli/pull/75
 
+- BUG: fix version parsing for Idefix in idfx stamp
+  https://github.com/neutrinoceros/idefix_cli/pull/76
 
 ## [0.4.3] - 2021-26-08
 
