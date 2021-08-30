@@ -1,23 +1,50 @@
 import contextlib
 import os
+import platform
 import sys
+from configparser import ConfigParser
+from datetime import datetime
 from functools import wraps
+from getpass import getuser
 from glob import glob
 from itertools import chain
 from multiprocessing import cpu_count
+from socket import gethostname
 from subprocess import CalledProcessError
 from subprocess import check_call
+from time import ctime
 from typing import Any
 from typing import Callable
 from typing import cast
+from typing import Optional
 from typing import TypeVar
+from typing import Union
 
+from git.exc import InvalidGitRepositoryError
+from packaging.version import parse as parse_version
+from packaging.version import Version
 from rich.console import Console
 
 # workaround mypy not being confortable around decorator preserving signatures
 # adapted from
 # https://github.com/python/mypy/issues/1551#issuecomment-253978622
 TFun = TypeVar("TFun", bound=Callable[..., Any])
+
+
+if platform.system().lower().startswith("win"):
+    # Windows
+    env_var = "APPDATA"
+    default_usr_dir = "AppData"
+else:
+    # POSIX
+    env_var = "XDG_CONFIG_HOME"
+    default_usr_dir = ".config"
+
+XDG_CONFIG_HOME = os.environ.get(
+    env_var,
+    os.path.join(os.path.expanduser("~"), default_usr_dir),
+)
+del env_var, default_usr_dir
 
 
 class requires_idefix:
@@ -43,13 +70,15 @@ class requires_idefix:
 # since it usually has the side effect of truncating file names.
 # This workaround also helps keeping error messages reproducible in CI.
 
+ErrorMessage = Union[str, Exception]
 
-def print_err(message: str) -> None:
+
+def print_err(message: ErrorMessage) -> None:
     err_console = Console(width=500, file=sys.stderr)
     err_console.print(f"[bold white on red]ERROR[/] {message}")
 
 
-def print_warning(message: str) -> None:
+def print_warning(message: ErrorMessage) -> None:
     err_console = Console(width=500, file=sys.stderr)
     err_console.print(f"[red]WARNING[/] {message}")
 
@@ -77,3 +106,62 @@ def _make(directory) -> int:
 
 def files_from_patterns(source, *patterns):
     return sorted(chain.from_iterable(glob(os.path.join(source, p)) for p in patterns))
+
+
+@requires_idefix()
+def get_git_data() -> dict[str, str]:
+    data = {
+        "user": getuser(),
+        "host": gethostname(),
+        "date": ctime(datetime.now().timestamp()),
+    }
+    try:
+        # this import may fail in envs where the git executable is not present,
+        # so we'll avoid keeping it at the top level to minimize breakage
+        import git
+    except ImportError as exc:
+        print_warning(f"failed to load gitpython (got 'ImportError: {exc}')")
+    else:
+        repo = git.Repo(os.environ["IDEFIX_DIR"])
+        data = {
+            "tag": str(repo.tags[-1]),
+            "sha": repo.head.object.hexsha,
+        } | data
+
+    return data
+
+
+@requires_idefix()
+def get_idefix_version() -> Version:
+    default_version = parse_version("unknown")
+    try:
+        git_data = get_git_data()
+        return parse_version(git_data["tag"])
+    except InvalidGitRepositoryError:
+        print_warning(
+            "couldn't determine idefix version. "
+            "$IDEFIX_DIR seems to point to a directory that's not a git repository. "
+            "A patch is needed in idefix_cli"
+        )
+        return default_version
+    except KeyError:  # pragma: no cover
+        # This is an easter egg. I can think of *one* way to reach this with
+        # a sane copy of idefix, but I don't expect it will ever be used.
+        print_warning("Congratulations, you've reached the center of the maze.")
+        return default_version
+
+
+def get_user_config_file() -> Optional[str]:
+    for parent_dir in [".", XDG_CONFIG_HOME]:
+        if os.path.isfile(conf_file := os.path.join(parent_dir, "idefix.cfg")):
+            return os.path.abspath(conf_file)
+    return None
+
+
+def get_user_configuration() -> Optional[ConfigParser]:
+    if (conf_file := get_user_config_file()) is None:
+        return None
+
+    cf = ConfigParser()
+    cf.read(conf_file)
+    return cf
