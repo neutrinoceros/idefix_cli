@@ -1,5 +1,7 @@
 import os
+import subprocess
 from pathlib import Path
+from shutil import which
 
 from idefix_cli._commons import files_from_patterns
 from idefix_cli._commons import pushd
@@ -46,6 +48,21 @@ def clean(directory, clean_all: bool = False, dry: bool = False) -> int:
         patterns = bpatterns.union(kokkos_files)
         if clean_all:
             patterns = patterns.union(gpatterns)
+
+        # Guarantee that git indexed files are never cleaned
+        if which("git") is not None:
+            # we don't check the result of the process, meaning we trust git not to output
+            # anything to stdout in case the current dir isn't part of a git repo
+            git_files = set(
+                subprocess.run(["git", "ls-files"], capture_output=True)
+                .stdout.decode()
+                .strip()
+                .split("\n")
+            )
+        else:
+            git_files = set()
+
+        patterns -= git_files
 
         targets = files_from_patterns(Path.cwd(), *patterns)
 
