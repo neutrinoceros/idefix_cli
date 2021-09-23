@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import subprocess
 from pathlib import Path
+from shutil import rmtree
 from shutil import which
 
 from idefix_cli._commons import files_from_patterns
@@ -24,19 +25,25 @@ kokkos_files = frozenset(
     )
 )
 
+cmake_files = frozenset(("CMakeCache.txt", "cmake_install.cmake"))
+
 # only cleared if `--all` flag is passed
 gpatterns = frozenset(("Makefile", "idefix"))
+
+# it is important to append os.path.sep to directory names so
+# it's clear that they are not files when listed with idfx clean --dry
+GENERATED_DIRS = frozenset(("CMakeFiles" + os.path.sep,))
 
 
 def add_arguments(parser):
     parser.add_argument(
-        "directory", nargs="?", default=".", help="the root directory to clean"
+        "directory", nargs="?", default=".", help="the target directory to clean"
     )
     parser.add_argument(
         "--all",
         dest="clean_all",
         action="store_true",
-        help="also clean generated Makefiles, idefix excutable files and .ini_ files",
+        help="also clean generated Makefiles, idefix excutable files",
     )
     parser.add_argument(
         "--dry-run",
@@ -49,9 +56,9 @@ def add_arguments(parser):
 
 def command(directory, clean_all: bool = False, dry: bool = False) -> int:
     with pushd(directory):
-        patterns = bpatterns.union(kokkos_files)
+        patterns = bpatterns | kokkos_files | cmake_files | GENERATED_DIRS
         if clean_all:
-            patterns = patterns.union(gpatterns)
+            patterns |= gpatterns
 
         # Guarantee that git indexed files are never cleaned
         if which("git") is not None:
@@ -79,6 +86,9 @@ def command(directory, clean_all: bool = False, dry: bool = False) -> int:
             return 0
 
         for t in targets:
-            os.remove(t)
+            if os.path.isdir(t):
+                rmtree(t)
+            else:
+                os.remove(t)
 
     return 0
