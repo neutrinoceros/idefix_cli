@@ -1,10 +1,11 @@
+"""print relevant data for reproduction to stdout"""
 import json
 
 from idefix_cli._commons import get_git_data
 from idefix_cli._commons import requires_idefix
 
 
-def _add_stamp_args(parser):
+def add_arguments(parser):
     parser.add_argument(
         "-d",
         "--json",
@@ -15,7 +16,7 @@ def _add_stamp_args(parser):
 
 
 @requires_idefix()
-def stamp(todict: bool = False) -> int:
+def command(todict: bool = False) -> int:
     """
     Print idefix latest version tag-(git hash) and current time to stdout.
     """

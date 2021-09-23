@@ -1,3 +1,4 @@
+"""clone a problem directory"""
 import os
 import shutil
 from glob import glob
@@ -18,7 +19,7 @@ minimal_target = frozenset(
 )
 
 
-def _add_clone_args(parser) -> int:
+def add_arguments(parser) -> int:
     parser.add_argument(
         "source", default=".", help="the problem directory to be cloned."
     )
@@ -38,7 +39,7 @@ def _add_clone_args(parser) -> int:
     )
 
 
-def clone(
+def command(
     source,
     dest,
     shallow: bool = False,
