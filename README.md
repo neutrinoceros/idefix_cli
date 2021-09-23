@@ -7,7 +7,7 @@
 # `idefix_cli:idfx`
 
 This is a CLI helper tool for Idefix, named `idfx`. `idfx` gathers and automates
-boring and repetetive tasks such as setup and cleanup in a single tool.
+boring and repetetive tasks such as configuration and cleanup in a single tool.
 
 > Warning: Idefix itself is not publicly available yet.
 
@@ -19,7 +19,7 @@ boring and repetetive tasks such as setup and cleanup in a single tool.
 - [Internal documentation](#internal-documentation)
 - [Commands](#commands)
   * [`idfx clone`](#idfx-clone)
-  * [`idfx setup`](#idfx-setup)
+  * [`idfx conf`](#idfx-conf)
   * [`idfx run`](#idfx-run)
     + [minimal example: run a test sequentially](#minimal-example-run-a-test-sequentially)
     + [running a shorter version of a problem](#running-a-shorter-version-of-a-problem)
@@ -84,13 +84,13 @@ $ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --extra *.log
 
 </details>
 
-## `idfx setup`
+## `idfx conf`
 
-> `idfx setup` is a thin wrapper around `$IDEFIX_DIR/configure.py`
+> `idfx conf` is a thin wrapper around `$IDEFIX_DIR/configure.py`
 > all arguments and flags are directly passed down to _that_ script.
 
-`idfx setup` creates a valid `Makefile` at the specified location and with the speficied
-parameters (CPU/GPU ? HD/MHD ? ... set `idfx setup --help`).
+`idfx conf` creates a valid `Makefile` at the specified location and with the speficied
+parameters (CPU/GPU ? HD/MHD ? ... set `idfx conf --help`).
 
 ## `idfx run`
 
