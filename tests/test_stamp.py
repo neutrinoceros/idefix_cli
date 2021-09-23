@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 from getpass import getuser
 from socket import gethostname
+from typing import Tuple
 
 import pytest
 from pytest import assume
@@ -32,7 +33,7 @@ class MockRepo:
     # with the test id. This is likely a bug on their side but for now I'll just work around it.
     slot: str
     head: MockHead = MockHead()
-    tags: tuple[str] = (mock_data["latest ancestor version"],)
+    tags: Tuple[str] = (mock_data["latest ancestor version"],)
 
 
 @pytest.mark.parametrize("flag", ["", "-d", "--json"])

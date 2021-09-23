@@ -1,7 +1,8 @@
 """read an Idefix inifile and print it to json format"""
+from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import Optional
 
 from inifix import load
 
@@ -15,7 +16,7 @@ def add_arguments(parser):
     )
 
 
-def command(inifile: str, indent: Optional[int] = None) -> int:
+def command(inifile: str, indent: int | None = None) -> int:
     inifile = Path(inifile)
     if not inifile.is_file():
         print_err(f"no such file {inifile}")

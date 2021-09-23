@@ -19,7 +19,7 @@ repos:
     rev: v2.25.0
     hooks:
       - id: pyupgrade
-        args: ["--py39-plus"]
+        args: ["--py38-plus"]
 
   # this hook is broken since I introduced a CHANGELOG.md, see
   # https://github.com/Lucas-C/pre-commit-hooks-nodejs/issues/8

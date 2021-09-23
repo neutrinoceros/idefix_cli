@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MNT: rename modules, idfx setup is now idfx conf
   https://github.com/neutrinoceros/idefix_cli/pull/82
 
+- MNT: add support for Python 3.8
+  https://github.com/neutrinoceros/idefix_cli/pull/83
 ## [0.5.0] - 2021-23-09
 
 ENH: implement a plugin architecture for commands

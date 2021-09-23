@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import contextlib
 import os
 import platform
@@ -17,7 +19,6 @@ from time import ctime
 from typing import Any
 from typing import Callable
 from typing import cast
-from typing import Optional
 from typing import TypeVar
 from typing import Union
 
@@ -127,19 +128,17 @@ def get_git_data() -> dict[str, str]:
         print_warning(f"failed to load gitpython (got 'ImportError: {exc}')")
     else:
         repo = git.Repo(os.environ["IDEFIX_DIR"])
-        data = {
-            "sha": repo.head.object.hexsha,
-        } | data
+        data = {"sha": repo.head.object.hexsha, **data}
     if (version := get_idefix_version()) is None:
         version_str = "unknown version"
     else:
         version_str = str(version)
-    data = {"latest ancestor version": version_str} | data
+    data = {"latest ancestor version": version_str, **data}
     return data
 
 
 @requires_idefix()
-def get_idefix_version() -> Optional[Version]:
+def get_idefix_version() -> Version | None:
     # We rely on parsing the CHANGELOG file to determine the most recent release at
     # any given point. This is more reliable than checking for the closest ancestor
     # in git tags because the development branch usually doesn't decend from releases.
@@ -164,14 +163,14 @@ def get_idefix_version() -> Optional[Version]:
     )
 
 
-def get_user_config_file() -> Optional[str]:
+def get_user_config_file() -> str | None:
     for parent_dir in [".", XDG_CONFIG_HOME]:
         if os.path.isfile(conf_file := os.path.join(parent_dir, "idefix.cfg")):
             return os.path.abspath(conf_file)
     return None
 
 
-def get_user_configuration() -> Optional[ConfigParser]:
+def get_user_configuration() -> ConfigParser | None:
     if (conf_file := get_user_config_file()) is None:
         return None
 
