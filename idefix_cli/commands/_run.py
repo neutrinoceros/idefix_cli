@@ -1,3 +1,4 @@
+"""run an Idefix problem"""
 from pathlib import Path
 from subprocess import call
 from tempfile import NamedTemporaryFile
@@ -10,7 +11,7 @@ from idefix_cli._commons import print_err
 from idefix_cli._commons import pushd
 
 
-def _add_run_args(parser):
+def add_arguments(parser):
 
     parser.add_argument("directory", nargs="?", default=".", help="target directory")
     parser.add_argument(
@@ -44,7 +45,7 @@ def _add_run_args(parser):
     )
 
 
-def run(
+def command(
     directory: str,
     inifile: str = "idefix.ini",
     duration: Optional[float] = None,

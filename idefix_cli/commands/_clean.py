@@ -1,3 +1,4 @@
+"""clean up generated files"""
 import os
 import subprocess
 from pathlib import Path
@@ -25,12 +26,13 @@ kokkos_files = frozenset(
 gpatterns = frozenset(("Makefile", "idefix"))
 
 
-def _add_clean_args(parser):
+def add_arguments(parser):
     parser.add_argument(
         "directory", nargs="?", default=".", help="the root directory to clean"
     )
     parser.add_argument(
         "--all",
+        dest="clean_all",
         action="store_true",
         help="also clean generated Makefiles, idefix excutable files and .ini_ files",
     )
@@ -43,7 +45,7 @@ def _add_clean_args(parser):
     )
 
 
-def clean(directory, clean_all: bool = False, dry: bool = False) -> int:
+def command(directory, clean_all: bool = False, dry: bool = False) -> int:
     with pushd(directory):
         patterns = bpatterns.union(kokkos_files)
         if clean_all:

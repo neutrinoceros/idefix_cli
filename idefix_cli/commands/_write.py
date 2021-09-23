@@ -1,3 +1,4 @@
+"""write an Idefix inifile a from json string"""
 import argparse
 import json
 import sys
@@ -8,7 +9,7 @@ import inifix
 from idefix_cli._commons import print_err
 
 
-def _add_write_args(parser):
+def add_arguments(parser):
     parser.add_argument("dest", type=str, help="dest inifile")
     parser.add_argument(
         "source",
@@ -25,7 +26,7 @@ def _add_write_args(parser):
     )
 
 
-def write(dest: str, source, force: bool = False) -> int:
+def command(dest: str, source, force: bool = False) -> int:
     try:
         data = json.load(source)
     except json.decoder.JSONDecodeError:
