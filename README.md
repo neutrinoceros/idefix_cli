@@ -86,11 +86,24 @@ $ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --extra *.log
 
 ## `idfx conf`
 
-> `idfx conf` is a thin wrapper around `$IDEFIX_DIR/configure.py`
-> all arguments and flags are directly passed down to _that_ script.
-
 `idfx conf` creates a valid `Makefile` at the specified location and with the speficied
-parameters (CPU/GPU ? HD/MHD ? ... set `idfx conf --help`).
+parameters (HD/MHD ? ... see `idfx conf --help`).
+
+> `idfx conf` is a unified wrapper for `$IDEFIX_DIR/configure.py` and `cmake`.
+> All arguments and flags are passed down to the prefered system
+> Some arguments like `-mhd`, `-mpi` and `-openmp`, originally implemented in
+> `$IDEFIX_DIR/configure.py`, are automatically translated for cmake.
+
+A system preference can be configured globally in
+`$HOME/.config/idefix.cfg`, as
+```ini
+[idefix_cli]
+conf_system = python
+# or
+conf_system = cmake
+```
+Otherwise `idfx conf` will attempt to guess what system should be used base on
+availability. Cmake is prefered over Python when available.
 
 ## `idfx run`
 
