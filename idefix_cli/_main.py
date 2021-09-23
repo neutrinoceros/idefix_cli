@@ -6,6 +6,7 @@ from importlib import import_module
 from pkgutil import walk_packages
 from types import FunctionType
 from typing import cast
+from typing import NoReturn
 
 from idefix_cli import __version__
 from idefix_cli import _commands
@@ -43,25 +44,30 @@ def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
     return retv
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None) -> int | NoReturn:
     parser = argparse.ArgumentParser(prog="idfx")
     parser.add_argument("-v", "--version", action="version", version=__version__)
     commands = _setup_commands(parser)
 
-    args, rest = parser.parse_known_args(argv)
+    known_args, unknown_args = parser.parse_known_args(argv)
 
-    if rest and args.command != "setup":
-        print_err(f"unknown arguments ({', '.join(rest)}).")
-        return 1
+    vargs = vars(known_args)
+    cmd_name = vargs.pop("command")
 
-    if args.command is None:
+    if cmd_name is None:
         # calling `idfx` without any argument is equivalent to `idfx --help`
         # except that the return value non zero.
         parser.print_help(sys.stderr)
         return 1
 
-    vargs = vars(args)
-    cmd = vargs.pop("command")
-    retv = commands[cmd](**vargs)
+    cmd = commands[cmd_name]
+    if cmd_name == "conf":
+        return cmd(unknown_args)  # type: ignore
+
+    elif unknown_args:
+        print_err(f"received unknown arguments {tuple(unknown_args)!r}.")
+        return 1
+
+    retv = cmd(**vargs)
     retv = cast(int, retv)
     return retv
