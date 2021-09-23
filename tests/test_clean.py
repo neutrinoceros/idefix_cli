@@ -1,8 +1,8 @@
 import pytest
 
-from idefix_cli.commands._clean import gpatterns
-from idefix_cli.commands._clean import kokkos_files
-from idefix_cli.main import main
+from idefix_cli._commands.clean import gpatterns
+from idefix_cli._commands.clean import kokkos_files
+from idefix_cli._main import main
 
 
 def replace_wildcards(names):

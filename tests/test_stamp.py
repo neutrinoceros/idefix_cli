@@ -6,7 +6,7 @@ from socket import gethostname
 import pytest
 from pytest import assume
 
-from idefix_cli.main import main
+from idefix_cli._main import main
 
 mock_data = {
     "latest ancestor version": "unknown version",

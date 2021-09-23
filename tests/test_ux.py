@@ -1,16 +1,16 @@
 from pytest import assume
 
-from idefix_cli.main import main
+from idefix_cli._main import main
 
-HELP_MESSAGE = """usage: idfx [-h] [-v] {clean,clone,read,run,setup,stamp,write} ...
+HELP_MESSAGE = """usage: idfx [-h] [-v] {clean,clone,conf,read,run,stamp,write} ...
 
 positional arguments:
-  {clean,clone,read,run,setup,stamp,write}
+  {clean,clone,conf,read,run,stamp,write}
     clean               clean up generated files
     clone               clone a problem directory
+    conf                setup an Idefix problem
     read                read an Idefix inifile and print it to json format
     run                 run an Idefix problem
-    setup               setup an Idefix problem
     stamp               print relevant data for reproduction to stdout
     write               write an Idefix inifile a from json string
 
@@ -26,4 +26,4 @@ def test_no_command_passed(capsys):
     out, err = capsys.readouterr()
     assume(out == "")
     # skip the first lines because they differ between macos and linux
-    assume(err.splitlines()[2:] == HELP_MESSAGE.splitlines()[2:])
+    assert err.splitlines()[2:] == HELP_MESSAGE.splitlines()[2:]

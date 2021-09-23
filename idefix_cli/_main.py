@@ -7,17 +7,17 @@ from typing import cast
 from typing import Optional
 
 from idefix_cli import __version__
-from idefix_cli import commands
+from idefix_cli import _commands
 from idefix_cli._commons import print_err
 
 
 def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
     # https://github.com/python/mypy/issues/1422
-    path: str = commands.__path__  # type: ignore
+    path: str = _commands.__path__  # type: ignore
 
     sparsers = parser.add_subparsers(dest="command")
     retv: dict[str, FunctionType] = {}
-    for module_info in walk_packages(path, commands.__name__ + "."):
+    for module_info in walk_packages(path, _commands.__name__ + "."):
         module = import_module(module_info.name)
 
         command_name = module_info.name.split(".")[-1].removeprefix("_")
