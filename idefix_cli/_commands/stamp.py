@@ -1,4 +1,6 @@
 """print relevant data for reproduction to stdout"""
+from __future__ import annotations
+
 import json
 
 from idefix_cli._commons import get_git_data

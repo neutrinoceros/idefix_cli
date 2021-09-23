@@ -1,8 +1,9 @@
 """run an Idefix problem"""
+from __future__ import annotations
+
 from pathlib import Path
 from subprocess import call
 from tempfile import NamedTemporaryFile
-from typing import Optional
 
 import inifix
 
@@ -48,9 +49,9 @@ def add_arguments(parser):
 def command(
     directory: str,
     inifile: str = "idefix.ini",
-    duration: Optional[float] = None,
-    time_step: Optional[float] = None,
-    one_step: Optional[bool] = False,
+    duration: float | None = None,
+    time_step: float | None = None,
+    one_step: bool | None = False,
 ) -> int:
 
     input_inifile = inifile

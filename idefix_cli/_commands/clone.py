@@ -1,9 +1,10 @@
 """clone a problem directory"""
+from __future__ import annotations
+
 import os
 import shutil
 from glob import glob
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 from rich import print
 
@@ -43,7 +44,7 @@ def command(
     source,
     dest,
     shallow: bool = False,
-    extra: Optional[list[str]] = None,
+    extra: list[str] | None = None,
 ) -> int:
     if not os.path.isdir(source):
         print_err(f"Error: source directory not found {source}")

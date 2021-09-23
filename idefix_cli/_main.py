@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import argparse
 import sys
 from importlib import import_module
 from pkgutil import walk_packages
 from types import FunctionType
 from typing import cast
-from typing import Optional
 
 from idefix_cli import __version__
 from idefix_cli import _commands
@@ -20,7 +21,7 @@ def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
     for module_info in walk_packages(path, _commands.__name__ + "."):
         module = import_module(module_info.name)
 
-        command_name = module_info.name.split(".")[-1].removeprefix("_")
+        _, _, command_name = module_info.name.rpartition(".")
 
         # plugin validation
         # TODO: could validate signatures too
@@ -42,7 +43,7 @@ def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
     return retv
 
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="idfx")
     parser.add_argument("-v", "--version", action="version", version=__version__)
     commands = _setup_commands(parser)

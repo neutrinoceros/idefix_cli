@@ -1,4 +1,6 @@
 """write an Idefix inifile a from json string"""
+from __future__ import annotations
+
 import argparse
 import json
 import sys
