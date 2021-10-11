@@ -1,23 +1,30 @@
+import sys
+
 from pytest import assume
 
 from idefix_cli._main import main
 
-HELP_MESSAGE = """usage: idfx [-h] [-v] {clean,clone,conf,read,run,stamp,write} ...
-
-positional arguments:
-  {clean,clone,conf,read,run,stamp,write}
-    clean               clean up generated files
-    clone               clone a problem directory
-    conf                setup an Idefix problem
-    read                read an Idefix inifile and print it to json format
-    run                 run an Idefix problem
-    stamp               print relevant data for reproduction to stdout
-    write               write an Idefix inifile a from json string
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -v, --version         show program's version number and exit
-"""
+if sys.version_info >= (3, 10):
+    OPTIONAL_SEC = "options"
+else:
+    OPTIONAL_SEC = "optional arguments"
+HELP_MESSAGE = (
+    "usage: idfx [-h] [-v] {clean,clone,conf,read,run,stamp,write} ...\n"
+    "\n"
+    "positional arguments:\n"
+    "  {clean,clone,conf,read,run,stamp,write}\n"
+    "    clean               clean up generated files\n"
+    "    clone               clone a problem directory\n"
+    "    conf                setup an Idefix problem\n"
+    "    read                read an Idefix inifile and print it to json format\n"
+    "    run                 run an Idefix problem\n"
+    "    stamp               print relevant data for reproduction to stdout\n"
+    "    write               write an Idefix inifile a from json string\n"
+    "\n"
+    f"{OPTIONAL_SEC}:\n"
+    "  -h, --help            show this help message and exit\n"
+    "  -v, --version         show program's version number and exit\n"
+)
 
 
 def test_no_command_passed(capsys):
