@@ -41,7 +41,7 @@ It is recommended to install this tool in isolation with [`pipx`](https://pipxpr
 $ pipx install idefix_cli
 ```
 
-Otherwise, the simplest way to install the latest stable version is
+Otherwise, the way to install the latest stable version is
 ```shell
 $ python3 -m pip install -u idefix_cli
 ```
