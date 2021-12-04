@@ -1,5 +1,5 @@
 [![PyPI](https://img.shields.io/pypi/v/idefix_cli)](https://pypi.org/project/idefix-cli/)
-![PyPI](https://img.shields.io/pypi/pyversions/idefix_cli/0.8.0?logo=python&logoColor=white&label=Python)
+![PyPI](https://img.shields.io/pypi/pyversions/idefix_cli/0.9.0?logo=python&logoColor=white&label=Python)
 [![codecov](https://codecov.io/gh/neutrinoceros/idefix_cli/branch/main/graph/badge.svg)](https://codecov.io/gh/neutrinoceros/idefix_cli)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/neutrinoceros/idefix_cli/main.svg)](https://results.pre-commit.ci/badge/github/neutrinoceros/idefix_cli/main.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -89,10 +89,11 @@ $ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --extra *.log
 `idfx conf` creates a valid `Makefile` at the specified location and with the speficied
 parameters (HD/MHD ? ... see `idfx conf --help`).
 
-> `idfx conf` is a unified wrapper for `$IDEFIX_DIR/configure.py` and `cmake`.
-> All arguments and flags are passed down to the prefered system
-> Some arguments like `-mhd`, `-mpi` and `-openmp`, originally implemented in
-> `$IDEFIX_DIR/configure.py`, are automatically translated for cmake.
+> `idfx conf` is a unified wrapper for `cmake` and the historical Python script
+> `$IDEFIX_DIR/configure.py`. All arguments and flags are passed down to the
+> prefered system Some arguments like `-mhd`, `-mpi` and `-openmp`, originally
+> implemented in `$IDEFIX_DIR/configure.py`, are automatically translated for
+> cmake.
 
 A system preference can be configured globally in
 `$HOME/.config/idefix.cfg`, as

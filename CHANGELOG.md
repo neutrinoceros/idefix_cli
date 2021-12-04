@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2021-4-12
+
+ENH: improve idfx conf for versions of Idefix that don't have configure.py
+https://github.com/neutrinoceros/idefix_cli/pull/89
+
+
 ## [0.8.0] - 2021-11-10
 
 MNT: add explicit support for Python 3.10
