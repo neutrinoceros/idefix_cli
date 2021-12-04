@@ -24,7 +24,7 @@ CMAKE_MIN_VERSIONS: dict[str, Version] = {
 }
 
 
-class CMakeEnvError(OSError):
+class IdefixEnvError(OSError):
     pass
 
 
@@ -73,13 +73,13 @@ def validate_cmake_support() -> None:
     else:
         msg += "\n- " + "\n- ".join(errors)
 
-    raise CMakeEnvError(msg)
+    raise IdefixEnvError(msg)
 
 
 def has_minimal_cmake_support() -> bool:
     try:
         validate_cmake_support()
-    except CMakeEnvError:
+    except IdefixEnvError:
         return False
     else:
         return True
@@ -97,15 +97,59 @@ def is_cmake_required() -> bool:
     return req is not None and req == "cmake"
 
 
-def has_cmake_preference() -> bool:
+def is_python_required() -> bool:
+    req = get_conf_system_requirement()
+    return req is not None and req == "python"
+
+
+def has_python_preference() -> bool:
     if (usr_conf := get_user_configuration()) is None:
-        return True
+        return False
 
     if "compilation" not in usr_conf.sections():
-        return True
+        return False
 
     comp_options = usr_conf["compilation"]
-    return not any(_ in comp_options for _ in ("CPU", "GPU", "compiler"))
+    return any(_ in comp_options for _ in ("CPU", "GPU", "compiler"))
+
+
+def has_cmake_preference() -> bool:
+    return not has_python_preference()
+
+
+@requires_idefix()
+def has_python_support() -> bool:
+    return os.path.isfile(os.path.join(os.environ["IDEFIX_DIR"], "configure.py"))
+
+
+@requires_idefix()
+def validate_python_support() -> None:
+    if has_python_support():
+        return
+
+    msg = "Running a version of Idefix that doesn't provide $IDEFIX_DIR/configure.py . "
+    if is_python_required():
+        msg += f"This configuration system was required from {get_user_config_file()}"
+    raise IdefixEnvError(msg)
+
+
+def get_valid_conf_system() -> str:
+    cmake_is_valid = has_minimal_cmake_support()
+    python_is_valid = has_python_support()
+    if cmake_is_valid:
+        if python_is_valid and has_python_preference():
+            return "python"
+        return "cmake"
+    elif python_is_valid:
+        return "python"
+    else:
+        raise IdefixEnvError(
+            "Could not determine a working configuration system. "
+            "Most likely, your version of Idefix requires CMake, "
+            "which is currently not installed. "
+            "Please consult Idefix's documentation, "
+            "or try to update idefix-cli if it didn't help."
+        )
 
 
 def substitute_cmake_args(*args: str) -> tuple[str, ...]:
@@ -134,30 +178,38 @@ def command(*args: str) -> int | NoReturn:
     cmake_cmd = ["cmake", os.environ["IDEFIX_DIR"]]
     system_req = get_conf_system_requirement()
 
-    if system_req == "cmake":
+    if system_req is None:
         try:
-            validate_cmake_support()
-        except CMakeEnvError as exc:
+            system_req = get_valid_conf_system()
+        except IdefixEnvError as exc:
             print_err(exc)
             return 1
-        cmd = cmake_cmd
-    elif system_req == "python":
-        cmd = python_cmd
-    elif system_req is None:
-        if has_minimal_cmake_support():
-            cmd = cmake_cmd
-        else:
-            cmd = python_cmd
     else:
-        print_err(
-            f"Got unknown value conf_system={system_req!r} "
-            f"from {get_user_config_file()}, "
-            "expected 'cmake' or 'python'"
-        )
-        return 1
+        try:
+            validate_selected_system = {
+                "cmake": validate_cmake_support,
+                "python": validate_python_support,
+            }[system_req]
+        except KeyError:
+            print_err(
+                f"Got unknown value conf_system={system_req!r} "
+                f"from {get_user_config_file()}, "
+                "expected 'cmake' or 'python'"
+            )
+            return 1
 
-    if cmd == cmake_cmd:
+        try:
+            validate_selected_system()
+        except IdefixEnvError as exc:
+            print_err(exc)
+            return 1
+
+    if system_req == "cmake":
+        cmd = cmake_cmd
         args = substitute_cmake_args(*args)
+    else:
+        assert system_req == "python"
+        cmd = python_cmd
 
     cmd.extend(args)
     os.execvp(cmd[0], cmd)
