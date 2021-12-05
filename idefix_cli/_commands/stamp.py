@@ -7,7 +7,7 @@ from idefix_cli._commons import get_git_data
 from idefix_cli._commons import requires_idefix
 
 
-def add_arguments(parser):
+def add_arguments(parser) -> None:
     parser.add_argument(
         "-d",
         "--json",

@@ -11,7 +11,7 @@ import inifix
 from idefix_cli._commons import print_err
 
 
-def add_arguments(parser):
+def add_arguments(parser) -> None:
     parser.add_argument("dest", type=str, help="dest inifile")
     parser.add_argument(
         "source",
