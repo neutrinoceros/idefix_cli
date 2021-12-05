@@ -62,7 +62,7 @@ def main(argv: list[str] | None = None) -> int | NoReturn:
 
     cmd = commands[cmd_name]
     if cmd_name == "conf":
-        return cmd(*unknown_args)  # type: ignore
+        return cmd(*unknown_args, **vars(known_args))  # type: ignore
 
     elif unknown_args:
         print_err(f"received unknown arguments {tuple(unknown_args)!r}.")

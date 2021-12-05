@@ -12,7 +12,7 @@ from idefix_cli._commons import print_err
 from idefix_cli._commons import pushd
 
 
-def add_arguments(parser):
+def add_arguments(parser) -> None:
 
     parser.add_argument("directory", nargs="?", default=".", help="target directory")
     parser.add_argument(

@@ -20,7 +20,7 @@ minimal_target = frozenset(
 )
 
 
-def add_arguments(parser) -> int:
+def add_arguments(parser) -> None:
     parser.add_argument(
         "source", default=".", help="the problem directory to be cloned."
     )

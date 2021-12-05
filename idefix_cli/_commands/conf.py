@@ -167,15 +167,20 @@ parser_kwargs = dict(
 )  # because it's a wrapper, we want to pass down even the "--help" flag
 
 
-def add_arguments(parser):
-    "Nothing to do here, this command is a pure wrapper"
-    return
+def add_arguments(parser) -> None:
+    parser.add_argument(
+        "-i",
+        "--interactive",
+        dest="interactive",
+        action="store_true",
+        help="Use ccmake over cmake " "(no effect with python configuration system)",
+    )
 
 
 @requires_idefix()
-def command(*args: str) -> int | NoReturn:
+def command(*args: str, interactive: bool) -> int | NoReturn:
     python_cmd = ["python3", os.path.join(os.environ["IDEFIX_DIR"], "configure.py")]
-    cmake_cmd = ["cmake", os.environ["IDEFIX_DIR"]]
+    cmake_cmd = ["ccmake" if interactive else "cmake", os.environ["IDEFIX_DIR"]]
     system_req = get_conf_system_requirement()
 
     if system_req is None:

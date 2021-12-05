@@ -9,7 +9,7 @@ from inifix import load
 from idefix_cli._commons import print_err
 
 
-def add_arguments(parser):
+def add_arguments(parser) -> None:
     parser.add_argument("inifile", type=str, help="target inifile")
     parser.add_argument(
         "--indent", type=int, help="indentation in spaces (default is flat output)"

@@ -35,7 +35,7 @@ gpatterns = frozenset(("Makefile", "idefix"))
 GENERATED_DIRS = frozenset(("CMakeFiles" + os.path.sep,))
 
 
-def add_arguments(parser):
+def add_arguments(parser) -> None:
     parser.add_argument(
         "directory", nargs="?", default=".", help="the target directory to clean"
     )
