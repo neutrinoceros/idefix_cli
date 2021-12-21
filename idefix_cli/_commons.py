@@ -180,3 +180,10 @@ def get_user_configuration() -> ConfigParser | None:
     cf = ConfigParser()
     cf.read(conf_file)
     return cf
+
+
+def get_user_conf_requirement(section_name: str, option_name: str, /) -> str | None:
+    if (usr_conf := get_user_configuration()) is None:
+        return None
+
+    return usr_conf.get(section_name, option_name, fallback=None)

@@ -5,13 +5,14 @@ import os
 import re
 import shutil
 import subprocess
+from argparse import ArgumentParser
 from typing import NoReturn
 
 from packaging.version import Version
 
 from idefix_cli._commons import get_idefix_version
+from idefix_cli._commons import get_user_conf_requirement
 from idefix_cli._commons import get_user_config_file
-from idefix_cli._commons import get_user_configuration
 from idefix_cli._commons import print_err
 from idefix_cli._commons import print_warning
 from idefix_cli._commons import requires_idefix
@@ -85,36 +86,14 @@ def has_minimal_cmake_support() -> bool:
         return True
 
 
-def get_conf_system_requirement() -> str | None:
-    if (usr_conf := get_user_configuration()) is None:
-        return None
-
-    return usr_conf.get("idefix_cli", "conf_system", fallback=None)
-
-
 def is_cmake_required() -> bool:
-    req = get_conf_system_requirement()
+    req = get_user_conf_requirement("idefix_cli", "conf_system")
     return req is not None and req == "cmake"
 
 
 def is_python_required() -> bool:
-    req = get_conf_system_requirement()
+    req = get_user_conf_requirement("idefix_cli", "conf_system")
     return req is not None and req == "python"
-
-
-def has_python_preference() -> bool:
-    if (usr_conf := get_user_configuration()) is None:
-        return False
-
-    if "compilation" not in usr_conf.sections():
-        return False
-
-    comp_options = usr_conf["compilation"]
-    return any(_ in comp_options for _ in ("CPU", "GPU", "compiler"))
-
-
-def has_cmake_preference() -> bool:
-    return not has_python_preference()
 
 
 @requires_idefix()
@@ -137,8 +116,6 @@ def get_valid_conf_system() -> str:
     cmake_is_valid = has_minimal_cmake_support()
     python_is_valid = has_python_support()
     if cmake_is_valid:
-        if python_is_valid and has_python_preference():
-            return "python"
         return "cmake"
     elif python_is_valid:
         return "python"
@@ -152,14 +129,60 @@ def get_valid_conf_system() -> str:
         )
 
 
-def substitute_cmake_args(*args: str) -> tuple[str, ...]:
-    # compatibility layer to enable configure.py's arguments with cmake
+def substitute_cmake_flags(args: list[str]) -> list[str]:
     subs: dict[str, str] = {
         "-mhd": "-DIdefix_MHD=ON",
         "-mpi": "-DIdefix_MPI=ON",
         "-openmp": "-DKokkos_ENABLE_OPENMP=ON",
+        "-gpu": "-DKokkos_ENABLE_CUDA=ON",
     }
-    return tuple(subs.get(_, _) for _ in args)
+    return [subs.get(_) or _ for _ in args]
+
+
+def substitute_cmake_archs(args: list[str]) -> list[str]:
+    if not (
+        "-arch" in args or any(re.match(r"-D\s?Kokkos_ARCH_\w+=ON", _) for _ in args)
+    ):
+        for option_name in ("CPU", "GPU"):
+            arch_req = get_user_conf_requirement("compilation", option_name)
+            if arch_req is None:
+                continue
+            args.extend(["-arch", arch_req])
+
+    parser = ArgumentParser()
+    parser.add_argument("-arch", nargs="+", required=False)
+    _args, unknown_args = parser.parse_known_args(args)
+
+    if _args.arch is None:
+        return args
+
+    return unknown_args + [f"-DKokkos_ARCH_{_.upper()}=ON" for _ in _args.arch]
+
+
+def substitute_cmake_cxx(args: list[str]) -> list[str]:
+    if not (
+        "-cxx" in args or any(re.match(r"-DCMAKE_CXX_COMPILER=\w+", _) for _ in args)
+    ):
+        compiler_req = get_user_conf_requirement("compilation", "compiler")
+        if compiler_req is not None:
+            args.extend(["-cxx", compiler_req])
+
+    parser = ArgumentParser()
+    parser.add_argument("-cxx")
+    _args, unknown_args = parser.parse_known_args(args)
+
+    if _args.cxx is None:
+        return args
+
+    return unknown_args + [f"-DCMAKE_CXX_COMPILER={_args.cxx}"]
+
+
+def substitute_cmake_args(args: list[str]) -> list[str]:
+    # compatibility layer to enable configure.py's arguments with cmake
+    args = substitute_cmake_flags(args)
+    args = substitute_cmake_archs(args)
+    args = substitute_cmake_cxx(args)
+    return args
 
 
 parser_kwargs = dict(
@@ -181,7 +204,7 @@ def add_arguments(parser) -> None:
 def command(*args: str, interactive: bool) -> int | NoReturn:
     python_cmd = ["python3", os.path.join(os.environ["IDEFIX_DIR"], "configure.py")]
     cmake_cmd = ["ccmake" if interactive else "cmake", os.environ["IDEFIX_DIR"]]
-    system_req = get_conf_system_requirement()
+    system_req = get_user_conf_requirement("idefix_cli", "conf_system")
 
     if system_req is None:
         try:
@@ -209,12 +232,14 @@ def command(*args: str, interactive: bool) -> int | NoReturn:
             print_err(exc)
             return 1
 
+    clargs = list(args)
     if system_req == "cmake":
         cmd = cmake_cmd
-        args = substitute_cmake_args(*args)
+        clargs = substitute_cmake_args(clargs)
     else:
         assert system_req == "python"
         cmd = python_cmd
 
-    cmd.extend(args)
+    cmd.extend(clargs)
+    print(f"INFO: running '{' '.join(cmd)}'")
     os.execvp(cmd[0], cmd)
