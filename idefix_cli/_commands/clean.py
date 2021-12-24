@@ -7,6 +7,8 @@ from pathlib import Path
 from shutil import rmtree
 from shutil import which
 
+from rich.prompt import Confirm
+
 from idefix_cli._commons import files_from_patterns
 from idefix_cli._commons import pushd
 
@@ -25,14 +27,12 @@ kokkos_files = frozenset(
     )
 )
 
-cmake_files = frozenset(("CMakeCache.txt", "cmake_install.cmake"))
+cmake_files = frozenset(("CMakeCache.txt", "cmake_install.cmake", "build"))
 
 # only cleared if `--all` flag is passed
 gpatterns = frozenset(("Makefile", "idefix"))
 
-# it is important to append os.path.sep to directory names so
-# it's clear that they are not files when listed with idfx clean --dry
-GENERATED_DIRS = frozenset(("CMakeFiles" + os.path.sep,))
+GENERATED_DIRS = frozenset(("CMakeFiles",))
 
 
 def add_arguments(parser) -> None:
@@ -50,7 +50,7 @@ def add_arguments(parser) -> None:
         "--dry",
         dest="dry",
         action="store_true",
-        help="print a list of targets, no file is removed",
+        help="skip prompt, exit without cleaning",
     )
 
 
@@ -77,18 +77,18 @@ def command(directory, clean_all: bool = False, dry: bool = False) -> int:
 
         targets = files_from_patterns(Path.cwd(), *patterns)
 
-        if dry:
-            if not targets:
-                print("Nothing to remove.")
-                return 0
-            print("The following files would be removed.")
-            print("\n".join(targets))
+        if not targets:
+            print("Nothing to remove.")
             return 0
 
-        for t in targets:
-            if os.path.isdir(t):
-                rmtree(t)
-            else:
-                os.remove(t)
+        print("The following files and directories can be removed")
+        print("\n".join(targets))
+
+        if not dry and Confirm.ask("\nPerform cleaning ? (y/[n])"):
+            for t in targets:
+                if os.path.isdir(t):
+                    rmtree(t)
+                else:
+                    os.remove(t)
 
     return 0
