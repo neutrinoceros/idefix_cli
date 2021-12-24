@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+- ENH: improvements to `idfx clean`
+  * make idfx clean interactive: no file is removed without an informed
+    confirmation, --dry is repurposed to skip prompt
+  * improve info messages in idfx clean
+  * improve cmake support (detect build/ dir)
+https://github.com/neutrinoceros/idefix_cli/pull/94
+
 ## [0.10.0] - 2021-05-12
 ENH: add `-i/--interactive` flag to `idfx conf` to invoke `ccmake` instead of `cmake`.
 https://github.com/neutrinoceros/idefix_cli/pull/92

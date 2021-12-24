@@ -1,3 +1,5 @@
+from io import StringIO
+
 import pytest
 
 from idefix_cli._commands.clean import gpatterns
@@ -44,21 +46,39 @@ def messy_tmp_dir(dirty_tmp_dir):
     return tmp_path, targets, killable, survivors
 
 
+YESES = ("y\n", "Y\n", "No\ny\n", "0\n1\nyes\nY\n")
+NOES = ("n\n", "N\n", "No\nn\n", "0\n1\nyes\nN\n")
+VALID_USER_INPUTS = YESES + NOES
+assert not set(NOES).intersection(set(YESES))
+
+
 def test_patterns():
     assert not kokkos_files.intersection(gpatterns)
 
 
+@pytest.mark.parametrize("usr_input", VALID_USER_INPUTS)
 @pytest.mark.parametrize("pattern", [p for p in kokkos_files if "*" in p])
-def test_clean_wildcards(pattern, tmp_path):
+def test_clean_wildcards(pattern, usr_input, monkeypatch, tmp_path):
     file_to_clean = tmp_path / pattern.replace("*", "legit_file_prefix")
     file_to_clean.touch()
+
+    monkeypatch.setattr("sys.stdin", StringIO(usr_input))
     main(["clean", str(tmp_path.absolute())])
-    assert not list(tmp_path.iterdir())
+
+    if usr_input in YESES:
+        assert not list(tmp_path.iterdir())
+    else:
+        assert file_to_clean.is_file()
 
 
-def test_clean_only_kokkos(dirty_tmp_dir):
+@pytest.mark.parametrize("usr_input", VALID_USER_INPUTS)
+def test_clean_only_kokkos(usr_input, dirty_tmp_dir, monkeypatch):
     tmp_path, targets, survivors = dirty_tmp_dir
 
+    if usr_input in NOES:
+        targets, survivors = (), targets + survivors
+
+    monkeypatch.setattr("sys.stdin", StringIO(usr_input))
     main(["clean", str(tmp_path.absolute())])
 
     for name in targets:
@@ -67,12 +87,19 @@ def test_clean_only_kokkos(dirty_tmp_dir):
         assert name.is_file()
 
 
-def test_clean_all(messy_tmp_dir):
+@pytest.mark.parametrize("usr_input", VALID_USER_INPUTS)
+def test_clean_all(usr_input, messy_tmp_dir, monkeypatch):
     tmp_path, targets, killable, survivors = messy_tmp_dir
 
+    if usr_input in YESES:
+        targets = targets + killable
+    else:
+        targets, survivors = (), targets + killable + survivors
+
+    monkeypatch.setattr("sys.stdin", StringIO(usr_input))
     main(["clean", str(tmp_path.absolute()), "--all"])
 
-    for name in targets + killable:
+    for name in targets:
         assert not name.is_file()
     for name in survivors:
         assert name.is_file()
@@ -100,7 +127,7 @@ def test_drymode_dirty(flag, dirty_tmp_dir, capsys):
 
     out, err = capsys.readouterr()
     file_list = "\n".join(str(t) for t in sorted(targets))
-    assert out == f"The following files would be removed.\n{file_list}\n"
+    assert out == f"The following files and directories can be removed\n{file_list}\n"
     assert err == ""
 
 
@@ -113,7 +140,7 @@ def test_drymode_messy(flag, messy_tmp_dir, capsys):
 
     out, err = capsys.readouterr()
     file_list = "\n".join(str(t) for t in sorted(targets))
-    assert out == f"The following files would be removed.\n{file_list}\n"
+    assert out == f"The following files and directories can be removed\n{file_list}\n"
     assert err == ""
 
 
@@ -126,5 +153,5 @@ def test_drymode_messy_all(flag, messy_tmp_dir, capsys):
 
     out, err = capsys.readouterr()
     file_list = "\n".join(str(t) for t in sorted(targets + killable))
-    assert out == f"The following files would be removed.\n{file_list}\n"
+    assert out == f"The following files and directories can be removed\n{file_list}\n"
     assert err == ""
