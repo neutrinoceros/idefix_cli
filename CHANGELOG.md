@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.11.0] - 2021-12-24
 
 - ENH: improvements to `idfx clean`
   * make idfx clean interactive: no file is removed without an informed
@@ -13,33 +13,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * improve cmake support (detect build/ dir)
 https://github.com/neutrinoceros/idefix_cli/pull/94
 
-## [0.10.0] - 2021-05-12
+- ENH: add support for -arch, -gpu, -cxx options with CMake, and support their
+  equivalent options from .config/idefix.cfg
+https://github.com/neutrinoceros/idefix_cli/pull/93
+
+
+## [0.10.0] - 2021-12-05
 ENH: add `-i/--interactive` flag to `idfx conf` to invoke `ccmake` instead of `cmake`.
 https://github.com/neutrinoceros/idefix_cli/pull/92
 
 
-## [0.9.0] - 2021-04-12
+## [0.9.0] - 2021-12-04
 
 ENH: improve idfx conf for versions of Idefix that don't have configure.py
 https://github.com/neutrinoceros/idefix_cli/pull/89
 
 
-## [0.8.0] - 2021-11-10
+## [0.8.0] - 2021-10-11
 
 MNT: add explicit support for Python 3.10
 https://github.com/neutrinoceros/idefix_cli/pull/86
 
-## [0.7.0] - 2021-23-09
+## [0.7.0] - 2021-09-23
 
 ENH: add provisional support for CMake configuration (Idefix 0.9)
 https://github.com/neutrinoceros/idefix_cli/pull/70
 
-## [0.6.1] - 2021-23-09
+## [0.6.1] - 2021-09-23
 
 BUG: fix a breaking with idfx conf
 https://github.com/neutrinoceros/idefix_cli/pull/84
 
-## [0.6.0] - 2021-23-09
+## [0.6.0] - 2021-09-23
 
 - MNT: rename modules, idfx setup is now idfx conf
   https://github.com/neutrinoceros/idefix_cli/pull/82
@@ -47,18 +52,18 @@ https://github.com/neutrinoceros/idefix_cli/pull/84
 - MNT: add support for Python 3.8
   https://github.com/neutrinoceros/idefix_cli/pull/83
 
-## [0.5.0] - 2021-23-09
+## [0.5.0] - 2021-09-23
 
 ENH: implement a plugin architecture for commands
 https://github.com/neutrinoceros/idefix_cli/pull/81
 
 
-## [0.4.5] - 2021-31-08
+## [0.4.5] - 2021-08-31
 
 ENH: programatically guarantee that git-indexed files cannot be removed by `idfx
 clean` https://github.com/neutrinoceros/idefix_cli/pull/77
 
-## [0.4.4] - 2021-30-08
+## [0.4.4] - 2021-08-30
 
 - ENH: add preliminary support for cmake via additional globals and functions in
   idefix_cli._commons module https://github.com/neutrinoceros/idefix_cli/pull/75
@@ -66,11 +71,11 @@ clean` https://github.com/neutrinoceros/idefix_cli/pull/77
 - BUG: fix version parsing for Idefix in idfx stamp
   https://github.com/neutrinoceros/idefix_cli/pull/76
 
-## [0.4.3] - 2021-26-08
+## [0.4.3] - 2021-08-26
 
 MNT: bump dependencies versions
 
-## [0.4.2] - 2021-17-08
+## [0.4.2] - 2021-08-17
 
 UX: add colored logging and refactor idfx clone to use os.replace for atomicity
 

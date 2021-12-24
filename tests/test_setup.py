@@ -4,40 +4,38 @@ import pytest
 from packaging.version import Version
 from pytest import assume
 
-from idefix_cli._commands.conf import has_cmake_preference
 from idefix_cli._commands.conf import is_cmake_required
 from idefix_cli._commands.conf import substitute_cmake_args
 from idefix_cli._commons import get_user_config_file
 from idefix_cli._main import main
 
 
-@pytest.mark.parametrize("mode", ["local", "global"])
-def test_require_cmake(mode, tmp_path, monkeypatch):
+@pytest.fixture()
+def isolated_conf_dir(tmp_path, monkeypatch):
     conf_dir = tmp_path / ".config"
     os.makedirs(conf_dir)
     monkeypatch.setattr("idefix_cli._commons.XDG_CONFIG_HOME", str(conf_dir))
-
     monkeypatch.chdir(tmp_path)
+    return conf_dir
+
+
+@pytest.mark.parametrize("mode", ["local", "global"])
+def test_require_cmake(mode, isolated_conf_dir):
     assert get_user_config_file() is None
-    assert has_cmake_preference()
     assert not is_cmake_required()
 
-    cfg = {"local": "idefix.cfg", "global": str(conf_dir / "idefix.cfg")}[mode]
+    cfg = {"local": "idefix.cfg", "global": str(isolated_conf_dir / "idefix.cfg")}[mode]
     with open(cfg, "w") as fh:
         fh.write("[some valid section]\nparam=value\n")
-
     assert not is_cmake_required()
 
     with open(cfg, "a") as fh:
         fh.write("[idefix_cli]\nconf_system=cmake\n")
     assert is_cmake_required()
-    assert has_cmake_preference()
 
     with open(cfg, "a") as fh:
         fh.write("[compilation]\nCPU=BDW\n")
-
     assert is_cmake_required()
-    assert not has_cmake_preference()
 
 
 def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
@@ -66,6 +64,17 @@ def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
     assert f"ERROR cmake is required from {usr_config.absolute()}, but " in err
 
 
-def test_cmake_subs():
-    ret = substitute_cmake_args("-mhd", "--random", "1", "-mpi")
-    assert ret == ("-DIdefix_MHD=ON", "--random", "1", "-DIdefix_MPI=ON")
+@pytest.mark.parametrize(
+    "args, expected",
+    (
+        (["-mhd"], ["-DIdefix_MHD=ON"]),
+        (["--unknown-option", "1"], ["--unknown-option", "1"]),
+        (["--unknown-flag", "-mhd"], ["--unknown-flag", "-DIdefix_MHD=ON"]),
+        (["-mpi"], ["-DIdefix_MPI=ON"]),
+        (["-arch", "Ampere86"], ["-DKokkos_ARCH_AMPERE86=ON"]),
+    ),
+)
+@pytest.mark.usefixtures("isolated_conf_dir")
+def test_cmake_subs(args, expected):
+    ret = substitute_cmake_args(args)
+    assert ret == expected

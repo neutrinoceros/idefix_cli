@@ -86,25 +86,67 @@ $ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --extra *.log
 
 ## `idfx conf`
 
-`idfx conf` creates a valid `Makefile` at the specified location and with the speficied
-parameters (HD/MHD ? ... see `idfx conf --help`).
+`idfx conf`
 
-> `idfx conf` is a unified wrapper for `cmake` and the historical Python script
-> `$IDEFIX_DIR/configure.py`. All arguments and flags are passed down to the
-> prefered system Some arguments like `-mhd`, `-mpi` and `-openmp`, originally
-> implemented in `$IDEFIX_DIR/configure.py`, are automatically translated for
-> cmake.
 
-A system preference can be configured globally in
-`$HOME/.config/idefix.cfg`, as
+`idfx conf` is a unified wrapper for `cmake` and the historical Python script
+`$IDEFIX_DIR/configure.py`. All arguments and flags are passed down to the
+relevant configuration system.
+
+Arguments that were originally implemented in
+`$IDEFIX_DIR/configure.py` (`-mhd`, `-mpi`, `-openmp`, `-cxx`, `-arch`, `-gpu`)
+are converted on the fly for cmake.
+
+For instance
+```shell
+$ idfx conf -gpu -mpi -openmp -arch Ampere86 -cxx g++
+```
+is equivalent to
+```
+$ cmake $IDEFIX_DIR \
+  -DKokkos_ENABLE_CUDA=ON \
+  -DIdefix_MPI=ON \
+  -DKokkos_ENABLE_OPENMP=ON \
+  -DKokkos_ARCH_AMPERE86=ON \
+  -DCMAKE_CXX_COMPILER=g++
+```
+
+
+### Persistent, sytem wide configuration file
+
+Some configuration options like prefered compiler and target architecture rarely
+need to be changed on a single maching. `idfx conf` follows the last version of
+`$IDEFIX_DIR/configure.py` and looks for persistent options stored in
+`$HOME/.config/idefix.cfg`.
+
+For instance, one can select a persistent build target (say Ampere86) and custom compiler as
 ```ini
+# idefix.cfg
+
+[compilation]
+GPU = Ampere86
+compiler = g++
+```
+
+A prefered conf system can also be store as
+```ini
+# idefix.cfg
+
 [idefix_cli]
-conf_system = python
+conf_system = python  # use configure.py
 # or
 conf_system = cmake
 ```
-Otherwise `idfx conf` will attempt to guess what system should be used base on
-availability. Cmake is prefered over Python when available.
+though this is mostly useful for testing purposes. In general `idfx conf`
+automatically determine which configuration system to use based on your
+resources. Cmake is prefered over Python when available.
+
+Any option passed on the command line will override its equivalent persistent
+configuration.
+
+Lastly, it is possible invoke `ccmake` instead of `cmake` by passing the
+`-i/--interactive` flag to `idfx conf`
+
 
 ## `idfx run`
 
