@@ -1,4 +1,4 @@
-"""clean up generated files"""
+"""remove compilation files"""
 from __future__ import annotations
 
 import os
