@@ -1,4 +1,4 @@
-"""write an Idefix inifile a from json string"""
+"""write an Idefix inifile from a json string"""
 from __future__ import annotations
 
 import argparse
