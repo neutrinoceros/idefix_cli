@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import inspect
 import sys
 from importlib import import_module
 from pkgutil import walk_packages
@@ -25,14 +26,32 @@ def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
         _, _, command_name = module_info.name.rpartition(".")
 
         # plugin validation
-        # TODO: could validate signatures too
-        if not hasattr(module, "add_arguments"):
-            raise RuntimeError(
-                f"command plugin {command_name} is missing an 'add_arguments' function."
+
+        _command = getattr(module, "command", None)
+        _add_arguments = getattr(module, "add_arguments", None)
+
+        if (_command, _add_arguments) == (None, None):
+            err_msg = (
+                f"command plugin {command_name} is missing required functions "
+                "'command' and 'add_arguments'"
             )
-        if not hasattr(module, "command"):
+        elif _command is None:
+            err_msg = f"command plugin {command_name} is missing a 'command' function"
+        elif _add_arguments is None:
+            err_msg = (
+                f"command plugin {command_name} is missing a 'add_arguments' function"
+            )
+        else:
+            err_msg = ""
+
+        if err_msg:
+            raise RuntimeError(err_msg)
+
+        sig = inspect.signature(_add_arguments)
+        if (params := list(sig.parameters.keys())) != ["parser"]:
             raise RuntimeError(
-                f"command plugin {command_name} is missing a 'command' function."
+                f"command plugin {command_name}.add_arguments function's signature is invalid. "
+                f"Expected a single argument named 'parser', found {params}"
             )
 
         # optional plugin hooks
