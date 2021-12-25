@@ -54,6 +54,12 @@ def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
                 f"Expected a single argument named 'parser', found {params}"
             )
 
+        if not module.__doc__:
+            # default is None, but we also invalidate empty strings
+            raise RuntimeError(
+                f"command plugin {command_name} is missing a module docstring"
+            )
+
         # optional plugin hooks
         kwargs = getattr(module, "parser_kwargs", {})
 
