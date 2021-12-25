@@ -34,6 +34,15 @@ SRC_DIR = Path(__file__).parents[1].joinpath("idefix_cli")
             ".add_arguments function's signature is invalid. "
             "Expected a single argument named 'parser', found []",
         ),
+        (
+            (
+                "def add_arguments(parser):\n",
+                "    return\n",
+                "def command():\n",
+                "    return\n",
+            ),
+            " is missing a module docstring",
+        ),
     ),
 )
 def test_broken_command_plugin(content, msg):
