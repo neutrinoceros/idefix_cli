@@ -30,22 +30,19 @@ def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
         _command = getattr(module, "command", None)
         _add_arguments = getattr(module, "add_arguments", None)
 
-        if (_command, _add_arguments) == (None, None):
-            err_msg = (
+        if _command is _add_arguments is None:
+            raise RuntimeError(
                 f"command plugin {command_name} is missing required functions "
                 "'command' and 'add_arguments'"
             )
         elif _command is None:
-            err_msg = f"command plugin {command_name} is missing a 'command' function"
+            raise RuntimeError(
+                f"command plugin {command_name} is missing a 'command' function"
+            )
         elif _add_arguments is None:
-            err_msg = (
+            raise RuntimeError(
                 f"command plugin {command_name} is missing a 'add_arguments' function"
             )
-        else:
-            err_msg = ""
-
-        if err_msg:
-            raise RuntimeError(err_msg)
 
         sig = inspect.signature(_add_arguments)
         if (params := list(sig.parameters.keys())) != ["parser"]:
@@ -64,8 +61,8 @@ def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
         kwargs = getattr(module, "parser_kwargs", {})
 
         sub_parser = sparsers.add_parser(command_name, help=module.__doc__, **kwargs)
-        module.add_arguments(sub_parser)  # type: ignore
-        retv.update({command_name: module.command})  # type: ignore
+        module.add_arguments(sub_parser)
+        retv.update({command_name: module.command})
     return retv
 
 
