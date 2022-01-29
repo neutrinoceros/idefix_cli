@@ -4,12 +4,14 @@
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/neutrinoceros/idefix_cli/main.svg)](https://results.pre-commit.ci/badge/github/neutrinoceros/idefix_cli/main.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-# `idefix_cli:idfx`
+# `idefix_cli`
 
-This is a CLI helper tool for Idefix, named `idfx`. `idfx` gathers and automates
-boring and repetetive tasks such as configuration and cleanup in a single tool.
+This is a CLI helper tool for the hexascale portable MHD code
+[Idefix](https://gricad-gitlab.univ-grenoble-alpes.fr/lesurg/idefix-public),
+written by Geoffroy Lesur et al.
 
-> Warning: Idefix itself is not publicly available yet.
+It provides a family of commands to help with repetitive tasks such as
+configuration and cleanup in a single tool.
 
 <!-- toc -->
 
@@ -47,7 +49,7 @@ $ python3 -m pip install -u idefix_cli
 ```
 
 Note that most `idfx` commands explicitly require that the env variable `$IDEFIX_DIR` be
-set.
+set at runtime.
 
 # Internal documentation
 
