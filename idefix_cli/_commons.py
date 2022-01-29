@@ -111,9 +111,15 @@ def _make(directory) -> int:
 
 def files_from_patterns(source, *patterns) -> list[str]:
     raw = sorted(chain.from_iterable(glob(os.path.join(source, p)) for p in patterns))
-    # it is important to append os.path.sep to directory names so
-    # it's clear that they are not files when listed with idfx clean --dry
-    return [_ + os.path.sep if os.path.isdir(_) else _ for _ in raw]
+    retv = []
+    for _ in raw:
+        if os.path.isdir(_):
+            # it is important to append os.path.sep to directory names so
+            # it's clear that they are not files when listed with idfx clean --dry
+            retv.append(_ + os.path.sep)
+        elif os.path.isfile(_):
+            retv.append(_)
+    return retv
 
 
 @requires_idefix()
