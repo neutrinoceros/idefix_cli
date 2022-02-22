@@ -16,6 +16,7 @@ minimal_target = frozenset(
         "idefix.ini",
         "definitions.hpp",
         "setup.cpp",
+        "CMakeLists.txt",
     )
 )
 
@@ -70,7 +71,7 @@ def command(
         # The temporary directory is created next to the final destination
         # so we can safely use os.replace (atomic) without worrying about
         # possibly sparse filesystems.
-        for file in files_from_patterns(source, *minimal_target, *extra):
+        for file in files_to_generate:
             fdest = os.path.join(tmpdir, os.path.basename(file))
             if shallow:
                 os.symlink(file, fdest)
