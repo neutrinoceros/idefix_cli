@@ -84,7 +84,7 @@ def command(directory, clean_all: bool = False, dry: bool = False) -> int:
         print("The following files and directories can be removed")
         print("\n".join(targets))
 
-        if not dry and Confirm.ask("\nPerform cleaning ? (y/[n])"):
+        if not dry and Confirm.ask("\nPerform cleaning ?"):
             for t in targets:
                 if os.path.isdir(t):
                     rmtree(t)

@@ -1,14 +1,19 @@
 """run an Idefix problem"""
 from __future__ import annotations
 
+import os
+import sys
 from pathlib import Path
 from subprocess import call
 from tempfile import NamedTemporaryFile
 
 import inifix
+from rich.prompt import Confirm
 
 from idefix_cli._commons import _make
+from idefix_cli._commons import files_from_patterns
 from idefix_cli._commons import print_err
+from idefix_cli._commons import print_warning
 from idefix_cli._commons import pushd
 
 
@@ -67,6 +72,7 @@ def command(
             time_step = inifix.load(pinifile)["TimeIntegrator"]["first_dt"]
         duration = time_step
 
+    compilation_required = False
     d = Path(directory)
     if not (d / "idefix").is_file():
         if not (d / "Makefile").is_file():
@@ -76,8 +82,38 @@ def command(
             )
             return 1
 
-        if (ret := _make(directory)) != 0:
-            return ret
+        compilation_required = True
+
+    else:
+        last_compilation_time = os.stat(d / "idefix").st_mtime
+        source_edit_times = tuple(
+            (file, os.stat(file).st_mtime)
+            for file in files_from_patterns(
+                d,
+                "*.hpp",
+                "*.cpp",
+                "*.h",
+                "*.c",
+                "CMakeLists.txt",
+            )
+        )
+        time_deltas = tuple(
+            (file, edit_time - last_compilation_time)
+            for file, edit_time in source_edit_times
+        )
+        if updated_since_compilation := tuple(
+            file for file, td in time_deltas if td > 0
+        ):
+            print_warning(
+                "The following files were updated since last compilation:",
+            )
+            print("\n".join(updated_since_compilation), file=sys.stderr)
+            compilation_required = Confirm.ask(
+                "Would you like to recompile before running the program ?"
+            )
+
+    if compilation_required and (ret := _make(directory)) != 0:
+        return ret
 
     conf = inifix.load(pinifile)
     if time_step is not None:
@@ -86,7 +122,7 @@ def command(
         conf["TimeIntegrator"]["tstop"] = duration
 
     with pushd(d), NamedTemporaryFile() as tmp_inifile:
-        conf.write(tmp_inifile.name)
+        inifix.dump(conf, tmp_inifile.name)
         ret = call(["./idefix", "-i", tmp_inifile.name])
         if ret != 0:
             print_err("idefix terminated with an error.")
