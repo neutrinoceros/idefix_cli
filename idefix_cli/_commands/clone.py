@@ -14,8 +14,10 @@ from idefix_cli._commons import print_err
 minimal_target = frozenset(
     (
         "idefix.ini",
-        "definitions.hpp",
-        "setup.cpp",
+        "*.hpp",
+        "*.cpp",
+        "*.h",
+        "*.c",
         "CMakeLists.txt",
     )
 )
