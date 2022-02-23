@@ -72,7 +72,7 @@ def command(
         if not (d / "Makefile").is_file():
             print_err(
                 "No idefix instance or Makefile found in the target directory. "
-                "Run `idfx setup` first."
+                "Run `idfx conf` first."
             )
             return 1
 
