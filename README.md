@@ -127,7 +127,7 @@ GPU = Ampere86
 compiler = g++
 ```
 
-A prefered conf system can also be store as
+A prefered conf system can also be stored as
 ```ini
 # idefix.cfg
 
@@ -137,24 +137,28 @@ conf_system = python  # use configure.py
 conf_system = cmake
 ```
 though this is mostly useful for testing purposes. In general `idfx conf`
-automatically determine which configuration system to use based on your
-resources. Cmake is prefered over Python when available.
+automatically determines which configuration system to use based on
+resources available. Cmake is prefered over Python when both are available.
 
 Any option passed on the command line will override its equivalent persistent
 configuration.
 
 Lastly, it is possible invoke `ccmake` instead of `cmake` by passing the
-`-i/--interactive` flag to `idfx conf`
+`-i/--interactive` flag to `idfx conf`.
 
 
 ## `idfx run`
 
-`idfx run` performs a simulation. It is mostly useful
-run tests problems sequentially for very short periods.
+This command is intended as a simple assistant to continuously check soundness
+of your setup as your developing it, and run tests problems sequentially for
+very short periods of time.
+
+`idfx run` essenitally invokes the `idefix` binary, but will also (re)compiles
+it if necessary. If source files were edited since last compilation, a prompt
+will offer to recompile.
 
 Note that this command will fail if neither `idefix` or `Makefile` are found in the
-specified directory. In case only the `Makefile` is present, this command will compile the
-program first.
+specified directory. Use `idfx conf` to generate the `Makefile`.
 
 > `idfx run` is not a complete wrapper around the `idefix` executable. This means that
 > if you need to pass additional arguments to `idefix` other than `-i`, you should run it directly.
@@ -233,7 +237,7 @@ Sat Jan 16 16:15:28 2021
 <details>
 <summary>More</summary>
 
-This command is roughly equivalent (and slightly more portable) to
+This command is roughly equivalent to
 ```shell
 $ cd $IDEFIX_DIR \
   && git describe --tags \
