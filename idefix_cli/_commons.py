@@ -34,7 +34,7 @@ VERSION_STR = r"\d+\.\d+\.\d+"
 VERSION_REGEXP = re.compile(VERSION_STR)
 # This is how sections are formatted in the changelog,
 # e.g., '## [0.8.1] - 2021-06-24'
-VERSECT_REGEXP = re.compile(fr"## \[{VERSION_STR}\] - \d\d\d\d-\d\d-\d\d\s*\n")
+VERSECT_REGEXP = re.compile(fr"## \[{VERSION_STR}\]\s*-?\s*\d\d\d\d-\d\d-\d\d\s*\n")
 
 if platform.system().lower().startswith("win"):
     # Windows
