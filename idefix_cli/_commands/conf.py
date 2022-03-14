@@ -143,11 +143,14 @@ def substitute_cmake_archs(args: list[str]) -> list[str]:
     if not (
         "-arch" in args or any(re.match(r"-D\s?Kokkos_ARCH_\w+=ON", _) for _ in args)
     ):
-        for option_name in ("CPU", "GPU"):
-            arch_req = get_user_conf_requirement("compilation", option_name)
-            if arch_req is None:
-                continue
+        arch_req = get_user_conf_requirement("compilation", "CPU")
+        if arch_req is not None:
             args.extend(["-arch", arch_req])
+        arch_req = get_user_conf_requirement("compilation", "GPU")
+        if arch_req is not None:
+            args.extend(["-arch", arch_req])
+            if "-gpu" not in args:
+                args.append("-gpu")
 
     parser = ArgumentParser()
     parser.add_argument("-arch", nargs="+", required=False)
