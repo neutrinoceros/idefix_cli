@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.13.2] - 2022-03-14
+## [0.13.3] - 2022-03-14
+
+BUG: same fix as 0.13.2, this time done more carefully.
+
+## [0.13.2] - 2022-03-14 (yanked)
 
 BUG: fix a bug where `-gpu` flag wasn't implied by using a known GPU target architecture in idfx conf
 
