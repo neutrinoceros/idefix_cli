@@ -182,8 +182,9 @@ def substitute_cmake_cxx(args: list[str]) -> list[str]:
 
 def substitute_cmake_args(args: list[str]) -> list[str]:
     # compatibility layer to enable configure.py's arguments with cmake
-    args = substitute_cmake_flags(args)
+    # order matters
     args = substitute_cmake_archs(args)
+    args = substitute_cmake_flags(args)
     args = substitute_cmake_cxx(args)
     return args
 
