@@ -118,7 +118,7 @@ def files_from_patterns(source, *patterns) -> list[str]:
             # it's clear that they are not files when listed with idfx clean --dry
             retv.append(_ + os.path.sep)
         elif os.path.isfile(_):
-            retv.append(_)
+            retv.append(os.path.abspath(_))
     return retv
 
 

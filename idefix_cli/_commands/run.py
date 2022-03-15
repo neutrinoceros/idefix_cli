@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
 from pathlib import Path
-from subprocess import call
 from tempfile import NamedTemporaryFile
 
 import inifix
@@ -86,16 +86,38 @@ def command(
 
     else:
         last_compilation_time = os.stat(d / "idefix").st_mtime
-        source_edit_times = tuple(
-            (file, os.stat(file).st_mtime)
-            for file in files_from_patterns(
-                d,
-                "*.hpp",
-                "*.cpp",
-                "*.h",
-                "*.c",
-                "CMakeLists.txt",
+        source_patterns = (
+            "*.hpp",
+            "*.cpp",
+            "*.h",
+            "*.c",
+            "CMakeLists.txt",
+        )
+
+        files_to_check = files_from_patterns(d, *source_patterns)
+        idefix_dir = Path(os.environ["IDEFIX_DIR"])
+        try:
+            with pushd(idefix_dir):
+                git_indexed_idefix_files = [
+                    os.path.abspath(_)
+                    for _ in subprocess.run(["git", "ls-files"], capture_output=True)
+                    .stdout.decode()
+                    .split("\n")
+                ]
+        except subprocess.CalledProcessError:
+            # emmit no warning here as Idefix might not be installed as a git copy
+            pass
+        else:
+            files_to_check.extend(
+                list(
+                    set(git_indexed_idefix_files).union(
+                        set(files_from_patterns(idefix_dir, *source_patterns))
+                    )
+                )
             )
+
+        source_edit_times = tuple(
+            (file, os.stat(file).st_mtime) for file in files_to_check
         )
         time_deltas = tuple(
             (file, edit_time - last_compilation_time)
@@ -123,7 +145,7 @@ def command(
 
     with pushd(d), NamedTemporaryFile() as tmp_inifile:
         inifix.dump(conf, tmp_inifile.name)
-        ret = call(["./idefix", "-i", tmp_inifile.name])
+        ret = subprocess.call(["./idefix", "-i", tmp_inifile.name])
         if ret != 0:
             print_err("idefix terminated with an error.")
     return ret
