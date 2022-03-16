@@ -87,11 +87,11 @@ def command(
     else:
         last_compilation_time = os.stat(d / "idefix").st_mtime
         source_patterns = (
-            "*.hpp",
-            "*.cpp",
-            "*.h",
-            "*.c",
-            "CMakeLists.txt",
+            "**/*.hpp",
+            "**/*.cpp",
+            "**/*.h",
+            "**/*.c",
+            "**/CMakeLists.txt",
         )
 
         files_to_check = files_from_patterns(d, *source_patterns)
@@ -110,8 +110,8 @@ def command(
         else:
             files_to_check.extend(
                 list(
-                    set(git_indexed_idefix_files).union(
-                        set(files_from_patterns(idefix_dir, *source_patterns))
+                    set(git_indexed_idefix_files).intersection(
+                        set(files_from_patterns(idefix_dir / "src", *source_patterns))
                     )
                 )
             )
