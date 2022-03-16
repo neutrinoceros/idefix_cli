@@ -109,8 +109,12 @@ def _make(directory) -> int:
         return exc.returncode
 
 
-def files_from_patterns(source, *patterns) -> list[str]:
-    raw = sorted(chain.from_iterable(glob(os.path.join(source, p)) for p in patterns))
+def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]:
+    raw = sorted(
+        chain.from_iterable(
+            glob(os.path.join(source, p), recursive=recursive) for p in patterns
+        )
+    )
     retv = []
     for _ in raw:
         if os.path.isdir(_):

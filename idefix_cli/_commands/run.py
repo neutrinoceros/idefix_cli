@@ -94,7 +94,7 @@ def command(
             "**/CMakeLists.txt",
         )
 
-        files_to_check = files_from_patterns(d, *source_patterns)
+        files_to_check = files_from_patterns(d, *source_patterns, recursive=True)
         idefix_dir = Path(os.environ["IDEFIX_DIR"])
         try:
             with pushd(idefix_dir):
