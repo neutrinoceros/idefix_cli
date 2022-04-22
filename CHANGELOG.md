@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2022-04-22
+
+ENH: idfx run --one now accepts optional and arbitrary output format identifiers.
+For instance
+
+```
+$ idfx run --one dmp vtk
+```
+will run the curdir setup for one time step and output both a dmp file and a vtk file.
+
 ## [0.14.2] - 2022-03-16
 
 BUG: fix a bug where the list of files checked for edit time by idfx run was not inclusive enough.

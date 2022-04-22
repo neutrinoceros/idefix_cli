@@ -199,7 +199,12 @@ is a shortcut for
 ```shell
 $ idfx run . --duration x --time-step x
 ```
-where `x`, is the existing value found in the inifile.
+where `x`, is the existing value found in the inifile. `idfx run --one` also
+optionally accepts arbitrary output format identifiers. For instance
+```shell
+$ idfx run --one dmp vtk
+```
+will run the curdir setup for one time step and output both a dmp file and a vtk file.
 
 
 ## `idfx clean`
