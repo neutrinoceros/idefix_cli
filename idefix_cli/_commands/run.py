@@ -39,8 +39,9 @@ def add_arguments(parser) -> None:
         "--one",
         "--one-step",
         dest="one_step",
-        action="store_true",
-        help="run only for one time step",
+        nargs="*",
+        help="run only for one time step. "
+        "Accepts arbitrary output type name(s) (e.g. dmp or vtk).",
     )
     parser.add_argument(
         "--time-step",
@@ -56,7 +57,7 @@ def command(
     inifile: str = "idefix.ini",
     duration: float | None = None,
     time_step: float | None = None,
-    one_step: bool | None = False,
+    one_step: list[str] | None = None,
 ) -> int:
 
     input_inifile = inifile
@@ -67,10 +68,16 @@ def command(
     else:
         print_err(f"could not find inifile {input_inifile}")
         return 1
-    if one_step:
+
+    conf = inifix.load(pinifile)
+
+    if one_step is not None:
         if time_step is None:
-            time_step = inifix.load(pinifile)["TimeIntegrator"]["first_dt"]
+            time_step = conf["TimeIntegrator"]["first_dt"]
         duration = time_step
+        if len(one_step) > 0:
+            for entry in one_step:
+                conf["Output"][entry] = duration
 
     compilation_required = False
     d = Path(directory)
@@ -137,7 +144,6 @@ def command(
     if compilation_required and (ret := _make(directory)) != 0:
         return ret
 
-    conf = inifix.load(pinifile)
     if time_step is not None:
         conf["TimeIntegrator"]["first_dt"] = time_step
     if duration is not None:
