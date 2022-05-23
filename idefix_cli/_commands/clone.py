@@ -10,6 +10,7 @@ from rich import print
 
 from idefix_cli._commons import files_from_patterns
 from idefix_cli._commons import print_err
+from idefix_cli._commons import print_warning
 
 minimal_target = frozenset(
     (
@@ -64,8 +65,15 @@ def command(
 
     files_to_generate = files_from_patterns(source, *minimal_target, *extra)
     if not files_to_generate:
-        print_err(f"Error: did not find any file to copy from {source}")
+        print_err(f"did not find any file to copy from {source}")
         return 1
+
+    if dest.endswith(os.path.sep):
+        print_warning(
+            f"directory {dest} will be created. "
+            f"Drop the trailing {os.path.sep!r} char to turn off this warning."
+        )
+        dest = dest[:-1]
 
     with TemporaryDirectory(dir=os.path.dirname(dest)) as tmpdir:
         # using a context manager to guarantee atomicity:
