@@ -44,19 +44,19 @@ def add_arguments(parser) -> None:
 
 
 def command(
-    source,
-    dest,
+    source: str,
+    dest: str,
     shallow: bool = False,
     extra: list[str] | None = None,
 ) -> int:
     if not os.path.isdir(source):
-        print_err(f"Error: source directory not found {source}")
+        print_err(f"source directory not found {source}")
         return 1
     if not os.listdir(source):
-        print_err(f"Error: {source} appears to be empty.")
+        print_err(f"{source} appears to be empty.")
         return 1
     if os.path.exists(dest):
-        print_err(f"Error: destination directory exists {dest}")
+        print_err(f"destination directory exists {dest}")
         return 1
 
     if extra is None:
