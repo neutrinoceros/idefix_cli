@@ -48,5 +48,7 @@ def command(dest: str, source, force: bool = False) -> int:
         )
         return 1
 
-    inifix.dump(data, dest)
+    with open(dest, "wb") as fh:
+        inifix.dump(data, fh)
+
     return 0

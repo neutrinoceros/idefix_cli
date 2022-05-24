@@ -69,7 +69,8 @@ def command(
         print_err(f"could not find inifile {input_inifile}")
         return 1
 
-    conf = inifix.load(pinifile)
+    with open(pinifile, "rb") as fh:
+        conf = inifix.load(fh)
 
     if one_step is not None:
         if time_step is None:
@@ -150,7 +151,8 @@ def command(
         conf["TimeIntegrator"]["tstop"] = duration
 
     with pushd(d), NamedTemporaryFile() as tmp_inifile:
-        inifix.dump(conf, tmp_inifile.name)
+        with open(tmp_inifile.name, "wb") as fh:
+            inifix.dump(conf, fh)
         ret = subprocess.call(["./idefix", "-i", tmp_inifile.name])
         if ret != 0:
             print_err("idefix terminated with an error.")

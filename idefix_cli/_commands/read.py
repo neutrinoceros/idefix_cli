@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from inifix import load
+import inifix
 
 from idefix_cli._commons import print_err
 
@@ -21,5 +21,7 @@ def command(inifile: str, indent: int | None = None) -> int:
     if not inifile.is_file():
         print_err(f"no such file {inifile}")
         return 1
-    print(json.dumps(load(inifile), indent=indent))
+    with open(inifile, "rb") as fh:
+        payload = inifix.load(fh)
+    print(json.dumps(payload, indent=indent))
     return 0
