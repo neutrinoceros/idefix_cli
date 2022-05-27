@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 from pathlib import Path
 from shutil import rmtree
 from shutil import which
@@ -10,7 +11,11 @@ from shutil import which
 from rich.prompt import Confirm
 
 from idefix_cli._commons import files_from_patterns
-from idefix_cli._commons import pushd
+
+if sys.version_info >= (3, 11):
+    from contextlib import chdir
+else:
+    from idefix_cli._commons import chdir
 
 # bpatterns are those targeted by `make clean`, which is equivalent to
 # rm -f *.o *.cuda *.host
@@ -55,7 +60,7 @@ def add_arguments(parser) -> None:
 
 
 def command(directory, clean_all: bool = False, dry: bool = False) -> int:
-    with pushd(directory):
+    with chdir(directory):
         patterns = bpatterns | kokkos_files | cmake_files | GENERATED_DIRS
         if clean_all:
             patterns |= gpatterns
