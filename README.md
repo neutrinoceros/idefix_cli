@@ -153,7 +153,7 @@ This command is intended as a simple assistant to continuously check soundness
 of your setup as your developing it, and run tests problems sequentially for
 very short periods of time.
 
-`idfx run` essenitally invokes the `idefix` binary, but will also (re)compiles
+`idfx run` essentially invokes the `idefix` binary, but will also (re)compiles
 it if necessary. If source files were edited since last compilation, a prompt
 will offer to recompile.
 
