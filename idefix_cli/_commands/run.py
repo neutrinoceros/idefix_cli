@@ -14,7 +14,11 @@ from idefix_cli._commons import _make
 from idefix_cli._commons import files_from_patterns
 from idefix_cli._commons import print_err
 from idefix_cli._commons import print_warning
-from idefix_cli._commons import pushd
+
+if sys.version_info >= (3, 11):
+    from contextlib import chdir
+else:
+    from idefix_cli._commons import chdir
 
 
 def add_arguments(parser) -> None:
@@ -105,7 +109,7 @@ def command(
         files_to_check = files_from_patterns(d, *source_patterns, recursive=True)
         idefix_dir = Path(os.environ["IDEFIX_DIR"])
         try:
-            with pushd(idefix_dir):
+            with chdir(idefix_dir):
                 git_indexed_idefix_files = [
                     os.path.abspath(_)
                     for _ in subprocess.run(["git", "ls-files"], capture_output=True)
@@ -150,7 +154,7 @@ def command(
     if duration is not None:
         conf["TimeIntegrator"]["tstop"] = duration
 
-    with pushd(d), NamedTemporaryFile() as tmp_inifile:
+    with chdir(d), NamedTemporaryFile() as tmp_inifile:
         with open(tmp_inifile.name, "wb") as fh:
             inifix.dump(conf, fh)
         ret = subprocess.call(["./idefix", "-i", tmp_inifile.name])

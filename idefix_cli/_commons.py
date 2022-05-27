@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import contextlib
 import os
 import platform
 import re
@@ -52,6 +51,27 @@ XDG_CONFIG_HOME = os.environ.get(
 del env_var, default_usr_dir
 
 
+if sys.version_info >= (3, 11):
+    from contextlib import chdir
+else:
+    # vendored from Python 3.11b1
+    from contextlib import AbstractContextManager
+
+    class chdir(AbstractContextManager):
+        """Non thread-safe context manager to change the current working directory."""
+
+        def __init__(self, path):
+            self.path = path
+            self._old_cwd = []
+
+        def __enter__(self):
+            self._old_cwd.append(os.getcwd())
+            os.chdir(self.path)
+
+        def __exit__(self, *excinfo):
+            os.chdir(self._old_cwd.pop())
+
+
 class requires_idefix:
     def __call__(self, f: TFun) -> TFun:
         @wraps(f)
@@ -88,21 +108,11 @@ def print_warning(message: ErrorMessage) -> None:
     err_console.print(f"[red]WARNING[/] {message}")
 
 
-@contextlib.contextmanager
-def pushd(new_dir):
-    previous_dir = os.getcwd()
-    os.chdir(new_dir)
-    try:
-        yield
-    finally:
-        os.chdir(previous_dir)
-
-
 @requires_idefix()
 def _make(directory) -> int:
     ncpus = str(min(8, cpu_count() // 2))
     try:
-        with pushd(directory):
+        with chdir(directory):
             return check_call(["make", "-j", ncpus])
     except CalledProcessError as exc:
         print_err("failed to compile idefix")
