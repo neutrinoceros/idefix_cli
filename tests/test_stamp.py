@@ -17,12 +17,12 @@ mock_data = {
 }
 
 
-@dataclass
+@dataclass(frozen=True)
 class MockObject:
     hexsha: str = mock_data["sha"]
 
 
-@dataclass
+@dataclass(frozen=True)
 class MockHead:
     object: MockObject = MockObject()
 
