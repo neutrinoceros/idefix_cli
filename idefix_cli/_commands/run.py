@@ -55,6 +55,16 @@ def add_arguments(parser) -> None:
         type=float,
         help="patch the inifile TimeIntegrator.first_dt parameter",
     )
+    parser.add_argument(
+        "--nproc",
+        action="store",
+        type=int,
+        default=1,
+        help=(
+            "run idefix in parallel over selected number of ALU. "
+            "Requires the code to be configured for MPI."
+        ),
+    )
 
 
 def command(
@@ -63,6 +73,7 @@ def command(
     duration: float | None = None,
     time_step: float | None = None,
     one_step: list[str] | None = None,
+    nproc: int = 1,
 ) -> int:
 
     d = Path(directory)
@@ -163,6 +174,15 @@ def command(
         inputfile = str(pinifile.relative_to(d.resolve()))
 
     cmd.append(inputfile)
+
+    if nproc > 1:
+        cmd = ["mpirun", "-n", str(nproc), *cmd]
+
+    msg = f"INFO: running '{' '.join(cmd)}'"
+    if d.resolve() != Path.cwd():
+        msg += f" (from {d}{os.sep})"
+    print(msg)
+
     with chdir(d):
         ret = subprocess.call(cmd)
         if ret != 0:
