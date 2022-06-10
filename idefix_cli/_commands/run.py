@@ -65,6 +65,15 @@ def command(
     one_step: list[str] | None = None,
 ) -> int:
 
+    d = Path(directory)
+    compilation_required = not (d / "idefix").is_file()
+    if compilation_required and not (d / "Makefile").is_file():
+        print_err(
+            "No idefix executable or Makefile found in the target directory. "
+            "Run `idfx conf` first."
+        )
+        return 1
+
     input_inifile = inifile
     for loc in [Path.cwd(), Path(directory)]:
         pinifile = (loc / input_inifile).resolve()
@@ -85,18 +94,6 @@ def command(
         if len(one_step) > 0:
             for entry in one_step:
                 conf["Output"][entry] = duration
-
-    compilation_required = False
-    d = Path(directory)
-    if not (d / "idefix").is_file():
-        if not (d / "Makefile").is_file():
-            print_err(
-                "No idefix instance or Makefile found in the target directory. "
-                "Run `idfx conf` first."
-            )
-            return 1
-
-        compilation_required = True
 
     else:
         last_compilation_time = os.stat(d / "idefix").st_mtime
