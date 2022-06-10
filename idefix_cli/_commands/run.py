@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+from copy import deepcopy
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -75,6 +76,7 @@ def command(
 
     with open(pinifile, "rb") as fh:
         conf = inifix.load(fh)
+        base_conf = deepcopy(conf)
 
     if one_step is not None:
         if time_step is None:
@@ -154,10 +156,18 @@ def command(
     if duration is not None:
         conf["TimeIntegrator"]["tstop"] = duration
 
-    with chdir(d), NamedTemporaryFile() as tmp_inifile:
+    cmd = ["./idefix", "-i"]
+    if conf != base_conf:
+        tmp_inifile = NamedTemporaryFile()
         with open(tmp_inifile.name, "wb") as fh:
             inifix.dump(conf, fh)
-        ret = subprocess.call(["./idefix", "-i", tmp_inifile.name])
+        inputfile = tmp_inifile.name
+    else:
+        inputfile = str(pinifile.relative_to(d.resolve()))
+
+    cmd.append(inputfile)
+    with chdir(d):
+        ret = subprocess.call(cmd)
         if ret != 0:
             print_err("idefix terminated with an error.")
     return ret
