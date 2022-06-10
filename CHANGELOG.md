@@ -4,12 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.16.0] - 2022-04-24
+
+## [0.17.0] - 2022-06-10
+
+ENH: replace custom solution with stdlib's contextlib.chdir in Python 3.11, vendor it for older versions
+
+Several enhancements to idfx run
+- ENH: don't create a temporary inputfile if no edits are required
+- ENH: prioritize checking for executable (or Markefile) over inifile in error message for idfx run
+- ENH: add support for mpirun in idfx run
+
+
+## [0.16.0] - 2022-05-24
 
 ENH: use inifix's binary mode to maximize portability, bump minimal supported version to 3.0.0
 
 
-## [0.15.1] - 2022-04-22
+## [0.15.1] - 2022-05-23
 
 - BUG: fix error messages in idfx clone
 - BUG: fix a bug where os.path.setp-terminated target dir would cause a crash in idfx clone
