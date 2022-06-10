@@ -16,21 +16,21 @@ configuration and cleanup in a single tool.
 <!-- toc -->
 
 - [Installation](#installation)
-  * [stable](#stable)
-  * [bleeding-edge](#bleeding-edge)
 - [Internal documentation](#internal-documentation)
 - [Commands](#commands)
   * [`idfx clone`](#idfx-clone)
   * [`idfx conf`](#idfx-conf)
+    + [Persistent, sytem wide configuration file](#persistent-sytem-wide-configuration-file)
   * [`idfx run`](#idfx-run)
     + [minimal example: run a test sequentially](#minimal-example-run-a-test-sequentially)
     + [running a shorter version of a problem](#running-a-shorter-version-of-a-problem)
-  * [IO operations for inifiles](#io-operations-for-inifiles)
-    + [`idfx read`](#idfx-read)
-    + [`idfx write`](#idfx-write)
-    + [arbitrary patching](#arbitrary-patching)
+    + [running in parallel](#running-in-parallel)
   * [`idfx clean`](#idfx-clean)
   * [`idfx stamp`](#idfx-stamp)
+- [IO operations for inifiles](#io-operations-for-inifiles)
+  * [`idfx read`](#idfx-read)
+  * [`idfx write`](#idfx-write)
+    + [arbitrary patching](#arbitrary-patching)
 - [Contribution guidelines](#contribution-guidelines)
 - [Testing](#testing)
 
@@ -150,12 +150,12 @@ Lastly, it is possible invoke `ccmake` instead of `cmake` by passing the
 ## `idfx run`
 
 This command is intended as a simple assistant to continuously check soundness
-of your setup as your developing it, and run tests problems sequentially for
+of your setup as your developing it, and run tests problems locally for
 very short periods of time.
 
 `idfx run` essentially invokes the `idefix` binary, but will also (re)compiles
-it if necessary. If source files were edited since last compilation, a prompt
-will offer to recompile.
+it if necessary. If source files were edited since last compilation, an
+interactive prompt will offer to recompile.
 
 Note that this command will fail if neither `idefix` or `Makefile` are found in the
 specified directory. Use `idfx conf` to generate the `Makefile`.
@@ -206,6 +206,17 @@ $ idfx run --one dmp vtk
 ```
 will run the curdir setup for one time step and output both a dmp file and a vtk file.
 
+### running in parallel
+
+`idfx run` also wraps around `mpirun` via the `--nproc` optional argument.
+For instance
+```shell
+$ idfx run mydir --nproc 2
+```
+is equivalent to
+```
+$ pushd mydir ; mpirun -n 2 ./idefix ; popd
+```
 
 ## `idfx clean`
 
