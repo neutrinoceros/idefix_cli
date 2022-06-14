@@ -77,8 +77,8 @@ def command(
 ) -> int:
 
     d = Path(directory)
-    compilation_required = not (d / "idefix").is_file()
-    if compilation_required and not (d / "Makefile").is_file():
+    exe = d / "idefix"
+    if not exe.is_file() and not (d / "Makefile").is_file():
         print_err(
             "No idefix executable or Makefile found in the target directory. "
             "Run `idfx conf` first."
@@ -106,8 +106,11 @@ def command(
             for entry in one_step:
                 conf["Output"][entry] = duration
 
+    compilation_is_required: bool
+    if not exe.is_file():
+        compilation_is_required = True
     else:
-        last_compilation_time = os.stat(d / "idefix").st_mtime
+        last_compilation_time = os.stat(exe).st_mtime
         source_patterns = (
             "**/*.hpp",
             "**/*.cpp",
@@ -152,11 +155,13 @@ def command(
                 "The following files were updated since last compilation:",
             )
             print("\n".join(updated_since_compilation), file=sys.stderr)
-            compilation_required = Confirm.ask(
+            compilation_is_required = Confirm.ask(
                 "Would you like to recompile before running the program ?"
             )
+        else:
+            compilation_is_required = False
 
-    if compilation_required and (ret := _make(directory)) != 0:
+    if compilation_is_required and (ret := _make(directory)) != 0:
         return ret
 
     if time_step is not None:
