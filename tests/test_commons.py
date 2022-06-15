@@ -21,7 +21,7 @@ def test_requires_idefix_undef(capsys, monkeypatch):
 
     out, err = capsys.readouterr()
     assume(out == "")
-    assume(err == "ERROR this functionality requires $IDEFIX_DIR to be defined.\n")
+    assume(err == "💥 this functionality requires $IDEFIX_DIR to be defined\n")
 
 
 def test_requires_idefix_not_a_directory(capsys, monkeypatch, tmp_path):
@@ -35,8 +35,8 @@ def test_requires_idefix_not_a_directory(capsys, monkeypatch, tmp_path):
     assume(
         err.replace("\n", "")
         == (
-            "ERROR env variable $IDEFIX_DIR isn't properly defined: "
-            f"{tmp_idefix_dir} is not a directory."
+            "💥 env variable $IDEFIX_DIR isn't properly defined: "
+            f"{tmp_idefix_dir} is not a directory"
         )
     )
 

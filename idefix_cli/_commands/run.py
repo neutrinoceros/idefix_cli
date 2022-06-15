@@ -14,6 +14,7 @@ from rich.prompt import Confirm
 from idefix_cli._commons import _make
 from idefix_cli._commons import files_from_patterns
 from idefix_cli._commons import print_err
+from idefix_cli._commons import print_subcommand
 from idefix_cli._commons import print_warning
 
 if sys.version_info >= (3, 11):
@@ -81,7 +82,7 @@ def command(
     if not exe.is_file() and not (d / "Makefile").is_file():
         print_err(
             f"No idefix executable or Makefile found in the target directory {d} "
-            "Run `idfx conf` first."
+            "Run `idfx conf` first"
         )
         return 1
 
@@ -182,13 +183,9 @@ def command(
     if nproc > 1:
         cmd = ["mpirun", "-n", str(nproc), *cmd]
 
-    msg = f"INFO: running '{' '.join(cmd)}'"
-    if d.resolve() != Path.cwd():
-        msg += f" (from {d}{os.sep})"
-    print(msg)
-
+    print_subcommand(cmd, loc=d)
     with chdir(d):
         ret = subprocess.call(cmd)
         if ret != 0:
-            print_err("idefix terminated with an error.")
+            print_err("idefix terminated with an error")
     return ret

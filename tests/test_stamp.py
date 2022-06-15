@@ -49,7 +49,7 @@ def test_stamp_no_idefix(flag, capsys, monkeypatch):
 
     out, err = capsys.readouterr()
     assume(out == "")
-    assume(err == "ERROR this functionality requires $IDEFIX_DIR to be defined.\n")
+    assume(err == "💥 this functionality requires $IDEFIX_DIR to be defined\n")
 
 
 def test_stamp_simple(capsys, monkeypatch, tmp_path):

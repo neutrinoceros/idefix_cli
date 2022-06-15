@@ -53,7 +53,7 @@ def test_write_file_exists(tmp_path, capsys, monkeypatch):
     assume(out == "")
     assume(
         err
-        == f"ERROR destination file {target} already exists. Use -f/--force to overwrite.\n"
+        == f"💥 destination file {target} already exists. Use -f/--force to overwrite.\n"
     )
     assume(target.read_text() == "")
 
@@ -84,7 +84,7 @@ def test_invalid_json(capsys, tmp_path, monkeypatch):
     assume(ret != 0)
     out, err = capsys.readouterr()
     assume(out == "")
-    assume(err == "ERROR input is not valid json.\n")
+    assume(err == "💥 input is not valid json.\n")
 
     # test that this is still what happens even if the target file exists
     target.touch()
@@ -92,7 +92,7 @@ def test_invalid_json(capsys, tmp_path, monkeypatch):
     assume(ret != 0)
     out, err = capsys.readouterr()
     assume(out == "")
-    assume(err == "ERROR input is not valid json.\n")
+    assume(err == "💥 input is not valid json.\n")
 
 
 def test_invalid_inifile(capsys, tmp_path, monkeypatch):
@@ -105,4 +105,4 @@ def test_invalid_inifile(capsys, tmp_path, monkeypatch):
     assume(ret != 0)
     out, err = capsys.readouterr()
     assume(out == "")
-    assume(err == "ERROR input is not Pluto inifile format compliant.\n")
+    assume(err == "💥 input is not Pluto inifile format compliant.\n")

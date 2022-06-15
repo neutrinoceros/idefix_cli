@@ -61,7 +61,7 @@ def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
 
     out, err = capsys.readouterr()
     assume(out == "")
-    assert f"ERROR cmake is required from {usr_config.absolute()}, but " in err
+    assert f"💥 cmake is required from {usr_config.absolute()}, but " in err
 
 
 @pytest.mark.parametrize(

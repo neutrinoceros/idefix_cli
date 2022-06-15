@@ -11,6 +11,7 @@ from getpass import getuser
 from glob import glob
 from itertools import chain
 from multiprocessing import cpu_count
+from pathlib import Path
 from socket import gethostname
 from subprocess import CalledProcessError
 from subprocess import check_call
@@ -78,12 +79,12 @@ class requires_idefix:
         def wrapper(*args, **kwargs) -> Any:
             if (IDEFIX_DIR := os.getenv("IDEFIX_DIR")) is None:
                 print_err(
-                    "this functionality requires $IDEFIX_DIR to be defined.",
+                    "this functionality requires $IDEFIX_DIR to be defined",
                 )
                 return 10
             elif not os.path.isdir(IDEFIX_DIR):
                 print_err(
-                    f"env variable $IDEFIX_DIR isn't properly defined: {IDEFIX_DIR} is not a directory.",
+                    f"env variable $IDEFIX_DIR isn't properly defined: {IDEFIX_DIR} is not a directory",
                 )
                 return 20
             return f(*args, **kwargs)
@@ -100,20 +101,33 @@ ErrorMessage = Union[str, Exception]
 
 def print_err(message: ErrorMessage) -> None:
     err_console = Console(width=500, file=sys.stderr)
-    err_console.print(f"[bold white on red]ERROR[/] {message}")
+    err_console.print(f":boom:[bold red3] {message}[/]")
 
 
 def print_warning(message: ErrorMessage) -> None:
     err_console = Console(width=500, file=sys.stderr)
-    err_console.print(f"[red]WARNING[/] {message}")
+    err_console.print(f":exclamation:[italic magenta] {message}[/]")
+
+
+def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
+    msg = " ".join(cmd)
+
+    header = "running"
+    if loc is not None and loc.resolve() != Path.cwd():
+        header += f" (from {loc}{os.sep})"
+
+    console = Console(width=500, highlight=False)
+    console.print(f":rocket:[italic cornflower_blue] {header}[/] [bold]{msg}[/]")
 
 
 @requires_idefix()
 def _make(directory) -> int:
     ncpus = str(min(8, cpu_count() // 2))
+    cmd = ["make", "-j", ncpus]
+    print_subcommand(cmd, loc=Path(directory))
     try:
         with chdir(directory):
-            return check_call(["make", "-j", ncpus])
+            return check_call(cmd)
     except CalledProcessError as exc:
         print_err("failed to compile idefix")
         return exc.returncode
