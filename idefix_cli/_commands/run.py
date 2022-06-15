@@ -186,6 +186,7 @@ def command(
     print_subcommand(cmd, loc=d)
     with chdir(d):
         ret = subprocess.call(cmd)
-        if ret != 0:
-            print_err("idefix terminated with an error")
+
+    if ret != 0:
+        print_err(f"{cmd[0]} terminated with an error")
     return ret
