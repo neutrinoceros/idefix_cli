@@ -11,7 +11,7 @@ def test_read_not_a_file(tmp_path, capsys):
     assume(ret != 0)
     out, err = capsys.readouterr()
     assume(out == "")
-    assume(err == f"ERROR no such file {target.absolute()}\n")
+    assume(err == f"💥 no such file {target.absolute()}\n")
 
 
 def test_read(inifile, capsys):

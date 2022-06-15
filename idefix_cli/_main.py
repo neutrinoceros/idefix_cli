@@ -92,7 +92,7 @@ def main(argv: list[str] | None = None) -> Any:
 
     cmd, accepts_unknown_args = commands[cmd_name]
     if unknown_args and not accepts_unknown_args:
-        print_err(f"received unknown arguments {tuple(unknown_args)!r}.")
+        print_err(f"received unknown arguments {tuple(unknown_args)!r}")
         return 1
 
     return cmd(*unknown_args, **vars(known_args))

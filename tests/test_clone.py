@@ -23,6 +23,6 @@ def test_clone_with_terminal_sep(capsys, tmp_path):
     ret = main(["clone", str(BASE_SETUP), dest])
 
     out, err = capsys.readouterr()
-    assert err.startswith(f"WARNING directory {dest} will be created.")
+    assert err.startswith(f"❗ directory {dest} will be created.")
     assert out.startswith("Created the following files\n")
     assert ret == 0

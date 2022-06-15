@@ -54,7 +54,7 @@ def command(
         print_err(f"source directory not found {source}")
         return 1
     if not os.listdir(source):
-        print_err(f"{source} appears to be empty.")
+        print_err(f"{source} appears to be empty")
         return 1
     if os.path.exists(dest):
         print_err(f"destination directory exists {dest}")

@@ -14,6 +14,7 @@ from idefix_cli._commons import get_idefix_version
 from idefix_cli._commons import get_user_conf_requirement
 from idefix_cli._commons import get_user_config_file
 from idefix_cli._commons import print_err
+from idefix_cli._commons import print_subcommand
 from idefix_cli._commons import print_warning
 from idefix_cli._commons import requires_idefix
 
@@ -245,5 +246,5 @@ def command(*args: str, interactive: bool) -> int | NoReturn:
         cmd = python_cmd
 
     cmd.extend(clargs)
-    print(f"INFO: running '{' '.join(cmd)}'")
+    print_subcommand(cmd)
     os.execvp(cmd[0], cmd)

@@ -65,4 +65,4 @@ def test_unknown_args(capsys):
     assert ret != 0
     out, err = capsys.readouterr()
     assert out == ""
-    assert err == f"ERROR received unknown arguments {args!r}.\n"
+    assert err == f"💥 received unknown arguments {args!r}\n"
