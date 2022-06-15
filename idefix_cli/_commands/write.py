@@ -41,14 +41,14 @@ def command(dest: str, source, force: bool = False) -> int:
         print_err("input is not Pluto inifile format compliant.")
         return 1
 
-    dest = Path(dest)
-    if dest.is_file() and not force:
+    pdest = Path(dest)
+    if pdest.is_file() and not force:
         print_err(
             f"destination file {dest} already exists. Use -f/--force to overwrite."
         )
         return 1
 
-    with open(dest, "wb") as fh:
+    with open(pdest, "wb") as fh:
         inifix.dump(data, fh)
 
     return 0

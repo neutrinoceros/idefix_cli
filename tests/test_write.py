@@ -10,8 +10,8 @@ from idefix_cli._main import main
 
 jq_available = subprocess.run(["which", "jq"]).returncode == 0
 
-simple_conf = {"Grid": {"x": 1, "y": 2}}
-simple_conf = json.dumps(simple_conf)
+data = {"Grid": {"x": 1, "y": 2}}
+simple_conf = json.dumps(data)
 simple_conf_as_ini = "[Grid]\nx 1\ny 2"
 
 

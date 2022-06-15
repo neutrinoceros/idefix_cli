@@ -97,6 +97,5 @@ def command(
     else:
         objs = "files"
         lines = output_files
-    output_files = "\n".join(list(glob(os.path.join(dest, "*"))))
     print(f"Created the following {objs}\n" + "\n".join(lines))
     return 0

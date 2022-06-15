@@ -17,11 +17,11 @@ def add_arguments(parser) -> None:
 
 
 def command(inifile: str, indent: int | None = None) -> int:
-    inifile = Path(inifile)
-    if not inifile.is_file():
+    pinifile = Path(inifile)
+    if not pinifile.is_file():
         print_err(f"no such file {inifile}")
         return 1
-    with open(inifile, "rb") as fh:
+    with open(pinifile, "rb") as fh:
         payload = inifix.load(fh)
     print(json.dumps(payload, indent=indent))
     return 0
