@@ -160,18 +160,18 @@ interactive prompt will offer to recompile.
 Note that this command will fail if neither `idefix` or `Makefile` are found in the
 specified directory. Use `idfx conf` to generate the `Makefile`.
 
-> `idfx run` is not a complete wrapper around the `idefix` executable. This means that
-> if you need to pass additional arguments to `idefix` other than `-i`, you should run it directly.
+Additional, arbitrary arguments may be passed to the `idefix` executable via this
+command.
 
 ### minimal example: run a test sequentially
 
 ```shell
-$ idfx run $IDEFIX_DIR/test/HD/KHI
+$ idfx run --dir $IDEFIX_DIR/test/HD/KHI
 ```
 The default behaviour is to use `idefix.ini` contained in the specified directory. If you
 want to run a different one, use `-i/--inifile`
 ```shell
-$ idfx run . -i myconf.ini
+$ idfx run -i myconf.ini
 ```
 
 Note that `idfx run` looks for the inifile relative to the cwd, and _then_ relative to
@@ -182,7 +182,7 @@ Use the `--duration` and `--time-step` arguments to run a modified version of a 
 inifile.
 
 ```shell
-$ idfx run . --duration 1e-4
+$ idfx run --duration 1e-4
 ```
 
 Note that `--time-step` maps to Idefix's inifile `TimeIntegrator.first_dt`.
@@ -193,11 +193,11 @@ The length of the time step can be adjusted in combination with `--time-step`, h
 `--one-step` is incompatible with `--duration`.
 
 ```shell
-$ idfx run . --one
+$ idfx run --one
 ```
 is a shortcut for
 ```shell
-$ idfx run . --duration x --time-step x
+$ idfx run --duration x --time-step x
 ```
 where `x`, is the existing value found in the inifile. `idfx run --one` also
 optionally accepts arbitrary output format identifiers. For instance
@@ -208,10 +208,10 @@ will run the curdir setup for one time step and output both a dmp file and a vtk
 
 ### running in parallel
 
-`idfx run` also wraps around `mpirun` via the `--nproc` optional argument.
+`idfx run` also wraps around `mpirun -> idefix` via the `--nproc` optional argument.
 For instance
 ```shell
-$ idfx run mydir --nproc 2
+$ idfx run --dir mydir --nproc 2
 ```
 is equivalent to
 ```

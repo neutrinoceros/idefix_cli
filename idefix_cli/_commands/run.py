@@ -24,7 +24,7 @@ else:
 
 def add_arguments(parser) -> None:
 
-    parser.add_argument("directory", nargs="?", default=".", help="target directory")
+    parser.add_argument("--dir", dest="directory", default=".", help="target directory")
     parser.add_argument(
         "-i",
         dest="inifile",
@@ -68,19 +68,19 @@ def add_arguments(parser) -> None:
 
 
 def command(
-    directory: str,
+    *unknown_args: str,
+    directory: str = ".",
     inifile: str = "idefix.ini",
     duration: float | None = None,
     time_step: float | None = None,
     one_step: list[str] | None = None,
     nproc: int = 1,
 ) -> int:
-
     d = Path(directory)
     exe = d / "idefix"
     if not exe.is_file() and not (d / "Makefile").is_file():
         print_err(
-            "No idefix executable or Makefile found in the target directory. "
+            f"No idefix executable or Makefile found in the target directory {d} "
             "Run `idfx conf` first."
         )
         return 1
@@ -169,7 +169,6 @@ def command(
     if duration is not None:
         conf["TimeIntegrator"]["tstop"] = duration
 
-    cmd = ["./idefix", "-i"]
     if conf != base_conf:
         tmp_inifile = NamedTemporaryFile()
         with open(tmp_inifile.name, "wb") as fh:
@@ -178,7 +177,7 @@ def command(
     else:
         inputfile = str(pinifile.relative_to(d.resolve()))
 
-    cmd.append(inputfile)
+    cmd = ["./idefix", "-i", inputfile, *unknown_args]
 
     if nproc > 1:
         cmd = ["mpirun", "-n", str(nproc), *cmd]
