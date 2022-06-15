@@ -66,7 +66,7 @@ def _setup_commands(
         sig = inspect.signature(module.command)
 
         accepts_unknown_args = any(
-            param.kind is inspect._VAR_POSITIONAL for param in sig.parameters.values()  # type: ignore [attr-defined]
+            param.kind is param.VAR_POSITIONAL for param in sig.parameters.values()
         )
         retv.update({command_name: (module.command, accepts_unknown_args)})
     return retv
