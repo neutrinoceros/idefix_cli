@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2022-06-15
+
+ENH: add support to pass arbitrary arguments to idefix via idfx run
+
+This is a breaking change because `idfx run` previously had one optional
+positional argument `directory`, which is now a named argument `--dir` (but
+still defaults to the current dir).
+
 ## [0.17.1] - 2022-06-14
 
 BUG: fix a bug where idfx run would crash instead of compiling idefix
