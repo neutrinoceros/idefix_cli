@@ -6,20 +6,21 @@ import sys
 from importlib import import_module
 from pkgutil import walk_packages
 from types import FunctionType
-from typing import cast
-from typing import NoReturn
+from typing import Any
 
 from idefix_cli import __version__
 from idefix_cli import _commands
 from idefix_cli._commons import print_err
 
 
-def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
+def _setup_commands(
+    parser: argparse.ArgumentParser,
+) -> dict[str, tuple[FunctionType, bool]]:
     # https://github.com/python/mypy/issues/1422
     path: str = _commands.__path__  # type: ignore
 
     sparsers = parser.add_subparsers(dest="command")
-    retv: dict[str, FunctionType] = {}
+    retv: dict[str, tuple[FunctionType, bool]] = {}
     for module_info in walk_packages(path, _commands.__name__ + "."):
         module = import_module(module_info.name)
 
@@ -62,11 +63,18 @@ def _setup_commands(parser: argparse.ArgumentParser) -> dict[str, FunctionType]:
 
         sub_parser = sparsers.add_parser(command_name, help=module.__doc__, **kwargs)
         module.add_arguments(sub_parser)
-        retv.update({command_name: module.command})
+        sig = inspect.signature(module.command)
+
+        accepts_unknown_args = any(
+            param.kind is inspect._VAR_POSITIONAL for param in sig.parameters.values()  # type: ignore [attr-defined]
+        )
+        retv.update({command_name: (module.command, accepts_unknown_args)})
     return retv
 
 
-def main(argv: list[str] | None = None) -> int | NoReturn:
+def main(argv: list[str] | None = None) -> Any:
+    # the return value is deleguated to sub commands so its type is arbitrary
+    # In practice it should be either 'int' or 'typing.NoReturn'
     parser = argparse.ArgumentParser(prog="idfx")
     parser.add_argument("-v", "--version", action="version", version=__version__)
     commands = _setup_commands(parser)
@@ -82,14 +90,9 @@ def main(argv: list[str] | None = None) -> int | NoReturn:
         parser.print_help(sys.stderr)
         return 1
 
-    cmd = commands[cmd_name]
-    if cmd_name == "conf":
-        return cmd(*unknown_args, **vars(known_args))
-
-    elif unknown_args:
+    cmd, accepts_unknown_args = commands[cmd_name]
+    if unknown_args and not accepts_unknown_args:
         print_err(f"received unknown arguments {tuple(unknown_args)!r}.")
         return 1
 
-    retv = cmd(**vargs)
-    retv = cast(int, retv)
-    return retv
+    return cmd(*unknown_args, **vars(known_args))
