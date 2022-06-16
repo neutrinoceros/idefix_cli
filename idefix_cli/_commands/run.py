@@ -113,13 +113,12 @@ def command(
     else:
         last_compilation_time = os.stat(exe).st_mtime
         source_patterns = (
-            "**/*.hpp",
-            "**/*.cpp",
-            "**/*.h",
-            "**/*.c",
-            "**/CMakeLists.txt",
+            "*.hpp",
+            "*.cpp",
+            "*.h",
+            "*.c",
+            "CMakeLists.txt",
         )
-
         files_to_check = files_from_patterns(d, *source_patterns, recursive=True)
         idefix_dir = Path(os.environ["IDEFIX_DIR"])
         try:
@@ -135,9 +134,9 @@ def command(
             pass
         else:
             files_to_check.extend(
-                list(
-                    set(git_indexed_idefix_files).intersection(
-                        set(files_from_patterns(idefix_dir / "src", *source_patterns))
+                set(git_indexed_idefix_files).intersection(
+                    files_from_patterns(
+                        idefix_dir / "src", *source_patterns, recursive=True
                     )
                 )
             )
