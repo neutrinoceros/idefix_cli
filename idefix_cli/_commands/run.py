@@ -113,11 +113,11 @@ def command(
     else:
         last_compilation_time = os.stat(exe).st_mtime
         source_patterns = (
-            "*.hpp",
-            "*.cpp",
-            "*.h",
-            "*.c",
-            "CMakeLists.txt",
+            "**/*.hpp",
+            "**/*.cpp",
+            "**/*.h",
+            "**/*.c",
+            "**/CMakeLists.txt",
         )
         files_to_check = files_from_patterns(d, *source_patterns, recursive=True)
         idefix_dir = Path(os.environ["IDEFIX_DIR"])
@@ -133,12 +133,11 @@ def command(
             # emmit no warning here as Idefix might not be installed as a git copy
             pass
         else:
+            source_files = files_from_patterns(
+                idefix_dir / "src", *source_patterns, recursive=True
+            )
             files_to_check.extend(
-                set(git_indexed_idefix_files).intersection(
-                    files_from_patterns(
-                        idefix_dir / "src", *source_patterns, recursive=True
-                    )
-                )
+                set(git_indexed_idefix_files).intersection(source_files)
             )
 
         source_edit_times = tuple(
