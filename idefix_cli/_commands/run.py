@@ -7,6 +7,7 @@ import sys
 from copy import deepcopy
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from typing import Final
 
 import inifix
 from rich.prompt import Confirm
@@ -21,6 +22,16 @@ if sys.version_info >= (3, 11):
     from contextlib import chdir
 else:
     from idefix_cli._commons import chdir
+
+# known end messages in Idefix
+KNOWN_SUCCESS: Final = (
+    "Main: Job completed successfully.",
+    "Main: Job's done",  # Idefix <= 1.0
+)
+KNOWN_FAIL: Final = (
+    "Main: Job was interrupted before completion.",
+    "Main: Job was aborted because of an unrecoverable error.",
+)
 
 
 def add_arguments(parser) -> None:
@@ -183,8 +194,23 @@ def command(
 
     print_subcommand(cmd, loc=d)
     with chdir(d):
-        ret = subprocess.call(cmd)
+        idefix_ret = subprocess.call(cmd)
+
+    ret = 0
+    if idefix_ret == 0:
+        # Idefix newer than 1.0 intentionally always returns 0, even on failure
+        with open(d / "idefix.0.log") as fh:
+            last_line = fh.read().strip().split("\n")[-1].strip()
+        if last_line in KNOWN_SUCCESS:
+            pass
+        elif last_line in KNOWN_FAIL:
+            ret = 1
+        else:
+            print_warning(
+                "Idefix completed with an unknown status. Please check log files."
+            )
 
     if ret != 0:
         print_err(f"{cmd[0]} terminated with an error")
+
     return ret

@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.20.0] - 2022-06-18
 
 - ENH: when compiling idefix, always use CPUs in powers of 2 (up to 8), and
   strictly less than the available number. Previously we used `min(8, count//2)`
+- ENH: following upstream development, idfx run will now check log files left by
+  idefix to determine its return value
 
 ## [0.19.3] - 2022-06-16
 
