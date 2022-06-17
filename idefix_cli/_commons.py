@@ -122,8 +122,8 @@ def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
 
 @requires_idefix()
 def _make(directory) -> int:
-    ncpus = str(min(8, cpu_count() // 2))
-    cmd = ["make", "-j", ncpus]
+    ncpus = 2 ** min(3, cpu_count().bit_length())
+    cmd = ["make", "-j", str(ncpus)]
     print_subcommand(cmd, loc=Path(directory))
     try:
         with chdir(directory):
