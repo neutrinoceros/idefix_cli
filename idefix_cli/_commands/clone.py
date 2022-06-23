@@ -30,12 +30,12 @@ def add_arguments(parser) -> None:
     )
     parser.add_argument(
         "dest",
-        help="destination directory (must not exist, unless the --force flag is used.).",
+        help="destination directory (cannot exist).",
     )
     parser.add_argument(
         "--shallow",
         action="store_true",
-        help="build symlinks instead of actual copies (not implemented yet).",
+        help="build symlinks instead of actual copies.",
     )
     parser.add_argument(
         "--extra",
