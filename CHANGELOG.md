@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.1] - 2022-06-23
+
+BUG: fix help message for idfx clone:
+  - `--shallow` flag was erroneouly marked as not implemented
+  - `dest` still referenced a long-gone `--force` flag
+
 ## [0.20.0] - 2022-06-18
 
 - ENH: when compiling idefix, always use CPUs in powers of 2 (up to 8), and
