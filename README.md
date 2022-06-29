@@ -80,8 +80,11 @@ copied, with `--shallow`.
 Additional files may be included in the clone using the `--extra` argument. They
 can be specified either by name or POSIX pattern, e.g.
 ```shell
-$ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --extra *.log
+$ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --extra "*.log"
 ```
+
+Note that extra patterns need be escaped, else they'd be interpreted by the
+shell before they make it to `idefix_cli`.
 
 </details>
 
@@ -97,14 +100,14 @@ are converted on the fly for cmake.
 
 For instance
 ```shell
-$ idfx conf -gpu -mpi -openmp -arch Ampere86 -cxx g++
+$ idfx conf -mhd -mpi -gpu -arch Ampere86 -cxx g++
 ```
 is equivalent to
 ```
 $ cmake $IDEFIX_DIR \
-  -DKokkos_ENABLE_CUDA=ON \
+  -DIdefix_MHD=ON \
   -DIdefix_MPI=ON \
-  -DKokkos_ENABLE_OPENMP=ON \
+  -DKokkos_ENABLE_CUDA=ON \
   -DKokkos_ARCH_AMPERE86=ON \
   -DCMAKE_CXX_COMPILER=g++
 ```
