@@ -100,14 +100,14 @@ are converted on the fly for cmake.
 
 For instance
 ```shell
-$ idfx conf -gpu -mpi -openmp -arch Ampere86 -cxx g++
+$ idfx conf -mhd -mpi -gpu -arch Ampere86 -cxx g++
 ```
 is equivalent to
 ```
 $ cmake $IDEFIX_DIR \
-  -DKokkos_ENABLE_CUDA=ON \
+  -DIdefix_MHD=ON \
   -DIdefix_MPI=ON \
-  -DKokkos_ENABLE_OPENMP=ON \
+  -DKokkos_ENABLE_CUDA=ON \
   -DKokkos_ARCH_AMPERE86=ON \
   -DCMAKE_CXX_COMPILER=g++
 ```
