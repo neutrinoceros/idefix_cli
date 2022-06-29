@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DOC: clarify and fix a couple example in the README
 - ENH: resolve dir path (improve error message in idfx run)
 - DEPR: deprecate `[idefix_cli]` configuration section in favor of command specific ones (like `[idfx conf]`)
+- ENH: add support for persistent (configured) arbitrary inclusions in `idfx clone`
 
 ## [0.20.1] - 2022-06-23
 
