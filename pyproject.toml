@@ -14,13 +14,6 @@ combine_as_imports = true
 minversion = "6.0"
 addopts = "--doctest-modules"
 
-[tool.coverage.run]
-branch = true
-omit = [
-  "setup.py",
-  "idefix_cli/__main__.py",
-]
-
 [tool.mypy]
 python_version = 3.8
 show_error_codes = true
