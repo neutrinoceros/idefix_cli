@@ -88,7 +88,7 @@ def command(
     one_step: list[str] | None = None,
     nproc: int = 1,
 ) -> int:
-    d = Path(directory)
+    d = Path(directory).resolve()
     exe = d / "idefix"
     if not exe.is_file() and not (d / "Makefile").is_file():
         print_err(
