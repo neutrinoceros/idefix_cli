@@ -8,15 +8,6 @@ from idefix_cli._commands.conf import substitute_cmake_args
 from idefix_cli._main import main
 
 
-@pytest.fixture()
-def isolated_conf_dir(tmp_path, monkeypatch):
-    conf_dir = tmp_path / ".config"
-    os.makedirs(conf_dir)
-    monkeypatch.setattr("idefix_cli._commons.XDG_CONFIG_HOME", str(conf_dir))
-    monkeypatch.chdir(tmp_path)
-    return conf_dir
-
-
 def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
     tmp_idefix_dir = tmp_path / "idefix"
     os.makedirs(tmp_idefix_dir / ".git")

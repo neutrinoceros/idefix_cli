@@ -9,10 +9,11 @@ from tempfile import TemporaryDirectory
 from rich import print
 
 from idefix_cli._commons import files_from_patterns
+from idefix_cli._commons import get_user_conf_requirement
 from idefix_cli._commons import print_err
 from idefix_cli._commons import print_warning
 
-minimal_target = frozenset(
+BASE_INCLUDE = frozenset(
     (
         "idefix.ini",
         "*.hpp",
@@ -22,6 +23,14 @@ minimal_target = frozenset(
         "CMakeLists.txt",
     )
 )
+
+
+def get_include_from_conf() -> list[str]:
+    raw = get_user_conf_requirement("idfx clone", "include")
+    if raw is not None:
+        return raw.split()
+    else:
+        return []
 
 
 def add_arguments(parser) -> None:
@@ -38,9 +47,14 @@ def add_arguments(parser) -> None:
         help="build symlinks instead of actual copies.",
     )
     parser.add_argument(
-        "--extra",
+        "--include",
         nargs="+",
         help="a list of additional file names (or patterns) that should be included in the clone.",
+    )
+    parser.add_argument(
+        "--extra",
+        nargs="+",
+        help="DEPRECATED: alias to --include",
     )
 
 
@@ -48,7 +62,8 @@ def command(
     source: str,
     dest: str,
     shallow: bool = False,
-    extra: list[str] | None = None,
+    include: list[str] | None = None,
+    extra: list[str] | None = None,  # deprecated
 ) -> int:
     if not os.path.isdir(source):
         print_err(f"source directory not found {source}")
@@ -60,11 +75,17 @@ def command(
         print_err(f"destination directory exists {dest}")
         return 1
 
-    if extra is None:
-        extra = []
+    if include is None:
+        include = []
 
-    files_to_generate = files_from_patterns(source, *minimal_target, *extra)
-    if not files_to_generate:
+    if extra is not None:
+        print_warning("The --extra argument is deprecated. Use --include instead.")
+        include += extra
+
+    files_to_copy = files_from_patterns(
+        source, *BASE_INCLUDE, *include, *get_include_from_conf()
+    )
+    if not files_to_copy:
         print_err(f"did not find any file to copy from {source}")
         return 1
 
@@ -81,7 +102,7 @@ def command(
         # The temporary directory is created next to the final destination
         # so we can safely use os.replace (atomic) without worrying about
         # possibly sparse filesystems.
-        for file in files_to_generate:
+        for file in files_to_copy:
             fdest = os.path.join(tmpdir, os.path.basename(file))
             if shallow:
                 os.symlink(file, fdest)

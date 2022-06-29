@@ -16,10 +16,12 @@ configuration and cleanup in a single tool.
 
 - [Installation](#installation)
 - [Internal documentation](#internal-documentation)
+    + [Configuration](#configuration)
 - [Commands](#commands)
   * [`idfx clone`](#idfx-clone)
+    + [Configuration](#configuration-1)
   * [`idfx conf`](#idfx-conf)
-    + [Persistent, sytem wide configuration file](#persistent-sytem-wide-configuration-file)
+    + [Configuration](#configuration-2)
   * [`idfx run`](#idfx-run)
     + [minimal example: run a test sequentially](#minimal-example-run-a-test-sequentially)
     + [running a shorter version of a problem](#running-a-shorter-version-of-a-problem)
@@ -61,6 +63,17 @@ Likewise, get help for each command therein as, for instance
 $ idfx run --help
 ```
 
+### Configuration
+
+`idfx_cli` supports persistent configuration. It follows the last version of
+`$IDEFIX_DIR/configure.py` and looks for options stored in
+`$HOME/.config/idefix.cfg`.
+
+Command specific options are stored in corresponding sections
+, e.g., `idfx conf` looks into the `[idfx conf]` section.
+
+In the following, more detail is given for each option available.
+
 # Commands
 
 ## `idfx clone`
@@ -74,17 +87,29 @@ $ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI
 
 <details>
 <summary>More</summary>
+
 Instead of making hard copies, files can be symbolically linked to instead of
 copied, with `--shallow`.
 
-Additional files may be included in the clone using the `--extra` argument. They
+Additional files may be included in the clone using the `--include` argument. They
 can be specified either by name or POSIX pattern, e.g.
 ```shell
-$ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --extra "*.log"
+$ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --include "*.log"
 ```
 
 Note that extra patterns need be escaped, else they'd be interpreted by the
 shell before they make it to `idefix_cli`.
+
+### Configuration
+
+Arbitrary patterns can also be stored in the configuration file. For example
+```ini
+# idefix.cfg
+
+[idfx clone]
+include = *py README.*
+```
+Note that the `--include` argument can be combined with `idefix.cfg`.
 
 </details>
 
@@ -112,13 +137,10 @@ $ cmake $IDEFIX_DIR \
   -DCMAKE_CXX_COMPILER=g++
 ```
 
-
-### Persistent, sytem wide configuration file
+### Configuration
 
 Some configuration options like prefered compiler and target architecture rarely
-need to be changed on a single maching. `idfx conf` follows the last version of
-`$IDEFIX_DIR/configure.py` and looks for persistent options stored in
-`$HOME/.config/idefix.cfg`.
+need to be changed on a single machine.
 
 For instance, one can select a persistent build target (say Ampere86) and custom compiler as
 ```ini
@@ -129,7 +151,7 @@ GPU = Ampere86
 compiler = g++
 ```
 
-A prefered conf system can also be stored as
+A prefered configuration engine can also be stored as
 ```ini
 # idefix.cfg
 
