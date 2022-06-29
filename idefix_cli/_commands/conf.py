@@ -87,13 +87,10 @@ def has_minimal_cmake_support() -> bool:
         return True
 
 
-def is_cmake_required() -> bool:
-    req = get_user_conf_requirement("idefix_cli", "conf_system")
-    return req is not None and req == "cmake"
-
-
 def is_python_required() -> bool:
-    req = get_user_conf_requirement("idefix_cli", "conf_system")
+    req_v1 = get_user_conf_requirement("idefix_cli", "conf_system")  # deprecated
+    req_v2 = get_user_conf_requirement("idfx conf", "engine")
+    req = req_v2 or req_v1
     return req is not None and req == "python"
 
 
@@ -109,11 +106,11 @@ def validate_python_support() -> None:
 
     msg = "Running a version of Idefix that doesn't provide $IDEFIX_DIR/configure.py . "
     if is_python_required():
-        msg += f"This configuration system was required from {get_user_config_file()}"
+        msg += f"This configuration engine was required from {get_user_config_file()}"
     raise IdefixEnvError(msg)
 
 
-def get_valid_conf_system() -> str:
+def get_valid_conf_engine() -> str:
     cmake_is_valid = has_minimal_cmake_support()
     python_is_valid = has_python_support()
     if cmake_is_valid:
@@ -122,7 +119,7 @@ def get_valid_conf_system() -> str:
         return "python"
     else:
         raise IdefixEnvError(
-            "Could not determine a working configuration system. "
+            "Could not determine a working configuration engine. "
             "Most likely, your version of Idefix requires CMake, "
             "which is currently not installed. "
             "Please consult Idefix's documentation, "
@@ -201,7 +198,7 @@ def add_arguments(parser) -> None:
         "--interactive",
         dest="interactive",
         action="store_true",
-        help="Use ccmake over cmake " "(no effect with python configuration system)",
+        help="Use ccmake over cmake (no effect with python configuration engine)",
     )
 
 
@@ -209,40 +206,49 @@ def add_arguments(parser) -> None:
 def command(*args: str, interactive: bool) -> int | NoReturn:
     python_cmd = ["python3", os.path.join(os.environ["IDEFIX_DIR"], "configure.py")]
     cmake_cmd = ["ccmake" if interactive else "cmake", os.environ["IDEFIX_DIR"]]
-    system_req = get_user_conf_requirement("idefix_cli", "conf_system")
 
-    if system_req is None:
+    engine_req = get_user_conf_requirement("idfx conf", "engine")
+    if engine_req is None:
+        if (
+            engine_req := get_user_conf_requirement("idefix_cli", "conf_system")
+        ) is not None:
+            print_warning(
+                "[idefix_cli].conf_system is deprecated, use [idfx conf].engine instead. "
+                f"Please edit your configuration file {get_user_config_file()}"
+            )
+
+    if engine_req is None:
         try:
-            system_req = get_valid_conf_system()
+            engine_req = get_valid_conf_engine()
         except IdefixEnvError as exc:
             print_err(exc)
             return 1
     else:
         try:
-            validate_selected_system = {
+            validate_selected_engine = {
                 "cmake": validate_cmake_support,
                 "python": validate_python_support,
-            }[system_req]
+            }[engine_req]
         except KeyError:
             print_err(
-                f"Got unknown value conf_system={system_req!r} "
+                f"Got unknown value engine={engine_req!r} "
                 f"from {get_user_config_file()}, "
                 "expected 'cmake' or 'python'"
             )
             return 1
 
         try:
-            validate_selected_system()
+            validate_selected_engine()
         except IdefixEnvError as exc:
             print_err(exc)
             return 1
 
     clargs = list(args)
-    if system_req == "cmake":
+    if engine_req == "cmake":
         cmd = cmake_cmd
         clargs = substitute_cmake_args(clargs)
     else:
-        assert system_req == "python"
+        assert engine_req == "python"
         cmd = python_cmd
 
     cmd.extend(clargs)

@@ -133,10 +133,10 @@ A prefered conf system can also be stored as
 ```ini
 # idefix.cfg
 
-[idefix_cli]
-conf_system = python  # use configure.py
+[idfx conf]
+engine = python  # use configure.py
 # or
-conf_system = cmake
+engine = cmake
 ```
 though this is mostly useful for testing purposes. In general `idfx conf`
 automatically determines which configuration system to use based on
