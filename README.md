@@ -80,8 +80,11 @@ copied, with `--shallow`.
 Additional files may be included in the clone using the `--extra` argument. They
 can be specified either by name or POSIX pattern, e.g.
 ```shell
-$ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --extra *.log
+$ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI --extra "*.log"
 ```
+
+Note that extra patterns need be escaped, else they'd be interpreted by the
+shell before they make it to `idefix_cli`.
 
 </details>
 
