@@ -196,8 +196,9 @@ def command(
     with chdir(d):
         idefix_ret = subprocess.call(cmd)
 
-    ret = 0
-    if idefix_ret == 0:
+    if idefix_ret != 0:
+        ret = idefix_ret
+    else:
         # Idefix newer than 1.0 intentionally always returns 0, even on failure
         with open(d / "idefix.0.log") as fh:
             last_line = fh.read().strip().split("\n")[-1].strip()
