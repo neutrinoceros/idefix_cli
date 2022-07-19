@@ -194,21 +194,17 @@ def command(
 
     print_subcommand(cmd, loc=d)
     with chdir(d):
-        idefix_ret = subprocess.call(cmd)
+        ret = subprocess.call(cmd)
 
-    if idefix_ret != 0:
-        ret = idefix_ret
-    else:
+    if ret == 0:
         # Idefix newer than 1.0 intentionally always returns 0, even on failure
         with open(d / "idefix.0.log") as fh:
             last_line = fh.read().strip().split("\n")[-1].strip()
-        if last_line in KNOWN_SUCCESS:
-            pass
-        elif last_line in KNOWN_FAIL:
+        if last_line in KNOWN_FAIL:
             ret = 1
-        else:
+        elif last_line not in KNOWN_SUCCESS:
             print_warning(
-                "Idefix completed with an unknown status. Please check log files."
+                "Command completed with an unknown status. Please check log files."
             )
 
     if ret != 0:
