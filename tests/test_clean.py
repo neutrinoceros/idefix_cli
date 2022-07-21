@@ -126,8 +126,9 @@ def test_drymode_dirty(flag, dirty_tmp_dir, capsys):
     assert ret == 0
 
     out, err = capsys.readouterr()
-    file_list = "\n".join(str(t) for t in sorted(targets))
-    assert out == f"The following files and directories can be removed\n{file_list}\n"
+    assert out.startswith("The following files and directories can be removed\n")
+    for t in targets:
+        assert str(t.relative_to(tmp_path)) in out
     assert err == ""
 
 
@@ -139,8 +140,9 @@ def test_drymode_messy(flag, messy_tmp_dir, capsys):
     assert ret == 0
 
     out, err = capsys.readouterr()
-    file_list = "\n".join(str(t) for t in sorted(targets))
-    assert out == f"The following files and directories can be removed\n{file_list}\n"
+    assert out.startswith("The following files and directories can be removed\n")
+    for t in targets:
+        assert str(t.relative_to(tmp_path)) in out
     assert err == ""
 
 
@@ -152,6 +154,7 @@ def test_drymode_messy_all(flag, messy_tmp_dir, capsys):
     assert ret == 0
 
     out, err = capsys.readouterr()
-    file_list = "\n".join(str(t) for t in sorted(targets + killable))
-    assert out == f"The following files and directories can be removed\n{file_list}\n"
+    assert out.startswith("The following files and directories can be removed\n")
+    for t in targets + killable:
+        assert str(t.relative_to(tmp_path)) in out
     assert err == ""
