@@ -4,11 +4,13 @@ from __future__ import annotations
 import os
 import shutil
 from glob import glob
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from rich import print
 
 from idefix_cli._commons import files_from_patterns
+from idefix_cli._commons import get_filetree
 from idefix_cli._commons import get_user_conf_requirement
 from idefix_cli._commons import print_err
 from idefix_cli._commons import print_warning
@@ -115,8 +117,10 @@ def command(
         objs = "symlinks"
         lencol1 = max(len(_) for _ in output_files)
         lines = [f"{_.ljust(lencol1 + 1)} -> {os.readlink(_)}" for _ in output_files]
+        files_repr = "\n".join(lines)
     else:
         objs = "files"
-        lines = output_files
-    print(f"Created the following {objs}\n" + "\n".join(lines))
+        parent = str(Path(dest).parent)
+        files_repr = get_filetree(output_files, root=dest, origin=parent)
+    print(f"Created the following {objs}\n{files_repr}")
     return 0
