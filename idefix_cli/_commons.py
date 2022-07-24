@@ -15,6 +15,7 @@ from pathlib import Path
 from socket import gethostname
 from subprocess import CalledProcessError
 from subprocess import check_call
+from textwrap import indent
 from time import ctime
 from typing import Any
 from typing import Callable
@@ -221,3 +222,13 @@ def get_user_conf_requirement(section_name: str, option_name: str, /) -> str | N
         return None
 
     return usr_conf.get(section_name, option_name, fallback=None)
+
+
+def get_filetree(file_list: list[str], root: str, origin: str) -> str:
+    ret: list[str] = [os.path.relpath(root, start=origin)]
+    for file in file_list[:-1]:
+        ret.append(f"├── {os.path.relpath(file, start=root)}")
+        if os.path.isdir(file):
+            ret.append("│   └── (...)")
+    ret.append(f"└── {os.path.relpath(file_list[-1], start=root)}")
+    return indent("\n".join(ret), " ")

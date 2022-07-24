@@ -7,11 +7,11 @@ import sys
 from pathlib import Path
 from shutil import rmtree
 from shutil import which
-from textwrap import indent
 
 from rich.prompt import Confirm
 
 from idefix_cli._commons import files_from_patterns
+from idefix_cli._commons import get_filetree
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
@@ -39,16 +39,6 @@ cmake_files = frozenset(("CMakeCache.txt", "cmake_install.cmake", "build"))
 gpatterns = frozenset(("Makefile", "idefix"))
 
 GENERATED_DIRS = frozenset(("CMakeFiles",))
-
-
-def _filetree(file_list: list[str], root: str, origin: str) -> str:
-    ret: list[str] = [os.path.relpath(root, start=origin)]
-    for file in file_list[:-1]:
-        ret.append(f"├── {os.path.relpath(file, start=root)}")
-        if os.path.isdir(file):
-            ret.append("│   └── (...)")
-    ret.append(f"└── {os.path.relpath(file_list[-1], start=root)}")
-    return indent("\n".join(ret), " ")
 
 
 def add_arguments(parser) -> None:
@@ -99,7 +89,7 @@ def command(directory, clean_all: bool = False, dry: bool = False) -> int:
             return 0
 
         print("The following files and directories can be removed")
-        print(_filetree(targets, root=os.path.abspath(os.curdir), origin=origin))
+        print(get_filetree(targets, root=os.path.abspath(os.curdir), origin=origin))
 
         if not dry and Confirm.ask("\nPerform cleaning ?"):
             for t in targets:
