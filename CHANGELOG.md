@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.23.0] - 2022-07-24
+
+ENH: idfx clone now shows a file tree of files and directories that were created (not in `--shallow` mode)
+
 ## [0.22.0] - 2022-07-21
 
 ENH: idfx clean now shows a file tree of files and directories to be removed
