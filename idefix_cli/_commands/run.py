@@ -77,6 +77,13 @@ def add_arguments(parser) -> None:
             "Requires the code to be configured for MPI."
         ),
     )
+    parser.add_argument(
+        "--times",
+        dest="multiplier",
+        type=int,
+        default=1,
+        help="multiplier for --one (use `--one --times 2` to run for 2 steps)",
+    )
 
 
 def command(
@@ -86,6 +93,7 @@ def command(
     duration: float | None = None,
     time_step: float | None = None,
     one_step: list[str] | None = None,
+    multiplier: int = 1,
     nproc: int = 1,
 ) -> int:
     d = Path(directory).resolve()
@@ -111,12 +119,19 @@ def command(
         base_conf = deepcopy(conf)
 
     if one_step is not None:
+        output_types = one_step
+
         if time_step is None:
+            conf.setdefault("TimeIntegrator", {})
+            conf["TimeIntegrator"].setdefault("first_dt", 1e-6)
             time_step = conf["TimeIntegrator"]["first_dt"]
-        duration = time_step
-        if len(one_step) > 0:
-            for entry in one_step:
-                conf["Output"][entry] = duration
+
+        duration = multiplier * time_step
+
+        if len(output_types) > 0:
+            conf.setdefault("Output", {})
+        for entry in output_types:
+            conf["Output"][entry] = time_step
 
     compilation_is_required: bool
     if not exe.is_file():
