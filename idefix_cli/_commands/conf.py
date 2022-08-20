@@ -73,10 +73,10 @@ def validate_cmake_support() -> None:
     if shutil.which("cmake") is None:
         errors.append("couldn't find cmake executable")
     else:
-        cmake_ver: str = subprocess.run(
+        cmake_ver_str: str = subprocess.run(
             ["cmake", "--version"], capture_output=True
         ).stdout.decode()
-        if (match := re.search(VERSION_REGEXP, cmake_ver)) is None:
+        if (match := re.search(VERSION_REGEXP, cmake_ver_str)) is None:
             errors.append("couldn't parse result from `cmake --version`")
 
         elif (cmake_ver := Version(match.group())) < CMAKE_MIN_VERSIONS["cmake"]:

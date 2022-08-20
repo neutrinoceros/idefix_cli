@@ -118,11 +118,19 @@ def command(
         conf = inifix.load(fh)
         base_conf = deepcopy(conf)
 
+    # conf type validation
+    conf.setdefault("TimeIntegrator", {})
+    if not isinstance(conf["TimeIntegrator"], dict):
+        print_err(
+            "configuration file seems malformed, "
+            "expected 'TimeIntegrator' to be a section title, not a parameter name."
+        )
+        return 1
+
     if one_step is not None:
         output_types = one_step
 
         if time_step is None:
-            conf.setdefault("TimeIntegrator", {})
             conf["TimeIntegrator"].setdefault("first_dt", 1e-6)
             time_step = conf["TimeIntegrator"]["first_dt"]
 
@@ -130,8 +138,15 @@ def command(
 
         if len(output_types) > 0:
             conf.setdefault("Output", {})
-        for entry in output_types:
-            conf["Output"][entry] = time_step
+            output_sec = conf["Ouptut"]
+            if not isinstance(output_sec, dict):
+                print_err(
+                    "configuration file seems malformed, "
+                    "expected 'Output' to be a section title, not a parameter name."
+                )
+                return 1
+            for entry in output_types:
+                output_sec[entry] = time_step
 
     compilation_is_required: bool
     if not exe.is_file():
