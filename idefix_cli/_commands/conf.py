@@ -5,7 +5,12 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from argparse import ArgumentParser
+from enum import auto
+from enum import Enum
+from pathlib import Path
+from typing import Any
 from typing import NoReturn
 
 from packaging.version import Version
@@ -18,12 +23,28 @@ from idefix_cli._commons import print_subcommand
 from idefix_cli._commons import print_warning
 from idefix_cli._commons import requires_idefix
 
+if sys.version_info >= (3, 11):
+    from typing import assert_never
+    from contextlib import chdir
+else:
+    from typing_extensions import assert_never
+    from idefix_cli._commons import chdir
+
+
 VERSION_REGEXP = re.compile(r"\d+\.\d+\.\d+")
 
 CMAKE_MIN_VERSIONS: dict[str, Version] = {
     "cmake": Version("3.16.0"),
     "idefix": Version("0.9.0"),
 }
+
+
+class EngineRequirement(Enum):
+    CMAKE = auto()
+    PYTHON = auto()
+
+
+ErrorMessage = Any  # just needs to be printable
 
 
 class IdefixEnvError(OSError):
@@ -110,13 +131,13 @@ def validate_python_support() -> None:
     raise IdefixEnvError(msg)
 
 
-def get_valid_conf_engine() -> str:
+def get_valid_conf_engine() -> EngineRequirement:
     cmake_is_valid = has_minimal_cmake_support()
     python_is_valid = has_python_support()
     if cmake_is_valid:
-        return "cmake"
+        return EngineRequirement.CMAKE
     elif python_is_valid:
-        return "python"
+        return EngineRequirement.PYTHON
     else:
         raise IdefixEnvError(
             "Could not determine a working configuration engine. "
@@ -193,6 +214,8 @@ parser_kwargs = dict(
 
 
 def add_arguments(parser) -> None:
+    parser.add_argument("--dir", dest="directory", default=".", help="target directory")
+
     parser.add_argument(
         "-i",
         "--interactive",
@@ -202,55 +225,78 @@ def add_arguments(parser) -> None:
     )
 
 
-@requires_idefix()
-def command(*args: str, interactive: bool) -> int | NoReturn:
-    python_cmd = ["python3", os.path.join(os.environ["IDEFIX_DIR"], "configure.py")]
-    cmake_cmd = ["ccmake" if interactive else "cmake", os.environ["IDEFIX_DIR"]]
+def _validate_engine(query: str) -> tuple[EngineRequirement | None, ErrorMessage]:
+    if query == "cmake":
+        engine_req = EngineRequirement.CMAKE
+        validate_selected_engine = validate_cmake_support
+    elif query == "python":
+        engine_req = EngineRequirement.PYTHON
+        validate_selected_engine = validate_python_support
+    else:
+        msg = (
+            f"Got unknown value engine={engine_req!r} "
+            f"from {get_user_config_file()}, "
+            "expected 'cmake' or 'python'"
+        )
+        return None, msg
 
-    engine_req = get_user_conf_requirement("idfx conf", "engine")
-    if engine_req is None:
-        if (
-            engine_req := get_user_conf_requirement("idefix_cli", "conf_system")
-        ) is not None:
-            print_warning(
-                "[idefix_cli].conf_system is deprecated, use [idfx conf].engine instead. "
-                f"Please edit your configuration file {get_user_config_file()}"
-            )
+    try:
+        validate_selected_engine()
+    except IdefixEnvError as exc:
+        return None, exc
+    else:
+        return engine_req, None
 
-    if engine_req is None:
+
+def _get_engine() -> tuple[EngineRequirement | None, ErrorMessage]:
+    engine_str = get_user_conf_requirement("idfx conf", "engine")
+    if engine_str is None:
+        engine_str = get_user_conf_requirement("idefix_cli", "conf_system")
+        if engine_str is not None:
+            engine_req, msg = _validate_engine(engine_str)
+            if msg is None:
+                msg = (
+                    "[idefix_cli].conf_system is deprecated, use [idfx conf].engine instead. "
+                    f"Please edit your configuration file {get_user_config_file()}"
+                )
+            return engine_req, msg
+
+    if engine_str is None:
         try:
             engine_req = get_valid_conf_engine()
         except IdefixEnvError as exc:
-            print_err(exc)
-            return 1
+            return None, exc
+        else:
+            msg = None
     else:
-        try:
-            validate_selected_engine = {
-                "cmake": validate_cmake_support,
-                "python": validate_python_support,
-            }[engine_req]
-        except KeyError:
-            print_err(
-                f"Got unknown value engine={engine_req!r} "
-                f"from {get_user_config_file()}, "
-                "expected 'cmake' or 'python'"
-            )
-            return 1
+        engine_req, msg = _validate_engine(engine_str)
 
-        try:
-            validate_selected_engine()
-        except IdefixEnvError as exc:
-            print_err(exc)
-            return 1
+    return engine_req, msg
+
+
+@requires_idefix()
+def command(*args: str, directory: str, interactive: bool) -> int | NoReturn:
+    python_cmd = ["python3", os.path.join(os.environ["IDEFIX_DIR"], "configure.py")]
+    cmake_cmd = ["ccmake" if interactive else "cmake", os.environ["IDEFIX_DIR"]]
 
     clargs = list(args)
-    if engine_req == "cmake":
+    engine_req, st = _get_engine()
+    if engine_req is None:
+        print_err(st)
+        return 1
+    elif st is not None:
+        print_warning(st)
+
+    if engine_req is EngineRequirement.CMAKE:
         cmd = cmake_cmd
         clargs = substitute_cmake_args(clargs)
-    else:
-        assert engine_req == "python"
+    elif engine_req is EngineRequirement.PYTHON:
         cmd = python_cmd
+    else:
+        assert_never(engine_req)
 
     cmd.extend(clargs)
-    print_subcommand(cmd)
-    os.execvp(cmd[0], cmd)
+    print_subcommand(cmd, loc=Path(directory))
+
+    with chdir(directory):
+        os.execvp(cmd[0], cmd)
