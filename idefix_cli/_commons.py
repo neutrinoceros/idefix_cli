@@ -141,15 +141,14 @@ def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]
             glob(os.path.join(source, p), recursive=recursive) for p in patterns
         )
     )
-    retv = []
-    for _ in raw:
-        if os.path.isdir(_):
+    retv = set()
+    for fp in raw:
+        if os.path.isdir(fp):
             # it is important to append os.path.sep to directory names so
             # it's clear that they are not files when listed with idfx clean --dry
-            retv.append(_ + os.path.sep)
-        elif os.path.isfile(_):
-            retv.append(os.path.abspath(_))
-    return retv
+            fp += os.path.sep
+        retv.add(os.path.abspath(fp))
+    return list(retv)
 
 
 @requires_idefix()
