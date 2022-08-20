@@ -225,7 +225,14 @@ def get_user_conf_requirement(section_name: str, option_name: str, /) -> str | N
 
 
 def get_filetree(file_list: list[str], root: str, origin: str) -> str:
-    ret: list[str] = [os.path.relpath(root, start=origin)]
+    ret: list[str] = []
+    try:
+        ret.append(os.path.relpath(root, start=origin))
+    except ValueError:
+        # this happens if root and mount are on different mounts
+        # which is common on Windows where 'C:' and 'D:' are both used
+        ret.append(os.path.abspath(root))
+
     for file in file_list[:-1]:
         ret.append(f"├── {os.path.relpath(file, start=root)}")
         if os.path.isdir(file):
