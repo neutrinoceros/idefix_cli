@@ -1,6 +1,7 @@
 import argparse
 import os
 import re
+import sys
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -12,6 +13,9 @@ from idefix_cli._main import main
 SRC_DIR = Path(__file__).parents[1].joinpath("idefix_cli")
 
 
+@pytest.mark.skipif(
+    sys.platform.startswith("win"), reason="plugin system tests are broken on windows"
+)
 @pytest.mark.parametrize(
     "content, msg",
     (

@@ -5,6 +5,7 @@ import platform
 import re
 import sys
 from configparser import ConfigParser
+from dataclasses import dataclass
 from datetime import datetime
 from functools import wraps
 from getpass import getuser
@@ -140,15 +141,14 @@ def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]
             glob(os.path.join(source, p), recursive=recursive) for p in patterns
         )
     )
-    retv = []
-    for _ in raw:
-        if os.path.isdir(_):
+    retv = set()
+    for fp in raw:
+        if os.path.isdir(fp):
             # it is important to append os.path.sep to directory names so
             # it's clear that they are not files when listed with idfx clean --dry
-            retv.append(_ + os.path.sep)
-        elif os.path.isfile(_):
-            retv.append(os.path.abspath(_))
-    return retv
+            fp += os.path.sep
+        retv.add(os.path.abspath(fp))
+    return list(retv)
 
 
 @requires_idefix()
@@ -224,11 +224,39 @@ def get_user_conf_requirement(section_name: str, option_name: str, /) -> str | N
     return usr_conf.get(section_name, option_name, fallback=None)
 
 
+if sys.platform.startswith("win"):
+
+    @dataclass
+    class tree:
+        TRUNK = "|"
+        FORK = "|-"
+        ANGLE = "'-"
+        BRANCH = "-"
+
+else:
+
+    @dataclass
+    class tree:
+        TRUNK = "│"
+        FORK = "├"
+        ANGLE = "└"
+        BRANCH = "─"
+
+
 def get_filetree(file_list: list[str], root: str, origin: str) -> str:
-    ret: list[str] = [os.path.relpath(root, start=origin)]
+    ret: list[str] = []
+    try:
+        ret.append(os.path.relpath(root, start=origin))
+    except ValueError:
+        # this happens if root and mount are on different mounts
+        # which is common on Windows where 'C:' and 'D:' are both used
+        ret.append(os.path.abspath(root))
+
     for file in file_list[:-1]:
-        ret.append(f"├── {os.path.relpath(file, start=root)}")
+        ret.append(f"{tree.FORK}{tree.BRANCH*2} {os.path.relpath(file, start=root)}")
         if os.path.isdir(file):
-            ret.append("│   └── (...)")
-    ret.append(f"└── {os.path.relpath(file_list[-1], start=root)}")
+            ret.append(f"{tree.TRUNK}   {tree.ANGLE}{tree.BRANCH*2} (...)")
+    ret.append(
+        f"{tree.ANGLE}{tree.BRANCH*2} {os.path.relpath(file_list[-1], start=root)}"
+    )
     return indent("\n".join(ret), " ")
