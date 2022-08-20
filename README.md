@@ -21,7 +21,6 @@ configuration and cleanup in a single tool.
   * [`idfx clone`](#idfx-clone)
     + [Configuration](#configuration-1)
   * [`idfx conf`](#idfx-conf)
-    + [Configuration](#configuration-2)
   * [`idfx run`](#idfx-run)
     + [minimal example: run a test sequentially](#minimal-example-run-a-test-sequentially)
     + [running a shorter version of a problem](#running-a-shorter-version-of-a-problem)
@@ -137,6 +136,15 @@ $ cmake $IDEFIX_DIR \
   -DCMAKE_CXX_COMPILER=g++
 ```
 
+`idfx conf` accepts a `--dir <path>` argument.
+```shell
+idfx conf --dir my/setup/dir
+```
+is equivalent to
+```shell
+pushd my/setup/dir && idfx conf && popd
+
+
 ### Configuration
 
 Some configuration options like prefered compiler and target architecture rarely
@@ -229,6 +237,10 @@ optionally accepts arbitrary output format identifiers. For instance
 $ idfx run --one dmp vtk
 ```
 will run the curdir setup for one time step and output both a dmp file and a vtk file.
+
+The `--times <n>` argument can also be supplied in combination with `--one` to
+run for an arbitry number of steps. It is close to idefix's `-maxcycles`
+argument.
 
 ### running in parallel
 
