@@ -91,11 +91,15 @@ def command(directory, clean_all: bool = False, dry: bool = False) -> int:
         print("The following files and directories can be removed")
         print(get_filetree(targets, root=os.path.abspath(os.curdir), origin=origin))
 
-        if not dry and Confirm.ask("\nPerform cleaning ?"):
-            for t in targets:
-                if os.path.isdir(t):
-                    rmtree(t)
-                else:
-                    os.remove(t)
+        if dry or not Confirm.ask("\nPerform cleaning ?"):
+            return 0
+
+        for t in targets:
+            # won't prevent race conditions but useful in testing
+            assert os.path.exists(t)
+            if os.path.isdir(t):
+                rmtree(t)
+            else:
+                os.remove(t)
 
     return 0
