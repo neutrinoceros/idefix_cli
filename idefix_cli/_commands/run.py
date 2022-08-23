@@ -138,7 +138,7 @@ def command(
 
         if len(output_types) > 0:
             conf.setdefault("Output", {})
-            output_sec = conf["Ouptut"]
+            output_sec = conf["Output"]
             if not isinstance(output_sec, dict):
                 print_err(
                     "configuration file seems malformed, "
