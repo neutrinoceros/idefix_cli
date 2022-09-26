@@ -159,6 +159,7 @@ def command(
             "**/*.h",
             "**/*.c",
             "**/CMakeLists.txt",
+            "**/Makefile.cmake",
         )
         files_to_check = files_from_patterns(d, *source_patterns, recursive=True)
         idefix_dir = Path(os.environ["IDEFIX_DIR"])
