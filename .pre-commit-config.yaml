@@ -16,7 +16,7 @@ repos:
       - id: debug-statements
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.37.3
+    rev: v2.38.2
     hooks:
       - id: pyupgrade
         args: ["--py38-plus"]
@@ -31,8 +31,8 @@ repos:
     hooks:
       - id: setup-cfg-fmt
 
-  - repo: https://github.com/myint/autoflake
-    rev: v1.4
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v1.6.1
     hooks:
       - id: autoflake
         args: [
@@ -43,12 +43,12 @@ repos:
         ]
 
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.8.2
+    rev: v3.8.3
     hooks:
         - id: reorder-python-imports
 
   - repo: https://github.com/psf/black
-    rev: 22.6.0
+    rev: 22.8.0
     hooks:
       - id: black
 
