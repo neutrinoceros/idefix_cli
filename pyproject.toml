@@ -1,5 +1,52 @@
 [build-system]
-requires = ["setuptools>=61.2"]
+requires = [
+    "setuptools>=61.2",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "idefix_cli"
+version = "0.25.2"
+description = "A CLI to automate mundane tasks with Idefix"
+authors = [
+    { name = "C.M.T. Robert" },
+]
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "gitpython>=3.1.18",
+    "inifix>=3.0.0",
+    "packaging>=21.0",
+    "rich>=10.7.0",
+    "typing-extensions>=4.1.0;python_version < '3.11'",
+]
+
+[project.license]
+text = "GPL-3.0"
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pytest>=6.1",
+    "pytest-assume>=2.4.3",
+]
+typecheck = [
+    "mypy==0.982",
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.scripts]
+idfx = "idefix_cli._main:main"
+
+[project.urls]
+Homepage = "https://github.com/neutrinoceros/idefix_cli"
 
 [tool.black]
 line-length = 88
@@ -7,12 +54,6 @@ line-length = 88
 [tool.isort]
 profile = "black"
 combine_as_imports = true
-
-[tool.pytest.ini_options]
-# pytest looks for configuration from pyproject.toml
-# only from version 6.0
-minversion = "6.0"
-addopts = "--doctest-modules"
 
 [tool.mypy]
 python_version = 3.8
@@ -22,3 +63,20 @@ warn_unused_configs = true
 warn_unused_ignores = true
 warn_unreachable = true
 show_error_context = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--doctest-modules"
+
+[tool.setuptools]
+license-files = [
+    "LICENSE",
+]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+exclude = [
+    "tests*",
+    "testing*",
+]
+namespaces = false
