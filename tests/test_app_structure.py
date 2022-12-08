@@ -4,9 +4,11 @@ import re
 import sys
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from textwrap import dedent
 
 import pytest
 
+from idefix_cli._commons import print_err
 from idefix_cli._main import _setup_commands
 from idefix_cli._main import main
 
@@ -70,3 +72,53 @@ def test_unknown_args(capsys):
     out, err = capsys.readouterr()
     assert out == ""
     assert err == f"💥 received unknown arguments {args!r}\n"
+
+
+def test_extensions(isolated_conf_dir, tmp_path, capsys):
+    with open(isolated_conf_dir / "idefix.cfg", "w") as fh:
+        fh.write(f"[idefix_cli]\nextension_dir = {tmp_path!s}")
+
+    with open(tmp_path / "hello.py", "w") as fh:
+        fh.write(
+            dedent(
+                """
+                'test extension command'
+                def add_arguments(parser) -> None:
+                    return
+
+                def command() -> int:
+                    print('Hello Idefix !')
+                    return 0
+                """
+            )
+        )
+
+    def _main_mock(argv):
+        """A simplified version of the main function that can be trashed with no side effects on other tests"""
+        parser = argparse.ArgumentParser()
+        commands = _setup_commands(parser)
+
+        known_args, unknown_args = parser.parse_known_args(argv)
+
+        vargs = vars(known_args)
+        cmd_name = vargs.pop("command")
+
+        cmd, accepts_unknown_args = commands[cmd_name]
+        if unknown_args and not accepts_unknown_args:
+            print_err(f"received unknown arguments {tuple(unknown_args)!r}")
+            return 1
+
+        return cmd(*unknown_args, **vars(known_args))
+
+    try:
+        ret = _main_mock(["hello"])
+    except SystemExit as exc:
+        # SystemExit is raised by parser.parse_known_args if the command isn't found
+        raise AssertionError("extension command wasn't found") from exc
+
+    # sys.modules.pop("hello")
+
+    assert ret == 0
+    out, err = capsys.readouterr()
+    assert out == "Hello Idefix !\n"
+    assert err == ""
