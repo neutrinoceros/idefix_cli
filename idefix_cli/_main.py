@@ -1,30 +1,56 @@
-from __future__ import annotations
-
 import argparse
 import inspect
+import os
 import sys
-from importlib import import_module
-from pkgutil import walk_packages
+from importlib.machinery import SourceFileLoader
+from pathlib import Path
 from types import FunctionType
 from typing import Any
+from typing import Dict
+from typing import Final
+from typing import List
+from typing import Tuple
 
 from idefix_cli import __version__
-from idefix_cli import _commands
+from idefix_cli._commons import get_user_conf_requirement
 from idefix_cli._commons import print_err
 
+CommandMap = Dict[str, Tuple[FunctionType, bool]]
 
-def _setup_commands(
-    parser: argparse.ArgumentParser,
-) -> dict[str, tuple[FunctionType, bool]]:
-    # https://github.com/python/mypy/issues/1422
-    path: str = _commands.__path__  # type: ignore
+
+BASE_COMMAND_PATH: Final[str] = str(Path(__file__).parent / "_commands")
+
+
+def _get_command_paths() -> List[str]:
+    dirs = [BASE_COMMAND_PATH]
+    if (
+        ext_dir := get_user_conf_requirement("idefix_cli", "extension_dir")
+    ) is not None:
+        dirs.append(ext_dir)
+
+    paths = []
+    for _dir in dirs:
+        paths.extend(
+            [
+                os.path.join(_dir, modfile)
+                for modfile in sorted(os.listdir(_dir))
+                if modfile.endswith(".py")
+            ]
+        )
+    return paths
+
+
+def _setup_commands(parser: argparse.ArgumentParser) -> CommandMap:
+    path: str
 
     sparsers = parser.add_subparsers(dest="command")
-    retv: dict[str, tuple[FunctionType, bool]] = {}
-    for module_info in walk_packages(path, _commands.__name__ + "."):
-        module = import_module(module_info.name)
+    cmddict: CommandMap = {}
+    paths = _get_command_paths()
+    # breakpoint()
 
-        _, _, command_name = module_info.name.rpartition(".")
+    for module_path in paths:
+        command_name, _, _ = os.path.basename(module_path).partition(".")
+        module = SourceFileLoader(command_name, module_path).load_module()
 
         # plugin validation
 
@@ -68,11 +94,11 @@ def _setup_commands(
         accepts_unknown_args = any(
             param.kind is param.VAR_POSITIONAL for param in sig.parameters.values()
         )
-        retv.update({command_name: (module.command, accepts_unknown_args)})
-    return retv
+        cmddict.update({command_name: (module.command, accepts_unknown_args)})
+    return cmddict
 
 
-def main(argv: list[str] | None = None) -> Any:
+def main(argv: "List[str] | None" = None) -> Any:
     # the return value is deleguated to sub commands so its type is arbitrary
     # In practice it should be either 'int' or 'typing.NoReturn'
     parser = argparse.ArgumentParser(prog="idfx")
