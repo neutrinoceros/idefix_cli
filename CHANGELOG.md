@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [0.26.0] - 2022-12-08
+## [0.26.1] - 2022-12-08
 
-ENH:  enable configuring a directory for user extensions
+BUG: fix packaging issue which made 0.26.0 unusable
+
+## [0.26.0] - 2022-12-08 (yanked)
+
+ENH: enable configuring a directory for user extensions
 
 ## [0.25.2] - 2022-09-26
 
