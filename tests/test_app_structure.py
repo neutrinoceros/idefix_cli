@@ -2,7 +2,6 @@ import argparse
 import os
 import re
 import sys
-from pathlib import Path
 from tempfile import NamedTemporaryFile
 from textwrap import dedent
 
@@ -11,8 +10,6 @@ import pytest
 from idefix_cli._commons import print_err
 from idefix_cli._main import _setup_commands
 from idefix_cli._main import main
-
-SRC_DIR = Path(__file__).parents[1].joinpath("idefix_cli")
 
 
 @pytest.mark.skipif(
@@ -51,13 +48,15 @@ SRC_DIR = Path(__file__).parents[1].joinpath("idefix_cli")
         ),
     ),
 )
-def test_broken_command_plugin(content, msg):
-    with NamedTemporaryFile(
-        mode="w", dir=str(SRC_DIR / "_commands"), suffix=".py"
-    ) as fh:
+def test_broken_command_plugin(isolated_conf_dir, tmp_path, content, msg):
+    with open(isolated_conf_dir / "idefix.cfg", "w") as fh:
+        fh.write(f"[idefix_cli]\nextension_dir = {tmp_path!s}")
+
+    with NamedTemporaryFile(mode="w", dir=tmp_path, suffix=".py") as fh:
         fh.writelines(content)
         fh.seek(0)  # force flush
         module_name, _ = os.path.splitext(os.path.basename(fh.name))
+
         with pytest.raises(
             RuntimeError,
             match=re.escape(f"command plugin {module_name}{msg}"),
@@ -115,8 +114,6 @@ def test_extensions(isolated_conf_dir, tmp_path, capsys):
     except SystemExit as exc:
         # SystemExit is raised by parser.parse_known_args if the command isn't found
         raise AssertionError("extension command wasn't found") from exc
-
-    # sys.modules.pop("hello")
 
     assert ret == 0
     out, err = capsys.readouterr()

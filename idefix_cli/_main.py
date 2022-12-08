@@ -13,7 +13,9 @@ from typing import Tuple
 
 from idefix_cli import __version__
 from idefix_cli._commons import get_user_conf_requirement
+from idefix_cli._commons import get_user_config_file
 from idefix_cli._commons import print_err
+from idefix_cli._commons import print_warning
 
 CommandMap = Dict[str, Tuple[FunctionType, bool]]
 
@@ -26,7 +28,16 @@ def _get_command_paths() -> List[str]:
     if (
         ext_dir := get_user_conf_requirement("idefix_cli", "extension_dir")
     ) is not None:
-        dirs.append(ext_dir)
+        if os.path.isdir(ext_dir):
+            dirs.append(ext_dir)
+        else:
+            # using `or ""` as a cheap way to convince mypy that path is a str
+            path = os.path.abspath(get_user_config_file() or "")
+            print_warning(
+                f"{ext_dir} is configured as your command extension "
+                f"directory (from {path}) "
+                "but no such directory exists."
+            )
 
     paths = []
     for _dir in dirs:
@@ -34,7 +45,7 @@ def _get_command_paths() -> List[str]:
             [
                 os.path.join(_dir, modfile)
                 for modfile in sorted(os.listdir(_dir))
-                if modfile.endswith(".py")
+                if modfile.endswith(".py") and modfile != "__init__.py"
             ]
         )
     return paths
@@ -46,7 +57,6 @@ def _setup_commands(parser: argparse.ArgumentParser) -> CommandMap:
     sparsers = parser.add_subparsers(dest="command")
     cmddict: CommandMap = {}
     paths = _get_command_paths()
-    # breakpoint()
 
     for module_path in paths:
         command_name, _, _ = os.path.basename(module_path).partition(".")
