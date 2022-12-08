@@ -3,6 +3,7 @@ import inspect
 import os
 import sys
 from importlib.machinery import SourceFileLoader
+from pathlib import Path
 from types import FunctionType
 from typing import Any
 from typing import Dict
@@ -11,14 +12,13 @@ from typing import List
 from typing import Tuple
 
 from idefix_cli import __version__
-from idefix_cli import _commands
 from idefix_cli._commons import get_user_conf_requirement
 from idefix_cli._commons import print_err
 
 CommandMap = Dict[str, Tuple[FunctionType, bool]]
-# _commands.__path__ might get polluted in a test session, so we only
-# pick the first element, which is a constant
-BASE_COMMAND_PATH: Final[str] = _commands.__path__[0]
+
+
+BASE_COMMAND_PATH: Final[str] = str(Path(__file__).parent / "_commands")
 
 
 def _get_command_paths() -> List[str]:
