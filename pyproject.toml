@@ -29,13 +29,12 @@ dependencies = [
 text = "GPL-3.0"
 
 [project.optional-dependencies]
-dev = [
-    "pre-commit",
-    "pytest>=6.1",
-    "pytest-assume>=2.4.3",
-]
-typecheck = [
-    "mypy==0.982",
+isolated = [
+    "gitpython==3.1.18",
+    "inifix==3.0.0",
+    "packaging==21.0",
+    "rich==10.7.0",
+    "typing-extensions==4.1.0;python_version < '3.11'",
 ]
 
 [project.readme]

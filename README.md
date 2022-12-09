@@ -40,12 +40,13 @@ configuration and cleanup in a single tool.
 
 It is recommended to install this tool in isolation with [`pipx`](https://pipxproject.github.io/pipx/) as
 ```shell
-$ pipx install idefix_cli
+$ pipx install "idefix_cli[isolated]"
 ```
+(adding `[isolated]` has the effect of pinning dependencies)
 
 Otherwise, the way to install the latest stable version is
 ```shell
-$ python3 -m pip install -u idefix_cli
+$ python -m pip install -u idefix_cli
 ```
 
 Note that most `idfx` commands explicitly require that the env variable `$IDEFIX_DIR` be
@@ -358,7 +359,13 @@ style and common pitfals.
 
 Before you commit to your local copy of the repo, please run this from the top level
 ```shell
-$ python3 -m pip install -u -e .[dev]
+$ python -m pip install -u -e .
+$ python -m pip install -r test_requirements.txt
+```
+
+It is also recommended to install `pre-commit` on your machine and then run,
+from the top level
+```shell
 $ pre-commit install
 ```
 
