@@ -109,7 +109,7 @@ else:
     env_var = "XDG_CONFIG_HOME"
     default_usr_dir = ".config"
 
-    class _Tree(StrEnum):
+    class _Tree(StrEnum):  # type: ignore [no-redef]
         TRUNK = "│"
         FORK = "├"
         ANGLE = "└"
