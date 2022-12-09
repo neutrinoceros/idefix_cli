@@ -1,0 +1,2 @@
+pytest>=6.1
+pytest-assume>=2.4.3
