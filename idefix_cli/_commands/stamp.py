@@ -8,6 +8,8 @@ from getpass import getuser
 from socket import gethostname
 from time import ctime
 
+from packaging.version import Version
+
 from idefix_cli._commons import get_idefix_version
 from idefix_cli._commons import print_warning
 from idefix_cli._commons import requires_idefix
@@ -29,7 +31,7 @@ def get_git_data() -> dict[str, str]:
     else:
         repo = git.Repo(os.environ["IDEFIX_DIR"])
         data = {"sha": repo.head.object.hexsha, **data}
-    if (version := get_idefix_version()) is None:
+    if (version := get_idefix_version()) == Version("0"):
         version_str = "unknown version"
     else:
         version_str = str(version)

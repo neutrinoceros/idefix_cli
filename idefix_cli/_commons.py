@@ -187,7 +187,10 @@ def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]
 
 
 @requires_idefix()
-def get_idefix_version() -> Version | None:
+def get_idefix_version() -> Version:
+    """
+    Attempt to retrieve Idefix's version. Default to Version("0")
+    """
     # We rely on parsing the CHANGELOG file to determine the most recent release at
     # any given point. This is more reliable than checking for the closest ancestor
     # in git tags because the development branch usually doesn't decend from releases.
@@ -197,7 +200,7 @@ def get_idefix_version() -> Version | None:
     if not os.path.isfile(changelog):
         # this is inevitable if the user is checked in a version that predates
         # the introduction of a changelog (Idefix v0.7.0)
-        return None
+        return Version("0")
 
     with open(changelog) as fh:
         for line in fh:
@@ -212,27 +215,24 @@ def get_idefix_version() -> Version | None:
     )
 
 
-def get_user_config_file() -> str | None:
-    for parent_dir in [".", XDG_CONFIG_HOME]:
+def get_user_config_file() -> str:
+    """Return the local configuration file (idefix.cfg) if it exists, or the global one."""
+    for parent_dir in (".", XDG_CONFIG_HOME):
         if os.path.isfile(conf_file := os.path.join(parent_dir, "idefix.cfg")):
-            return os.path.abspath(conf_file)
-    return None
+            break
+    return os.path.abspath(conf_file)
 
 
-def get_user_configuration() -> ConfigParser | None:
-    if (conf_file := get_user_config_file()) is None:
-        return None
-
+def get_user_configuration() -> ConfigParser:
     cf = ConfigParser()
-    cf.read(conf_file)
+    if os.path.isfile(conf_file := get_user_config_file()):
+        cf.read(conf_file)
     return cf
 
 
-def get_user_conf_requirement(section_name: str, option_name: str, /) -> str | None:
-    if (usr_conf := get_user_configuration()) is None:
-        return None
-
-    return usr_conf.get(section_name, option_name, fallback=None)
+def get_user_conf_requirement(section_name: str, option_name: str, /) -> str:
+    usr_conf = get_user_configuration()
+    return usr_conf.get(section_name, option_name, fallback="")
 
 
 def get_filetree(file_list: list[str], root: str, origin: str) -> str:

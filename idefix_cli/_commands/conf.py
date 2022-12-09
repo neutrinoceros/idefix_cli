@@ -57,7 +57,7 @@ def validate_cmake_support() -> None:
     warnings: list[str] = []
     idefix_ver = get_idefix_version()
 
-    if idefix_ver is None or idefix_ver < CMAKE_MIN_VERSIONS["idefix"]:
+    if idefix_ver < CMAKE_MIN_VERSIONS["idefix"]:
         # try a simpler heuristic to allow usage in between 0.8.x and 0.9.0
         if os.path.isfile(os.path.join(os.environ["IDEFIX_DIR"], "CMakeLists.txt")):
             warnings.append(
@@ -112,7 +112,7 @@ def is_python_required() -> bool:
     req_v1 = get_user_conf_requirement("idefix_cli", "conf_system")  # deprecated
     req_v2 = get_user_conf_requirement("idfx conf", "engine")
     req = req_v2 or req_v1
-    return req is not None and req == "python"
+    return req == "python"
 
 
 @requires_idefix()
@@ -162,11 +162,9 @@ def substitute_cmake_archs(args: list[str]) -> list[str]:
     if not (
         "-arch" in args or any(re.match(r"-D\s?Kokkos_ARCH_\w+=ON", _) for _ in args)
     ):
-        arch_req = get_user_conf_requirement("compilation", "CPU")
-        if arch_req is not None:
+        if arch_req := get_user_conf_requirement("compilation", "CPU"):
             args.extend(["-arch", arch_req])
-        arch_req = get_user_conf_requirement("compilation", "GPU")
-        if arch_req is not None:
+        if arch_req := get_user_conf_requirement("compilation", "GPU"):
             args.extend(["-arch", arch_req])
             if "-gpu" not in args:
                 args.append("-gpu")
@@ -185,8 +183,7 @@ def substitute_cmake_cxx(args: list[str]) -> list[str]:
     if not (
         "-cxx" in args or any(re.match(r"-DCMAKE_CXX_COMPILER=\w+", _) for _ in args)
     ):
-        compiler_req = get_user_conf_requirement("compilation", "compiler")
-        if compiler_req is not None:
+        if compiler_req := get_user_conf_requirement("compilation", "compiler"):
             args.extend(["-cxx", compiler_req])
 
     parser = ArgumentParser()
@@ -249,10 +246,8 @@ def _validate_engine(query: str) -> tuple[EngineRequirement | None, ErrorMessage
 
 
 def _get_engine() -> tuple[EngineRequirement | None, ErrorMessage]:
-    engine_str = get_user_conf_requirement("idfx conf", "engine")
-    if engine_str is None:
-        engine_str = get_user_conf_requirement("idefix_cli", "conf_system")
-        if engine_str is not None:
+    if not (engine_str := get_user_conf_requirement("idfx conf", "engine")):
+        if engine_str := get_user_conf_requirement("idefix_cli", "conf_system"):
             engine_req, msg = _validate_engine(engine_str)
             if msg is None:
                 msg = (
@@ -261,7 +256,7 @@ def _get_engine() -> tuple[EngineRequirement | None, ErrorMessage]:
                 )
             return engine_req, msg
 
-    if engine_str is None:
+    if not engine_str:
         try:
             engine_req = get_valid_conf_engine()
         except IdefixEnvError as exc:
