@@ -51,7 +51,7 @@ def _get_command_paths() -> List[str]:
 def _setup_commands(parser: argparse.ArgumentParser) -> CommandMap:
     path: str
 
-    sparsers = parser.add_subparsers(dest="command")
+    sparsers = parser.add_subparsers(title="commands", dest="command")
     cmddict: CommandMap = {}
     paths = _get_command_paths()
 
