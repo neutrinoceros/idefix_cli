@@ -5,7 +5,6 @@ import platform
 import re
 import sys
 from configparser import ConfigParser
-from dataclasses import dataclass
 from functools import wraps
 from glob import glob
 from itertools import chain
@@ -31,24 +30,10 @@ VERSION_REGEXP = re.compile(VERSION_STR)
 # e.g., '## [0.8.1] - 2021-06-24'
 VERSECT_REGEXP = re.compile(rf"## \[{VERSION_STR}\]\s*-?\s*\d\d\d\d-\d\d-\d\d\s*\n")
 
-if platform.system().lower().startswith("win"):
-    # Windows
-    env_var = "APPDATA"
-    default_usr_dir = "AppData"
-else:
-    # POSIX
-    env_var = "XDG_CONFIG_HOME"
-    default_usr_dir = ".config"
-
-XDG_CONFIG_HOME = os.environ.get(
-    env_var,
-    os.path.join(os.path.expanduser("~"), default_usr_dir),
-)
-del env_var, default_usr_dir
-
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
+    from enum import StrEnum
 else:
     # vendored from Python 3.11b1
     from contextlib import AbstractContextManager
@@ -66,6 +51,76 @@ else:
 
         def __exit__(self, *excinfo):
             os.chdir(self._old_cwd.pop())
+
+    from enum import Enum as _Enum
+
+    # vendored from Python 3.11.0
+    class _ReprEnum(_Enum):
+        """
+        Only changes the repr(), leaving str() and format() to the mixed-in type.
+        """
+
+    class StrEnum(str, _ReprEnum):
+        """
+        Enum where members are also (and must be) strings
+        """
+
+        def __new__(cls, *values):
+            "values must already be of type `str`"
+            if len(values) > 3:
+                raise TypeError(f"too many arguments for str(): {values!r}")
+            if len(values) == 1:
+                # it must be a string
+                if not isinstance(values[0], str):
+                    raise TypeError(f"{values[0]!r} is not a string")
+            if len(values) >= 2:
+                # check that encoding argument is a string
+                if not isinstance(values[1], str):
+                    raise TypeError(f"encoding must be a string, not {values[1]!r}")
+            if len(values) == 3:
+                # check that errors argument is a string
+                if not isinstance(values[2], str):
+                    raise TypeError("errors must be a string, not %r" % (values[2]))
+            value = str(*values)
+            member = str.__new__(cls, value)
+            member._value_ = value
+            return member
+
+        def _generate_next_value_(name, start, count, last_values):
+            """
+            Return the lower-cased version of the member name.
+            """
+            return name.lower()
+
+
+if platform.system().lower().startswith("win"):
+    # Windows
+    env_var = "APPDATA"
+    default_usr_dir = "AppData"
+
+    class _Tree(StrEnum):
+        TRUNK = "|"
+        FORK = "|-"
+        ANGLE = "'-"
+        BRANCH = "-"
+
+else:
+    # POSIX
+    env_var = "XDG_CONFIG_HOME"
+    default_usr_dir = ".config"
+
+    class _Tree(StrEnum):
+        TRUNK = "│"
+        FORK = "├"
+        ANGLE = "└"
+        BRANCH = "─"
+
+
+XDG_CONFIG_HOME = os.environ.get(
+    env_var,
+    os.path.join(os.path.expanduser("~"), default_usr_dir),
+)
+del env_var, default_usr_dir
 
 
 class requires_idefix:
@@ -180,25 +235,6 @@ def get_user_conf_requirement(section_name: str, option_name: str, /) -> str | N
     return usr_conf.get(section_name, option_name, fallback=None)
 
 
-if sys.platform.startswith("win"):
-
-    @dataclass
-    class tree:
-        TRUNK = "|"
-        FORK = "|-"
-        ANGLE = "'-"
-        BRANCH = "-"
-
-else:
-
-    @dataclass
-    class tree:
-        TRUNK = "│"
-        FORK = "├"
-        ANGLE = "└"
-        BRANCH = "─"
-
-
 def get_filetree(file_list: list[str], root: str, origin: str) -> str:
     ret: list[str] = []
     try:
@@ -209,10 +245,10 @@ def get_filetree(file_list: list[str], root: str, origin: str) -> str:
         ret.append(os.path.abspath(root))
 
     for file in file_list[:-1]:
-        ret.append(f"{tree.FORK}{tree.BRANCH*2} {os.path.relpath(file, start=root)}")
+        ret.append(f"{_Tree.FORK}{_Tree.BRANCH*2} {os.path.relpath(file, start=root)}")
         if os.path.isdir(file):
-            ret.append(f"{tree.TRUNK}   {tree.ANGLE}{tree.BRANCH*2} (...)")
+            ret.append(f"{_Tree.TRUNK}   {_Tree.ANGLE}{_Tree.BRANCH*2} (...)")
     ret.append(
-        f"{tree.ANGLE}{tree.BRANCH*2} {os.path.relpath(file_list[-1], start=root)}"
+        f"{_Tree.ANGLE}{_Tree.BRANCH*2} {os.path.relpath(file_list[-1], start=root)}"
     )
     return indent("\n".join(ret), " ")
