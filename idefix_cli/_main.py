@@ -25,14 +25,11 @@ BASE_COMMAND_PATH: Final[str] = str(Path(__file__).parent / "_commands")
 
 def _get_command_paths() -> List[str]:
     dirs = [BASE_COMMAND_PATH]
-    if (
-        ext_dir := get_user_conf_requirement("idefix_cli", "extension_dir")
-    ) is not None:
+    if (ext_dir := get_user_conf_requirement("idefix_cli", "extension_dir")) != "":
         if os.path.isdir(ext_dir):
             dirs.append(ext_dir)
         else:
-            # using `or ""` as a cheap way to convince mypy that path is a str
-            path = os.path.abspath(get_user_config_file() or "")
+            path = os.path.abspath(get_user_config_file())
             print_warning(
                 f"{ext_dir} is configured as your command extension "
                 f"directory (from {path}) "

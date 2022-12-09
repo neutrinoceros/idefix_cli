@@ -29,10 +29,7 @@ BASE_INCLUDE = frozenset(
 
 def get_include_from_conf() -> list[str]:
     raw = get_user_conf_requirement("idfx clone", "include")
-    if raw is not None:
-        return raw.split()
-    else:
-        return []
+    return raw.split()
 
 
 def add_arguments(parser) -> None:
