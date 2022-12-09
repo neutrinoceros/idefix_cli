@@ -248,7 +248,7 @@ def get_filetree(file_list: list[str], root: str, origin: str) -> str:
     try:
         ret.append(os.path.relpath(root, start=origin))
     except ValueError:
-        # this happens if root and mount are on different mounts
+        # ValueError is raised if root and origin are on different mounts,
         # which is common on Windows where 'C:' and 'D:' are both used
         ret.append(os.path.abspath(root))
 
