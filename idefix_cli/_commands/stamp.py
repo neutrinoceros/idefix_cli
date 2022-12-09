@@ -2,9 +2,39 @@
 from __future__ import annotations
 
 import json
+import os
+from datetime import datetime
+from getpass import getuser
+from socket import gethostname
+from time import ctime
 
-from idefix_cli._commons import get_git_data
+from idefix_cli._commons import get_idefix_version
+from idefix_cli._commons import print_warning
 from idefix_cli._commons import requires_idefix
+
+
+@requires_idefix()
+def get_git_data() -> dict[str, str]:
+    data = {
+        "user": getuser(),
+        "host": gethostname(),
+        "date": ctime(datetime.now().timestamp()),
+    }
+    try:
+        # this import may fail in envs where the git executable is not present,
+        # so we'll avoid keeping it at the top level to minimize breakage
+        import git
+    except ImportError as exc:
+        print_warning(f"failed to load gitpython (got 'ImportError: {exc}')")
+    else:
+        repo = git.Repo(os.environ["IDEFIX_DIR"])
+        data = {"sha": repo.head.object.hexsha, **data}
+    if (version := get_idefix_version()) is None:
+        version_str = "unknown version"
+    else:
+        version_str = str(version)
+    data = {"latest ancestor version": version_str, **data}
+    return data
 
 
 def add_arguments(parser) -> None:

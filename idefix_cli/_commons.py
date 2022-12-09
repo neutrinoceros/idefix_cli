@@ -5,19 +5,11 @@ import platform
 import re
 import sys
 from configparser import ConfigParser
-from dataclasses import dataclass
-from datetime import datetime
 from functools import wraps
-from getpass import getuser
 from glob import glob
 from itertools import chain
-from multiprocessing import cpu_count
 from pathlib import Path
-from socket import gethostname
-from subprocess import CalledProcessError
-from subprocess import check_call
 from textwrap import indent
-from time import ctime
 from typing import Any
 from typing import Callable
 from typing import cast
@@ -38,24 +30,10 @@ VERSION_REGEXP = re.compile(VERSION_STR)
 # e.g., '## [0.8.1] - 2021-06-24'
 VERSECT_REGEXP = re.compile(rf"## \[{VERSION_STR}\]\s*-?\s*\d\d\d\d-\d\d-\d\d\s*\n")
 
-if platform.system().lower().startswith("win"):
-    # Windows
-    env_var = "APPDATA"
-    default_usr_dir = "AppData"
-else:
-    # POSIX
-    env_var = "XDG_CONFIG_HOME"
-    default_usr_dir = ".config"
-
-XDG_CONFIG_HOME = os.environ.get(
-    env_var,
-    os.path.join(os.path.expanduser("~"), default_usr_dir),
-)
-del env_var, default_usr_dir
-
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
+    from enum import StrEnum
 else:
     # vendored from Python 3.11b1
     from contextlib import AbstractContextManager
@@ -73,6 +51,76 @@ else:
 
         def __exit__(self, *excinfo):
             os.chdir(self._old_cwd.pop())
+
+    from enum import Enum as _Enum
+
+    # vendored from Python 3.11.0
+    class _ReprEnum(_Enum):
+        """
+        Only changes the repr(), leaving str() and format() to the mixed-in type.
+        """
+
+    class StrEnum(str, _ReprEnum):
+        """
+        Enum where members are also (and must be) strings
+        """
+
+        def __new__(cls, *values):
+            "values must already be of type `str`"
+            if len(values) > 3:
+                raise TypeError(f"too many arguments for str(): {values!r}")
+            if len(values) == 1:
+                # it must be a string
+                if not isinstance(values[0], str):
+                    raise TypeError(f"{values[0]!r} is not a string")
+            if len(values) >= 2:
+                # check that encoding argument is a string
+                if not isinstance(values[1], str):
+                    raise TypeError(f"encoding must be a string, not {values[1]!r}")
+            if len(values) == 3:
+                # check that errors argument is a string
+                if not isinstance(values[2], str):
+                    raise TypeError("errors must be a string, not %r" % (values[2]))
+            value = str(*values)
+            member = str.__new__(cls, value)
+            member._value_ = value
+            return member
+
+        def _generate_next_value_(name, start, count, last_values):
+            """
+            Return the lower-cased version of the member name.
+            """
+            return name.lower()
+
+
+if platform.system().lower().startswith("win"):
+    # Windows
+    env_var = "APPDATA"
+    default_usr_dir = "AppData"
+
+    class _Tree(StrEnum):
+        TRUNK = "|"
+        FORK = "|-"
+        ANGLE = "'-"
+        BRANCH = "-"
+
+else:
+    # POSIX
+    env_var = "XDG_CONFIG_HOME"
+    default_usr_dir = ".config"
+
+    class _Tree(StrEnum):  # type: ignore [no-redef]
+        TRUNK = "│"
+        FORK = "├"
+        ANGLE = "└"
+        BRANCH = "─"
+
+
+XDG_CONFIG_HOME = os.environ.get(
+    env_var,
+    os.path.join(os.path.expanduser("~"), default_usr_dir),
+)
+del env_var, default_usr_dir
 
 
 class requires_idefix:
@@ -122,19 +170,6 @@ def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
     console.print(f":rocket:[italic cornflower_blue] {header}[/] [bold]{msg}[/]")
 
 
-@requires_idefix()
-def _make(directory) -> int:
-    ncpus = 2 ** min(3, cpu_count().bit_length())
-    cmd = ["make", "-j", str(ncpus)]
-    print_subcommand(cmd, loc=Path(directory))
-    try:
-        with chdir(directory):
-            return check_call(cmd)
-    except CalledProcessError as exc:
-        print_err("failed to compile idefix")
-        return exc.returncode
-
-
 def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]:
     raw = sorted(
         chain.from_iterable(
@@ -149,30 +184,6 @@ def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]
             fp += os.path.sep
         retv.add(os.path.abspath(fp))
     return list(retv)
-
-
-@requires_idefix()
-def get_git_data() -> dict[str, str]:
-    data = {
-        "user": getuser(),
-        "host": gethostname(),
-        "date": ctime(datetime.now().timestamp()),
-    }
-    try:
-        # this import may fail in envs where the git executable is not present,
-        # so we'll avoid keeping it at the top level to minimize breakage
-        import git
-    except ImportError as exc:
-        print_warning(f"failed to load gitpython (got 'ImportError: {exc}')")
-    else:
-        repo = git.Repo(os.environ["IDEFIX_DIR"])
-        data = {"sha": repo.head.object.hexsha, **data}
-    if (version := get_idefix_version()) is None:
-        version_str = "unknown version"
-    else:
-        version_str = str(version)
-    data = {"latest ancestor version": version_str, **data}
-    return data
 
 
 @requires_idefix()
@@ -224,25 +235,6 @@ def get_user_conf_requirement(section_name: str, option_name: str, /) -> str | N
     return usr_conf.get(section_name, option_name, fallback=None)
 
 
-if sys.platform.startswith("win"):
-
-    @dataclass
-    class tree:
-        TRUNK = "|"
-        FORK = "|-"
-        ANGLE = "'-"
-        BRANCH = "-"
-
-else:
-
-    @dataclass
-    class tree:
-        TRUNK = "│"
-        FORK = "├"
-        ANGLE = "└"
-        BRANCH = "─"
-
-
 def get_filetree(file_list: list[str], root: str, origin: str) -> str:
     ret: list[str] = []
     try:
@@ -253,10 +245,10 @@ def get_filetree(file_list: list[str], root: str, origin: str) -> str:
         ret.append(os.path.abspath(root))
 
     for file in file_list[:-1]:
-        ret.append(f"{tree.FORK}{tree.BRANCH*2} {os.path.relpath(file, start=root)}")
+        ret.append(f"{_Tree.FORK}{_Tree.BRANCH*2} {os.path.relpath(file, start=root)}")
         if os.path.isdir(file):
-            ret.append(f"{tree.TRUNK}   {tree.ANGLE}{tree.BRANCH*2} (...)")
+            ret.append(f"{_Tree.TRUNK}   {_Tree.ANGLE}{_Tree.BRANCH*2} (...)")
     ret.append(
-        f"{tree.ANGLE}{tree.BRANCH*2} {os.path.relpath(file_list[-1], start=root)}"
+        f"{_Tree.ANGLE}{_Tree.BRANCH*2} {os.path.relpath(file_list[-1], start=root)}"
     )
     return indent("\n".join(ret), " ")

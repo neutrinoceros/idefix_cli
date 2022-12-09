@@ -5,18 +5,21 @@ import os
 import subprocess
 import sys
 from copy import deepcopy
+from multiprocessing import cpu_count
 from pathlib import Path
+from subprocess import CalledProcessError
+from subprocess import check_call
 from tempfile import NamedTemporaryFile
 from typing import Final
 
 import inifix
 from rich.prompt import Confirm
 
-from idefix_cli._commons import _make
 from idefix_cli._commons import files_from_patterns
 from idefix_cli._commons import print_err
 from idefix_cli._commons import print_subcommand
 from idefix_cli._commons import print_warning
+from idefix_cli._commons import requires_idefix
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
@@ -32,6 +35,19 @@ KNOWN_FAIL: Final = (
     "Main: Job was interrupted before completion.",
     "Main: Job was aborted because of an unrecoverable error.",
 )
+
+
+@requires_idefix()
+def make(directory) -> int:
+    ncpus = 2 ** min(3, cpu_count().bit_length())
+    cmd = ["make", "-j", str(ncpus)]
+    print_subcommand(cmd, loc=Path(directory))
+    try:
+        with chdir(directory):
+            return check_call(cmd)
+    except CalledProcessError as exc:
+        print_err("failed to compile idefix")
+        return exc.returncode
 
 
 def add_arguments(parser) -> None:
@@ -202,7 +218,7 @@ def command(
         else:
             compilation_is_required = False
 
-    if compilation_is_required and (ret := _make(directory)) != 0:
+    if compilation_is_required and (ret := make(directory)) != 0:
         return ret
 
     if time_step is not None:
