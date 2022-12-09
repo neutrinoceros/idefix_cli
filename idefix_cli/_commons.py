@@ -6,18 +6,11 @@ import re
 import sys
 from configparser import ConfigParser
 from dataclasses import dataclass
-from datetime import datetime
 from functools import wraps
-from getpass import getuser
 from glob import glob
 from itertools import chain
-from multiprocessing import cpu_count
 from pathlib import Path
-from socket import gethostname
-from subprocess import CalledProcessError
-from subprocess import check_call
 from textwrap import indent
-from time import ctime
 from typing import Any
 from typing import Callable
 from typing import cast
@@ -122,19 +115,6 @@ def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
     console.print(f":rocket:[italic cornflower_blue] {header}[/] [bold]{msg}[/]")
 
 
-@requires_idefix()
-def _make(directory) -> int:
-    ncpus = 2 ** min(3, cpu_count().bit_length())
-    cmd = ["make", "-j", str(ncpus)]
-    print_subcommand(cmd, loc=Path(directory))
-    try:
-        with chdir(directory):
-            return check_call(cmd)
-    except CalledProcessError as exc:
-        print_err("failed to compile idefix")
-        return exc.returncode
-
-
 def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]:
     raw = sorted(
         chain.from_iterable(
@@ -149,30 +129,6 @@ def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]
             fp += os.path.sep
         retv.add(os.path.abspath(fp))
     return list(retv)
-
-
-@requires_idefix()
-def get_git_data() -> dict[str, str]:
-    data = {
-        "user": getuser(),
-        "host": gethostname(),
-        "date": ctime(datetime.now().timestamp()),
-    }
-    try:
-        # this import may fail in envs where the git executable is not present,
-        # so we'll avoid keeping it at the top level to minimize breakage
-        import git
-    except ImportError as exc:
-        print_warning(f"failed to load gitpython (got 'ImportError: {exc}')")
-    else:
-        repo = git.Repo(os.environ["IDEFIX_DIR"])
-        data = {"sha": repo.head.object.hexsha, **data}
-    if (version := get_idefix_version()) is None:
-        version_str = "unknown version"
-    else:
-        version_str = str(version)
-    data = {"latest ancestor version": version_str, **data}
-    return data
 
 
 @requires_idefix()
