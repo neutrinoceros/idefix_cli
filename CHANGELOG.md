@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.27.0] - 2022-12-10
+
+* BLD: update CD workflow
+* BLD: add the `[isolated]` optional dep target with the effect of pinning dependencies
+* RFC: minimise size of future public api module
+* RFC: reduce type uncertainty (strict return types)
+* TST: rename test file (test_setup.py -> test_conf.py)
+* UX: rework help
+* ENH: improve phrasing in compilation prompt
+* ENH: rename internal module _commons.py to lib.py to mark that it's now public
+* RFC: refactor dynamical command loading to avoid deprecation warning
+* BUG: fix idfx conf help message and add defaults to all commands help messages
 
 ## [0.26.1] - 2022-12-08
 
