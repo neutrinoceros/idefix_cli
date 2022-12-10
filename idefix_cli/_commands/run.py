@@ -209,7 +209,7 @@ def command(
             file for file, td in time_deltas if td > 0
         ):
             print_warning(
-                "The following files were updated since last compilation:",
+                "The following files were updated since last successful compilation:",
             )
             print("\n".join(updated_since_compilation), file=sys.stderr)
             compilation_is_required = Confirm.ask(
