@@ -20,7 +20,7 @@ HELP_MESSAGE = (
     "  {clean,clone,conf,read,run,stamp,write}\n"
     "    clean               remove compilation files\n"
     "    clone               clone a problem directory\n"
-    "    conf                setup an Idefix problem\n"
+    "    conf                configure Idefix\n"
     "    read                read an Idefix inifile and print it to json format\n"
     "    run                 run an Idefix problem\n"
     "    stamp               print relevant data for reproduction to stdout\n"

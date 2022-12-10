@@ -1,4 +1,20 @@
-"""setup an Idefix problem"""
+"""
+configure Idefix
+
+This command uses (c)cmake as a backend, or Python (configure.py) with legacy versions of Idefix.
+Some shortcuts are supported to emulate configure.py's interface, and are automatically
+translated into CMake flags. Namely:
+
+  -mhd         -> -DIdefix_MHD=ON
+  -mpi         -> -DIdefix_MPI=ON
+  -openmp      -> -DKokkos_ENABLE_OPENMP=ON
+  -gpu         -> -DKokkos_ENABLE_CUDA=ON
+  -arch MYARCH -> -DKokkos_ARCH_MYARCH=ON
+  -cxx MYCXX   -> -DCMAKE_CXX_COMPILER=MYCXX
+
+Any additional argument is passed directly to cmake.
+Use the -i/--interactive flag to enable ccmake as the backend.
+"""
 from __future__ import annotations
 
 import os
@@ -203,11 +219,6 @@ def substitute_cmake_args(args: list[str]) -> list[str]:
     args = substitute_cmake_flags(args)
     args = substitute_cmake_cxx(args)
     return args
-
-
-parser_kwargs = dict(
-    add_help=False
-)  # because it's a wrapper, we want to pass down even the "--help" flag
 
 
 def add_arguments(parser) -> None:
