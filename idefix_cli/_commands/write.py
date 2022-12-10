@@ -8,7 +8,7 @@ from pathlib import Path
 
 import inifix
 
-from idefix_cli._commons import print_err
+from idefix_cli.lib import print_err
 
 
 def add_arguments(parser) -> None:

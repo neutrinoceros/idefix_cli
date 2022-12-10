@@ -10,13 +10,13 @@ from shutil import which
 
 from rich.prompt import Confirm
 
-from idefix_cli._commons import files_from_patterns
-from idefix_cli._commons import get_filetree
+from idefix_cli.lib import files_from_patterns
+from idefix_cli.lib import get_filetree
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
 else:
-    from idefix_cli._commons import chdir
+    from idefix_cli.lib import chdir
 
 # bpatterns are those targeted by `make clean`, which is equivalent to
 # rm -f *.o *.cuda *.host

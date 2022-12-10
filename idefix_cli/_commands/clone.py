@@ -9,11 +9,11 @@ from tempfile import TemporaryDirectory
 
 from rich import print
 
-from idefix_cli._commons import files_from_patterns
-from idefix_cli._commons import get_filetree
-from idefix_cli._commons import get_user_conf_requirement
-from idefix_cli._commons import print_err
-from idefix_cli._commons import print_warning
+from idefix_cli.lib import files_from_patterns
+from idefix_cli.lib import get_filetree
+from idefix_cli.lib import get_user_conf_requirement
+from idefix_cli.lib import print_err
+from idefix_cli.lib import print_warning
 
 BASE_INCLUDE = frozenset(
     (

@@ -10,9 +10,9 @@ from time import ctime
 
 from packaging.version import Version
 
-from idefix_cli._commons import get_idefix_version
-from idefix_cli._commons import print_warning
-from idefix_cli._commons import requires_idefix
+from idefix_cli.lib import get_idefix_version
+from idefix_cli.lib import print_warning
+from idefix_cli.lib import requires_idefix
 
 
 @requires_idefix()

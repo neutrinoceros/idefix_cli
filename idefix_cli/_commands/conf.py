@@ -15,20 +15,20 @@ from typing import NoReturn
 
 from packaging.version import Version
 
-from idefix_cli._commons import get_idefix_version
-from idefix_cli._commons import get_user_conf_requirement
-from idefix_cli._commons import get_user_config_file
-from idefix_cli._commons import print_err
-from idefix_cli._commons import print_subcommand
-from idefix_cli._commons import print_warning
-from idefix_cli._commons import requires_idefix
+from idefix_cli.lib import get_idefix_version
+from idefix_cli.lib import get_user_conf_requirement
+from idefix_cli.lib import get_user_config_file
+from idefix_cli.lib import print_err
+from idefix_cli.lib import print_subcommand
+from idefix_cli.lib import print_warning
+from idefix_cli.lib import requires_idefix
 
 if sys.version_info >= (3, 11):
     from typing import assert_never
     from contextlib import chdir
 else:
     from typing_extensions import assert_never
-    from idefix_cli._commons import chdir
+    from idefix_cli.lib import chdir
 
 
 VERSION_REGEXP = re.compile(r"\d+\.\d+\.\d+")
