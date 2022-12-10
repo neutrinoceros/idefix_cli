@@ -2,9 +2,11 @@ import argparse
 import inspect
 import os
 import sys
-from importlib.machinery import SourceFileLoader
+from importlib.util import module_from_spec
+from importlib.util import spec_from_file_location
 from pathlib import Path
 from types import FunctionType
+from types import ModuleType
 from typing import Any
 from typing import Dict
 from typing import Final
@@ -48,16 +50,23 @@ def _get_command_paths() -> List[str]:
     return paths
 
 
-def _setup_commands(parser: argparse.ArgumentParser) -> CommandMap:
-    path: str
+def get_module_from_path(path: str, name: str) -> ModuleType:
+    if (spec := spec_from_file_location(name, path)) is None or spec.loader is None:
+        raise RuntimeError(f"Failed to load module from {path}")
 
+    module = module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _setup_commands(parser: argparse.ArgumentParser) -> CommandMap:
     sparsers = parser.add_subparsers(title="commands", dest="command")
     cmddict: CommandMap = {}
     paths = _get_command_paths()
 
     for module_path in paths:
-        command_name, _, _ = os.path.basename(module_path).partition(".")
-        module = SourceFileLoader(command_name, module_path).load_module()
+        command_name, _ = os.path.splitext(os.path.basename(module_path))
+        module = get_module_from_path(module_path, command_name)
 
         # plugin validation
 
