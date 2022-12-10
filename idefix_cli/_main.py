@@ -1,7 +1,8 @@
-import argparse
 import inspect
 import os
 import sys
+from argparse import ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser
 from importlib.util import module_from_spec
 from importlib.util import spec_from_file_location
 from pathlib import Path
@@ -11,6 +12,7 @@ from typing import Any
 from typing import Dict
 from typing import Final
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 from idefix_cli import __version__
@@ -59,7 +61,7 @@ def get_module_from_path(path: str, name: str) -> ModuleType:
     return module
 
 
-def _setup_commands(parser: argparse.ArgumentParser) -> CommandMap:
+def _setup_commands(parser: ArgumentParser) -> CommandMap:
     sparsers = parser.add_subparsers(title="commands", dest="command")
     cmddict: CommandMap = {}
     paths = _get_command_paths()
@@ -100,10 +102,15 @@ def _setup_commands(parser: argparse.ArgumentParser) -> CommandMap:
                 f"command plugin {command_name} is missing a module docstring"
             )
 
-        # optional plugin hooks
-        kwargs = getattr(module, "parser_kwargs", {})
-
-        sub_parser = sparsers.add_parser(command_name, help=module.__doc__, **kwargs)
+        usage: Optional[str]
+        help, _, usage = module.__doc__.strip().partition("\n")
+        usage = usage or None
+        sub_parser = sparsers.add_parser(
+            command_name,
+            help=help,
+            usage=usage,
+            formatter_class=ArgumentDefaultsHelpFormatter,
+        )
         module.add_arguments(sub_parser)
         sig = inspect.signature(module.command)
 
@@ -117,7 +124,7 @@ def _setup_commands(parser: argparse.ArgumentParser) -> CommandMap:
 def main(argv: "List[str] | None" = None) -> Any:
     # the return value is deleguated to sub commands so its type is arbitrary
     # In practice it should be either 'int' or 'typing.NoReturn'
-    parser = argparse.ArgumentParser(prog="idfx")
+    parser = ArgumentParser(prog="idfx")
     parser.add_argument("-v", "--version", action="version", version=__version__)
     commands = _setup_commands(parser)
 
