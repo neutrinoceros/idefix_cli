@@ -12,10 +12,10 @@ from typing import List
 from typing import Tuple
 
 from idefix_cli import __version__
-from idefix_cli._commons import get_user_conf_requirement
-from idefix_cli._commons import get_user_config_file
-from idefix_cli._commons import print_err
-from idefix_cli._commons import print_warning
+from idefix_cli.lib import get_user_conf_requirement
+from idefix_cli.lib import get_user_config_file
+from idefix_cli.lib import print_err
+from idefix_cli.lib import print_warning
 
 CommandMap = Dict[str, Tuple[FunctionType, bool]]
 

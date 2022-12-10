@@ -3,7 +3,7 @@ import sys
 
 from pytest import assume
 
-from idefix_cli._commons import requires_idefix
+from idefix_cli.lib import requires_idefix
 
 
 @requires_idefix()
