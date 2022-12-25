@@ -1,0 +1,54 @@
+# Define commands
+
+
+## Configuration
+🚧 This section is under construction 🚧
+
+https://github.com/neutrinoceros/idefix_cli/issues/177
+
+## A basic example
+
+Here's simple example illustrating all the requirements for a plugin file.
+Say that we want to define a `idfx hello` command
+```python
+# hello.py
+"Say hello n times"
+
+from idefix_cli.lib import print_error
+
+
+def add_arguments(parser) -> None:
+    # Define arbitrary arguments
+    # parser is a argparse.ArgumentParser object
+    # https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser
+    #
+    # this function is required, its signature is mandatory, but the body can be left empty
+    parser.add_argument(
+        "nrepeat",
+        type=int,
+        help="number of times to say 'hello'. Must be (>=1)",
+    )
+
+
+def command(nrepeat:int) -> int:
+    # Define the actual script
+    #
+    # this function is required and its return type must be int
+    # (return 0 is all goes well, otherwise return 1)
+    # the arguments must match those defined in add_arguments
+    if nrepeat <= 0:
+        # illustrate how to deal with exceptions
+        print_error(f"Cannot greet less than 1 time !")
+        return 1
+
+    print(nrepeat * "Hello " + "!")
+    return 0
+```
+
+Note that the name of the file (here `hello.py`) defines the name of the command (`idfx hello`).
+The module-level docstring is also required and serves as the description of the command when `idfx --help` is invoked.
+
+## Public API
+🚧 This section is under construction 🚧
+
+https://github.com/neutrinoceros/idefix_cli/issues/193
