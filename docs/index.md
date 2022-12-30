@@ -1,10 +1,4 @@
-[![PyPI](https://img.shields.io/pypi/v/idefix_cli)](https://pypi.org/project/idefix-cli/)
-![PyPI](https://img.shields.io/badge/requires-Python%20≥%203.8-blue?logo=python&logoColor=white)
-[![Documentation Status](https://readthedocs.org/projects/idefix-cli/badge/?version=latest)](https://idefix-cli.readthedocs.io/en/latest/?badge=latest)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/neutrinoceros/idefix_cli/main.svg)](https://results.pre-commit.ci/badge/github/neutrinoceros/idefix_cli/main.svg)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
-# `idefix_cli`
+# idefix_cli
 
 `idefix_cli` is command line framework to facilitate working with
 [Idefix](https://gricad-gitlab.univ-grenoble-alpes.fr/lesurg/idefix-public),
@@ -35,7 +29,7 @@ set at runtime.
 
 ## Get help
 
-Get a complete description of available commands with
+The following contains usage examples. Get a complete description of available options with
 ```shell
 $ idfx --help
 ```
@@ -44,4 +38,13 @@ Likewise, get help for each command therein as, for instance
 $ idfx run --help
 ```
 
-For more, read [the documentation !](https://idefix-cli.readthedocs.io/en/latest/?badge=latest)
+## Configuration
+
+`idfx_cli` supports persistent configuration. It follows the last version of
+`$IDEFIX_DIR/configure.py` and looks for options stored in
+`$HOME/.config/idefix.cfg`.
+
+Command specific options are stored in corresponding sections
+, e.g., `idfx conf` looks into the `[idfx conf]` section.
+
+More detail is given about each option in [Builtin Commands](commands.md).
