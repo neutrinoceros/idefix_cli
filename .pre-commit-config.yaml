@@ -43,7 +43,5 @@ repos:
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.4.0
   hooks:
-  - id: pretty-format-toml
-    args: [--autofix]
   - id: pretty-format-yaml
     args: [--autofix, --indent, '2']
