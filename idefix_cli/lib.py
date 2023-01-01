@@ -31,6 +31,20 @@ VERSION_REGEXP = re.compile(VERSION_STR)
 VERSECT_REGEXP = re.compile(rf"## \[{VERSION_STR}\]\s*-?\s*\d\d\d\d-\d\d-\d\d\s*\n")
 
 
+__all__ = [
+    "requires_idefix",
+    "print_err",
+    "print_warning",
+    "print_subcommand",
+    "files_from_patterns",
+    "get_idefix_version",
+    "get_user_config_file",
+    "get_user_configuration",
+    "get_user_conf_requirement",
+    "get_filetree",
+    "chdir",
+]
+
 if sys.version_info >= (3, 11):
     from contextlib import chdir
     from enum import StrEnum
