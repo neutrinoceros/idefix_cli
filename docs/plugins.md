@@ -1,12 +1,22 @@
-# Define commands
+# Define commands (plugins)
+
+`idefix_cli` can be extended to include arbitrary, user-defined commands, to be written as
+individual Python modules, later refered to as *plugins*.
 
 
 ## Configuration
-🚧 This section is under construction 🚧
 
-https://github.com/neutrinoceros/idefix_cli/issues/177
+To enable plugins, select a directory that will contain their definitions
+through the configuration file, e.g.
 
-## A basic example
+```ini
+# idefix.cfg
+[idefix_cli]
+plugins_directory = path/to/my/plugins/
+```
+
+
+## A basic plugin example
 
 Here's simple example illustrating all the requirements for a plugin file.
 Say that we want to define a `idfx hello` command
