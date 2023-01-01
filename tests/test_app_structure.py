@@ -50,7 +50,7 @@ from idefix_cli.lib import print_err
 )
 def test_broken_command_plugin(isolated_conf_dir, tmp_path, content, msg):
     with open(isolated_conf_dir / "idefix.cfg", "w") as fh:
-        fh.write(f"[idefix_cli]\nextension_dir = {tmp_path!s}")
+        fh.write(f"[idefix_cli]\nplugins_directory = {tmp_path!s}")
 
     with NamedTemporaryFile(mode="w", dir=tmp_path, suffix=".py") as fh:
         fh.writelines(content)
@@ -73,9 +73,9 @@ def test_unknown_args(capsys):
     assert err == f"💥 received unknown arguments {args!r}\n"
 
 
-def test_extensions(isolated_conf_dir, tmp_path, capsys):
+def test_plugins(isolated_conf_dir, tmp_path, capsys):
     with open(isolated_conf_dir / "idefix.cfg", "w") as fh:
-        fh.write(f"[idefix_cli]\nextension_dir = {tmp_path!s}")
+        fh.write(f"[idefix_cli]\nplugins_directory = {tmp_path!s}")
 
     with open(tmp_path / "hello.py", "w") as fh:
         fh.write(
@@ -113,7 +113,7 @@ def test_extensions(isolated_conf_dir, tmp_path, capsys):
         ret = _main_mock(["hello"])
     except SystemExit as exc:
         # SystemExit is raised by parser.parse_known_args if the command isn't found
-        raise AssertionError("extension command wasn't found") from exc
+        raise AssertionError("Command plugin wasn't found") from exc
 
     assert ret == 0
     out, err = capsys.readouterr()
