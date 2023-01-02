@@ -31,27 +31,25 @@ VERSION_REGEXP = re.compile(VERSION_STR)
 VERSECT_REGEXP = re.compile(rf"## \[{VERSION_STR}\]\s*-?\s*\d\d\d\d-\d\d-\d\d\s*\n")
 
 
+__all__ = [
+    "requires_idefix",
+    "print_err",
+    "print_warning",
+    "print_subcommand",
+    "files_from_patterns",
+    "get_idefix_version",
+    "get_user_config_file",
+    "get_user_configuration",
+    "get_user_conf_requirement",
+    "get_filetree",
+]
+
+# done as a separate statement to avoid adding a noqa to the whole __all__ def
+__all__.append("chdir")
+
 if sys.version_info >= (3, 11):
-    from contextlib import chdir
     from enum import StrEnum
 else:
-    # vendored from Python 3.11b1
-    from contextlib import AbstractContextManager
-
-    class chdir(AbstractContextManager):
-        """Non thread-safe context manager to change the current working directory."""
-
-        def __init__(self, path):
-            self.path = path
-            self._old_cwd = []
-
-        def __enter__(self):
-            self._old_cwd.append(os.getcwd())
-            os.chdir(self.path)
-
-        def __exit__(self, *excinfo):
-            os.chdir(self._old_cwd.pop())
-
     from enum import Enum as _Enum
 
     # vendored from Python 3.11.0
@@ -252,3 +250,38 @@ def get_filetree(file_list: list[str], root: str, origin: str) -> str:
         f"{_Tree.ANGLE}{_Tree.BRANCH*2} {os.path.relpath(file_list[-1], start=root)}"
     )
     return indent("\n".join(ret), " ")
+
+
+def __getattr__(attr: str):
+    # avoid leaking more than intended from the standard library
+    if attr == "chdir":
+        if sys.version_info >= (3, 11):
+            from contextlib import chdir
+
+            return chdir
+        else:
+            # vendored from Python 3.11b1
+            from contextlib import AbstractContextManager
+
+            class chdir(AbstractContextManager):
+                """Non thread-safe context manager to change the current working directory."""
+
+                def __init__(self, path):
+                    self.path = path
+                    self._old_cwd = []
+
+                def __enter__(self):
+                    self._old_cwd.append(os.getcwd())
+                    os.chdir(self.path)
+
+                def __exit__(self, *excinfo):
+                    os.chdir(self._old_cwd.pop())
+
+            return chdir
+
+    else:
+        raise AttributeError(f"Unknown attribute {attr!r}")
+
+
+def __dir__():
+    return list(globals()) + ["chdir"]
