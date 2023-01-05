@@ -11,7 +11,7 @@ from shutil import which
 from rich.prompt import Confirm
 
 from idefix_cli.lib import files_from_patterns
-from idefix_cli.lib import get_filetree
+from idefix_cli.lib import make_file_tree
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
@@ -89,7 +89,11 @@ def command(directory, clean_all: bool = False, dry: bool = False) -> int:
             return 0
 
         print("The following files and directories can be removed")
-        print(get_filetree(targets, root=os.path.abspath(os.curdir), origin=origin))
+        print(
+            make_file_tree(
+                targets, parent_dir=os.path.abspath(os.curdir), origin=origin
+            )
+        )
 
         if dry or not Confirm.ask("\nPerform cleaning ?"):
             return 0
