@@ -16,8 +16,8 @@ from typing import Optional
 from typing import Tuple
 
 from idefix_cli import __version__
-from idefix_cli.lib import get_user_conf_requirement
-from idefix_cli.lib import get_user_config_file
+from idefix_cli.lib import get_config_file
+from idefix_cli.lib import get_option
 from idefix_cli.lib import print_err
 from idefix_cli.lib import print_warning
 
@@ -30,19 +30,16 @@ BASE_COMMAND_PATH: Final[str] = str(Path(__file__).parent / "_commands")
 def _get_command_paths() -> List[str]:
     dirs = [BASE_COMMAND_PATH]
 
-    if ext_dir_v1 := get_user_conf_requirement("idefix_cli", "extension_dir"):
+    if ext_dir_v1 := get_option("idefix_cli", "extension_dir"):
         print_warning(
             "The 'extension_dir' option is deprecated. Use 'plugins_directory' instead."
         )
 
-    if (
-        ext_dir := get_user_conf_requirement("idefix_cli", "plugins_directory")
-        or ext_dir_v1
-    ):
+    if ext_dir := get_option("idefix_cli", "plugins_directory") or ext_dir_v1:
         if os.path.isdir(ext_dir):
             dirs.append(ext_dir)
         else:
-            path = os.path.abspath(get_user_config_file())
+            path = os.path.abspath(get_config_file())
             print_warning(
                 f"{ext_dir} is configured as your command extension "
                 f"directory (from {path}) "

@@ -10,8 +10,8 @@ from tempfile import TemporaryDirectory
 from rich import print
 
 from idefix_cli.lib import files_from_patterns
-from idefix_cli.lib import get_filetree
-from idefix_cli.lib import get_user_conf_requirement
+from idefix_cli.lib import get_option
+from idefix_cli.lib import make_file_tree
 from idefix_cli.lib import print_err
 from idefix_cli.lib import print_warning
 
@@ -28,7 +28,7 @@ BASE_INCLUDE = frozenset(
 
 
 def get_include_from_conf() -> list[str]:
-    raw = get_user_conf_requirement("idfx clone", "include")
+    raw = get_option("idfx clone", "include")
     return raw.split()
 
 
@@ -118,6 +118,6 @@ def command(
     else:
         objs = "files"
         parent = str(Path(dest).parent)
-        files_repr = get_filetree(output_files, root=dest, origin=parent)
+        files_repr = make_file_tree(output_files, parent_dir=dest, origin=parent)
     print(f"Created the following {objs}\n{files_repr}")
     return 0

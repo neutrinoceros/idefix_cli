@@ -59,6 +59,48 @@ Note that the name of the file (here `hello.py`) defines the name of the command
 The module-level docstring is also required and serves as the description of the command when `idfx --help` is invoked.
 
 ## Public API
-🚧 This section is under construction 🚧
 
-https://github.com/neutrinoceros/idefix_cli/issues/193
+The `idefix_cli.lib` module contains some common utility functions that can be imported
+
+### print_err
+::: idefix_cli.lib.print_err
+
+### print_warning
+::: idefix_cli.lib.print_warning
+
+### print_subcommand
+::: idefix_cli.lib.print_subcommand
+
+### chdir
+
+This function is backported [from the standard library](https://docs.python.org/3/library/contextlib.html?highlight=chdir#contextlib.chdir), and is provided for portability.
+
+If you are running Python 3.11 or newer, you may import this directly from the standard library,
+
+```python
+# with Python 3.11
+from contextlib import chdir
+# with any Python
+from idefix_cli.lib import chdir
+```
+
+### files_from_pattenrs
+::: idefix_cli.lib.files_from_patterns
+
+### make_file_tree
+::: idefix_cli.lib.make_file_tree
+
+### requires_idefix (decorator)
+::: idefix_cli.lib.requires_idefix
+
+### get_idefix_version
+::: idefix_cli.lib.get_idefix_version
+
+### get_config_file
+::: idefix_cli.lib.get_config_file
+
+### get_configuration
+::: idefix_cli.lib.get_configuration
+
+### get_option
+::: idefix_cli.lib.get_option

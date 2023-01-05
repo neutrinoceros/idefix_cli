@@ -27,3 +27,11 @@ markdown_extensions:
 
 plugins:
 - include-markdown
+- mkdocstrings:
+    custom_templates: templates
+    default_handler: python
+    handlers:
+      python:
+        options:
+          show_source: false
+          heading_level: 0

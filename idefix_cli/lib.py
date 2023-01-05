@@ -38,10 +38,10 @@ __all__ = [
     "print_subcommand",
     "files_from_patterns",
     "get_idefix_version",
-    "get_user_config_file",
-    "get_user_configuration",
-    "get_user_conf_requirement",
-    "get_filetree",
+    "get_config_file",
+    "get_configuration",
+    "get_option",
+    "make_file_tree",
 ]
 
 # done as a separate statement to avoid adding a noqa to the whole __all__ def
@@ -122,6 +122,16 @@ del env_var, default_usr_dir
 
 
 class requires_idefix:
+    """
+    Decorate a function that requires Idefix to produce
+    standardized error in case Idefix isn't installed properly.
+
+    Examples:
+        >>> @requires_idefix()
+        ... def my_command():
+        ...    pass
+    """
+
     def __call__(self, f: TFun) -> TFun:
         @wraps(f)
         def wrapper(*args, **kwargs) -> Any:
@@ -148,16 +158,69 @@ ErrorMessage = Union[str, Exception]
 
 
 def print_err(message: ErrorMessage) -> None:
+    """Print a fatal error message to stderr.
+    Normally followed by `return 1`.
+
+    Args:
+        message (str | Exception): the error message
+
+    Returns:
+        None
+
+    Examples:
+        >>> def my_command() -> int:
+        ...    if "MYENVVAR" not in os.environ:
+        ...        print_err("Missing MYENVVAR")
+        ...        return 1
+        ...    return 0
+    """
     err_console = Console(width=500, file=sys.stderr)
     err_console.print(f":boom:[bold red3] {message}[/]")
 
 
 def print_warning(message: ErrorMessage) -> None:
+    """Print a non-fatal error message to stderr.
+
+    Args:
+        message (str | Exception): the error message
+
+    Returns:
+        None
+
+    Examples:
+        >>> def my_command() -> int:
+        ...    if "MYENVVAR" not in os.environ:
+        ...        print_warning("Missing MYENVVAR")
+        ...    return 0
+    """
     err_console = Console(width=500, file=sys.stderr)
     err_console.print(f":exclamation:[italic magenta] {message}[/]")
 
 
 def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
+    """Print a command, which is to be executed as a subprocess.
+
+    Args:
+        cmd (list[str]): equivalent argument to be passed to, e.g., subprocess.run
+        loc (pathlib.Path | None): the directory (other than cwd)
+            from which the command is meant to be executed.
+
+    Returns:
+        None
+
+    Examples:
+        >>> import os
+        >>> import subprocess
+        >>> from pathlib import Path
+        >>> def my_command() -> int:
+        ...    cmd = ["which", "gcc"]
+        ...    print_subcommand(cmd, loc=Path.home())
+        ...    subprocess.run(cmd)
+        ...    return 0
+        >>> my_command()
+        🚀 running (from ...) which gcc
+        ...
+    """
     msg = " ".join(cmd)
 
     header = "running"
@@ -169,6 +232,22 @@ def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
 
 
 def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]:
+    """
+    Args:
+        source (os.PathLike[str]): path to the directory to inspect
+        patterns (str): file patterns (e.g. "*.py", "*.txt" ...)
+        recursive (bool): set to True to recurse into the source directory
+
+    Returns:
+        files (list[str]): files and directories sorted in alphabetical order.
+            Directories names end with "/" (or "\" on Windows) to make them visually
+            distinct from extension-less files.
+
+    Examples:
+        >>> from pathlib import Path
+        >>> files_from_patterns(Path.home() / "myproject", "*.py", "*.txt") # doctest: +SKIP
+        ["data.txt", "script1.py", "script2.py"]
+    """
     raw = sorted(
         chain.from_iterable(
             glob(os.path.join(source, p), recursive=recursive) for p in patterns
@@ -188,6 +267,15 @@ def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]
 def get_idefix_version() -> Version:
     """
     Attempt to retrieve Idefix's version. Default to Version("0")
+
+    Returns:
+        version (packaging.version.Version): a Version object that supports
+        meaningful comparison
+
+    Examples:
+        >>> from packaging.version import Version
+        >>> if (version := get_idefix_version()) < Version("1.1"): # doctest: +SKIP
+        ...     print_error(f"Idefix v{version} is too old (v1.1 or newer is required)")
     """
     # We rely on parsing the CHANGELOG file to determine the most recent release at
     # any given point. This is more reliable than checking for the closest ancestor
@@ -213,41 +301,93 @@ def get_idefix_version() -> Version:
     )
 
 
-def get_user_config_file() -> str:
-    """Return the local configuration file (idefix.cfg) if it exists, or the global one."""
+def get_config_file() -> str:
+    """
+    Return absolute path to the active configuration file.
+    If present, the local configuration is returned, otherwise the global one is
+    to be considered active, even if non-existent.
+    """
     for parent_dir in (".", XDG_CONFIG_HOME):
         if os.path.isfile(conf_file := os.path.join(parent_dir, "idefix.cfg")):
             break
     return os.path.abspath(conf_file)
 
 
-def get_user_configuration() -> ConfigParser:
+def get_configuration() -> ConfigParser:
+    """Parse the whole configuration file (local if present, else global)
+
+    Returns:
+        cf (configparser.ConfigParser): parsed configuration object (may be empty).
+
+    Examples:
+        >>> cf = get_configuration()
+        >>> cf["compilation"]
+        <Section: compilation>
+
+    See also:
+        get_option
+    """
     cf = ConfigParser()
-    if os.path.isfile(conf_file := get_user_config_file()):
+    if os.path.isfile(conf_file := get_config_file()):
         cf.read(conf_file)
     return cf
 
 
-def get_user_conf_requirement(section_name: str, option_name: str, /) -> str:
-    usr_conf = get_user_configuration()
+def get_option(section_name: str, option_name: str, /) -> str:
+    """Parse a specific option from the configuration file  (local if present, else global)
+
+    Args:
+        section_name (str): the section where the option is expected
+        option_name (str): the name of the option itself
+
+    Returns:
+        val (str): the raw string value (may be empty).
+
+    Examples:
+        >>> get_option("compilation", "compiler")
+        'g++'
+    """
+    usr_conf = get_configuration()
     return usr_conf.get(section_name, option_name, fallback="")
 
 
-def get_filetree(file_list: list[str], root: str, origin: str) -> str:
+def make_file_tree(file_list: list[str], parent_dir: str, origin: str) -> str:
+    """Build a simple file tree
+
+    Args:
+        file_list (list[str]) : ...
+        parent_dir (str) : ...
+        origin (str) : ...
+
+    Returns:
+        file_tree (str): a string representation of the parent directory content
+
+    Examples:
+        >>> file_list = ["a.cpp", "a.hpp", "b.cpp", "b.hpp", "README.md"]
+        >>> print(make_file_tree(file_list, parent_dir=".", origin="..")) # doctest: +SKIP
+         my_directory
+         ├── a.cpp
+         ├── a.hpp
+         ├── b.cpp
+         ├── b.hppp
+         └── README.md
+    """
     ret: list[str] = []
     try:
-        ret.append(os.path.relpath(root, start=origin))
+        ret.append(os.path.relpath(parent_dir, start=origin))
     except ValueError:
         # ValueError is raised if root and origin are on different mounts,
         # which is common on Windows where 'C:' and 'D:' are both used
-        ret.append(os.path.abspath(root))
+        ret.append(os.path.abspath(parent_dir))
 
     for file in file_list[:-1]:
-        ret.append(f"{_Tree.FORK}{_Tree.BRANCH*2} {os.path.relpath(file, start=root)}")
+        ret.append(
+            f"{_Tree.FORK}{_Tree.BRANCH*2} {os.path.relpath(file, start=parent_dir)}"
+        )
         if os.path.isdir(file):
             ret.append(f"{_Tree.TRUNK}   {_Tree.ANGLE}{_Tree.BRANCH*2} (...)")
     ret.append(
-        f"{_Tree.ANGLE}{_Tree.BRANCH*2} {os.path.relpath(file_list[-1], start=root)}"
+        f"{_Tree.ANGLE}{_Tree.BRANCH*2} {os.path.relpath(file_list[-1], start=parent_dir)}"
     )
     return indent("\n".join(ret), " ")
 

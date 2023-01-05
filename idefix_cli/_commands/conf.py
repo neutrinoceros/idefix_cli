@@ -31,9 +31,9 @@ from typing import NoReturn
 
 from packaging.version import Version
 
+from idefix_cli.lib import get_config_file
 from idefix_cli.lib import get_idefix_version
-from idefix_cli.lib import get_user_conf_requirement
-from idefix_cli.lib import get_user_config_file
+from idefix_cli.lib import get_option
 from idefix_cli.lib import print_err
 from idefix_cli.lib import print_subcommand
 from idefix_cli.lib import print_warning
@@ -68,7 +68,7 @@ class IdefixEnvError(OSError):
 
 
 def validate_cmake_support() -> None:
-    msg = f"cmake is required from {get_user_config_file()}, but "
+    msg = f"cmake is required from {get_config_file()}, but "
     errors: list[str] = []
     warnings: list[str] = []
     idefix_ver = get_idefix_version()
@@ -125,8 +125,8 @@ def has_minimal_cmake_support() -> bool:
 
 
 def is_python_required() -> bool:
-    req_v1 = get_user_conf_requirement("idefix_cli", "conf_system")  # deprecated
-    req_v2 = get_user_conf_requirement("idfx conf", "engine")
+    req_v1 = get_option("idefix_cli", "conf_system")  # deprecated
+    req_v2 = get_option("idfx conf", "engine")
     req = req_v2 or req_v1
     return req == "python"
 
@@ -143,7 +143,7 @@ def validate_python_support() -> None:
 
     msg = "Running a version of Idefix that doesn't provide $IDEFIX_DIR/configure.py . "
     if is_python_required():
-        msg += f"This configuration engine was required from {get_user_config_file()}"
+        msg += f"This configuration engine was required from {get_config_file()}"
     raise IdefixEnvError(msg)
 
 
@@ -178,9 +178,9 @@ def substitute_cmake_archs(args: list[str]) -> list[str]:
     if not (
         "-arch" in args or any(re.match(r"-D\s?Kokkos_ARCH_\w+=ON", _) for _ in args)
     ):
-        if arch_req := get_user_conf_requirement("compilation", "CPU"):
+        if arch_req := get_option("compilation", "CPU"):
             args.extend(["-arch", arch_req])
-        if arch_req := get_user_conf_requirement("compilation", "GPU"):
+        if arch_req := get_option("compilation", "GPU"):
             args.extend(["-arch", arch_req])
             if "-gpu" not in args:
                 args.append("-gpu")
@@ -199,7 +199,7 @@ def substitute_cmake_cxx(args: list[str]) -> list[str]:
     if not (
         "-cxx" in args or any(re.match(r"-DCMAKE_CXX_COMPILER=\w+", _) for _ in args)
     ):
-        if compiler_req := get_user_conf_requirement("compilation", "compiler"):
+        if compiler_req := get_option("compilation", "compiler"):
             args.extend(["-cxx", compiler_req])
 
     parser = ArgumentParser()
@@ -243,7 +243,7 @@ def _validate_engine(query: str) -> tuple[EngineRequirement | None, ErrorMessage
     else:
         msg = (
             f"Got unknown value engine={engine_req!r} "
-            f"from {get_user_config_file()}, "
+            f"from {get_config_file()}, "
             "expected 'cmake' or 'python'"
         )
         return None, msg
@@ -257,13 +257,13 @@ def _validate_engine(query: str) -> tuple[EngineRequirement | None, ErrorMessage
 
 
 def _get_engine() -> tuple[EngineRequirement | None, ErrorMessage]:
-    if not (engine_str := get_user_conf_requirement("idfx conf", "engine")):
-        if engine_str := get_user_conf_requirement("idefix_cli", "conf_system"):
+    if not (engine_str := get_option("idfx conf", "engine")):
+        if engine_str := get_option("idefix_cli", "conf_system"):
             engine_req, msg = _validate_engine(engine_str)
             if msg is None:
                 msg = (
                     "[idefix_cli].conf_system is deprecated, use [idfx conf].engine instead. "
-                    f"Please edit your configuration file {get_user_config_file()}"
+                    f"Please edit your configuration file {get_config_file()}"
                 )
             return engine_req, msg
 
