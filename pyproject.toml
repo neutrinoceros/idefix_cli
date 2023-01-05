@@ -44,6 +44,7 @@ content-type = "text/markdown"
 
 [project.scripts]
 idfx = "idefix_cli._main:main"
+baballe = "idefix_cli._main:alt_main"
 
 [project.urls]
 Homepage = "https://github.com/neutrinoceros/idefix_cli"
