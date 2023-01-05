@@ -1,4 +1,4 @@
-# Define commands (plugins)
+# How to define addtiional commands
 
 `idefix_cli` can be extended to include arbitrary, user-defined commands, to be written as
 individual Python modules, later refered to as *plugins*.
