@@ -1,4 +1,12 @@
 site_name: idefix_cli
+
+nav:
+- Introduction: index.md
+- commands.md
+- plugins.md
+- contributing.md
+- CHANGELOG.md
+
 theme:
   name: material
   palette:
