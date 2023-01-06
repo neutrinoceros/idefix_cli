@@ -125,9 +125,8 @@ def has_minimal_cmake_support() -> bool:
 
 
 def is_python_required() -> bool:
-    req_v1 = get_option("idefix_cli", "conf_system")  # deprecated
     req_v2 = get_option("idfx conf", "engine")
-    req = req_v2 or req_v1
+    req = req_v2
     return req == "python"
 
 
@@ -257,17 +256,8 @@ def _validate_engine(query: str) -> tuple[EngineRequirement | None, ErrorMessage
 
 
 def _get_engine() -> tuple[EngineRequirement | None, ErrorMessage]:
+    engine_req: EngineRequirement | None
     if not (engine_str := get_option("idfx conf", "engine")):
-        if engine_str := get_option("idefix_cli", "conf_system"):
-            engine_req, msg = _validate_engine(engine_str)
-            if msg is None:
-                msg = (
-                    "[idefix_cli].conf_system is deprecated, use [idfx conf].engine instead. "
-                    f"Please edit your configuration file {get_config_file()}"
-                )
-            return engine_req, msg
-
-    if not engine_str:
         try:
             engine_req = get_valid_conf_engine()
         except IdefixEnvError as exc:

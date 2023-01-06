@@ -50,11 +50,6 @@ def add_arguments(parser) -> None:
         nargs="+",
         help="a list of additional file names (or patterns) that should be included in the clone.",
     )
-    parser.add_argument(
-        "--extra",
-        nargs="+",
-        help="DEPRECATED: alias to --include",
-    )
 
 
 def command(
@@ -62,7 +57,6 @@ def command(
     dest: str,
     shallow: bool = False,
     include: list[str] | None = None,
-    extra: list[str] | None = None,  # deprecated
 ) -> int:
     if not os.path.isdir(source):
         print_err(f"source directory not found {source}")
@@ -76,10 +70,6 @@ def command(
 
     if include is None:
         include = []
-
-    if extra is not None:
-        print_warning("The --extra argument is deprecated. Use --include instead.")
-        include += extra
 
     files_to_copy = files_from_patterns(
         source, *BASE_INCLUDE, *include, *get_include_from_conf()
