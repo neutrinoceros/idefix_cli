@@ -15,7 +15,10 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
+from rich.console import Console
+
 from idefix_cli import __version__
+from idefix_cli._theme import set_theme
 from idefix_cli.lib import get_config_file
 from idefix_cli.lib import get_option
 from idefix_cli.lib import print_err
@@ -127,10 +130,13 @@ def _setup_commands(parser: ArgumentParser) -> CommandMap:
     return cmddict
 
 
-def main(argv: "List[str] | None" = None) -> Any:
+def main(
+    argv: "List[str] | None" = None, parser: "ArgumentParser | None" = None
+) -> Any:
     # the return value is deleguated to sub commands so its type is arbitrary
     # In practice it should be either 'int' or 'typing.NoReturn'
-    parser = ArgumentParser(prog="idfx")
+    if parser is None:
+        parser = ArgumentParser(prog="idfx")
     parser.add_argument("-v", "--version", action="version", version=__version__)
     commands = _setup_commands(parser)
 
@@ -151,3 +157,17 @@ def main(argv: "List[str] | None" = None) -> Any:
         return 1
 
     return cmd(*unknown_args, **vars(known_args))
+
+
+def alt_main(argv: "List[str] | None" = None) -> Any:
+    console = Console(width=500, highlight=False)
+    console.print(":tennis: :arrow_forward:")
+
+    set_theme("baballe")
+    try:
+        retv = main(argv, parser=ArgumentParser(prog="baballe"))
+    finally:
+        set_theme("default")
+        console.print(":arrow_backward: :tennis:")
+
+    return retv

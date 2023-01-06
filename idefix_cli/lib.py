@@ -19,10 +19,15 @@ from typing import Union
 from packaging.version import Version
 from rich.console import Console
 
+from idefix_cli._theme import get_theme
+from idefix_cli._theme import Theme
+
 if sys.version_info >= (3, 11):
     from enum import StrEnum
+    from typing import assert_never
 else:
     from idefix_cli._backports import StrEnum
+    from typing_extensions import assert_never
 
 # workaround mypy not being confortable around decorator preserving signatures
 # adapted from
@@ -137,7 +142,14 @@ def print_err(message: ErrorMessage) -> None:
         ...    return 0
     """
     err_console = Console(width=500, file=sys.stderr)
-    err_console.print(f":boom:[bold red3] {message}[/]")
+    THEME = get_theme()
+    if THEME is Theme.DEFAULT:
+        emoji = ":boom:"
+    elif THEME is Theme.BABALLE:
+        emoji = ":hot_dog:"
+    else:
+        assert_never(THEME)
+    err_console.print(f"{emoji}[bold red3] {message}[/]")
 
 
 def print_warning(message: ErrorMessage) -> None:
@@ -156,7 +168,14 @@ def print_warning(message: ErrorMessage) -> None:
         ...    return 0
     """
     err_console = Console(width=500, file=sys.stderr)
-    err_console.print(f":exclamation:[italic magenta] {message}[/]")
+    THEME = get_theme()
+    if THEME is Theme.DEFAULT:
+        emoji = ":exclamation:"
+    elif THEME is Theme.BABALLE:
+        emoji = ":paw_print:"
+    else:
+        assert_never(THEME)
+    err_console.print(f"{emoji}[italic magenta] {message}[/]")
 
 
 def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
@@ -190,7 +209,14 @@ def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
         header += f" (from {loc}{os.sep})"
 
     console = Console(width=500, highlight=False)
-    console.print(f":rocket:[italic cornflower_blue] {header}[/] [bold]{msg}[/]")
+    THEME = get_theme()
+    if THEME is Theme.DEFAULT:
+        emoji = ":rocket:"
+    elif THEME is Theme.BABALLE:
+        emoji = ":dog_face:"
+    else:
+        assert_never(THEME)
+    console.print(f"{emoji}[italic cornflower_blue] {header}[/] [bold]{msg}[/]")
 
 
 def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]:
