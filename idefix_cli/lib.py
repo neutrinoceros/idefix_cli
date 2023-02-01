@@ -10,24 +10,20 @@ from glob import glob
 from itertools import chain
 from pathlib import Path
 from textwrap import indent
-from typing import Any
-from typing import Callable
-from typing import cast
-from typing import TypeVar
-from typing import Union
+from typing import Any, Callable, TypeVar, Union, cast
 
 from packaging.version import Version
 from rich.console import Console
 
-from idefix_cli._theme import get_theme
-from idefix_cli._theme import Theme
+from idefix_cli._theme import Theme, get_theme
 
 if sys.version_info >= (3, 11):
     from enum import StrEnum
     from typing import assert_never
 else:
-    from idefix_cli._backports import StrEnum
     from typing_extensions import assert_never
+
+    from idefix_cli._backports import StrEnum
 
 # workaround mypy not being confortable around decorator preserving signatures
 # adapted from

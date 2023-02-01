@@ -2,8 +2,7 @@ from io import StringIO
 
 import pytest
 
-from idefix_cli._commands.clean import gpatterns
-from idefix_cli._commands.clean import kokkos_files
+from idefix_cli._commands.clean import gpatterns, kokkos_files
 from idefix_cli._main import main
 
 

@@ -7,19 +7,20 @@ import sys
 from copy import deepcopy
 from multiprocessing import cpu_count
 from pathlib import Path
-from subprocess import CalledProcessError
-from subprocess import check_call
+from subprocess import CalledProcessError, check_call
 from tempfile import NamedTemporaryFile
 from typing import Final
 
 import inifix
 from rich.prompt import Confirm
 
-from idefix_cli.lib import files_from_patterns
-from idefix_cli.lib import print_err
-from idefix_cli.lib import print_subcommand
-from idefix_cli.lib import print_warning
-from idefix_cli.lib import requires_idefix
+from idefix_cli.lib import (
+    files_from_patterns,
+    print_err,
+    print_subcommand,
+    print_warning,
+    requires_idefix,
+)
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir

@@ -63,9 +63,21 @@ namespaces = false
 [tool.black]
 line-length = 88
 
-[tool.isort]
-profile = "black"
-combine_as_imports = true
+[tool.ruff]
+target-version = "py38"
+exclude = ["*__init__.py"]
+ignore = ["E501"]
+select = [
+    "E",
+    "F",
+    "W",
+    "B",
+    "I",
+    "UP",
+]
+
+[tool.ruff.isort]
+combine-as-imports = true
 
 [tool.mypy]
 python_version = 3.8
