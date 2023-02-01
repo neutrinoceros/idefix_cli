@@ -1,7 +1,5 @@
 [build-system]
-requires = [
-    "setuptools>=61.2",
-]
+requires = ["setuptools>=61.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -49,6 +47,19 @@ baballe = "idefix_cli._main:alt_main"
 [project.urls]
 Homepage = "https://github.com/neutrinoceros/idefix_cli"
 
+[tool.setuptools]
+license-files = [
+    "LICENSE",
+]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+exclude = [
+    "tests*",
+    "testing*",
+]
+namespaces = false
+
 [tool.black]
 line-length = 88
 
@@ -71,16 +82,3 @@ addopts = "--doctest-modules"
 filterwarnings = [
     "error",
 ]
-
-[tool.setuptools]
-license-files = [
-    "LICENSE",
-]
-include-package-data = false
-
-[tool.setuptools.packages.find]
-exclude = [
-    "tests*",
-    "testing*",
-]
-namespaces = false
