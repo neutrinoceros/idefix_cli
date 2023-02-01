@@ -7,8 +7,7 @@ from textwrap import dedent
 
 import pytest
 
-from idefix_cli._main import _setup_commands
-from idefix_cli._main import main
+from idefix_cli._main import _setup_commands, main
 from idefix_cli.lib import print_err
 
 

@@ -23,27 +23,28 @@ import shutil
 import subprocess
 import sys
 from argparse import ArgumentParser
-from enum import auto
-from enum import Enum
+from enum import Enum, auto
 from pathlib import Path
-from typing import Any
-from typing import NoReturn
+from typing import Any, NoReturn
 
 from packaging.version import Version
 
-from idefix_cli.lib import get_config_file
-from idefix_cli.lib import get_idefix_version
-from idefix_cli.lib import get_option
-from idefix_cli.lib import print_err
-from idefix_cli.lib import print_subcommand
-from idefix_cli.lib import print_warning
-from idefix_cli.lib import requires_idefix
+from idefix_cli.lib import (
+    get_config_file,
+    get_idefix_version,
+    get_option,
+    print_err,
+    print_subcommand,
+    print_warning,
+    requires_idefix,
+)
 
 if sys.version_info >= (3, 11):
-    from typing import assert_never
     from contextlib import chdir
+    from typing import assert_never
 else:
     from typing_extensions import assert_never
+
     from idefix_cli.lib import chdir
 
 

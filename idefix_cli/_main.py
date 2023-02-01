@@ -1,28 +1,17 @@
 import inspect
 import os
 import sys
-from argparse import ArgumentDefaultsHelpFormatter
-from argparse import ArgumentParser
-from importlib.util import module_from_spec
-from importlib.util import spec_from_file_location
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
-from types import FunctionType
-from types import ModuleType
-from typing import Any
-from typing import Dict
-from typing import Final
-from typing import List
-from typing import Optional
-from typing import Tuple
+from types import FunctionType, ModuleType
+from typing import Any, Dict, Final, List, Optional, Tuple
 
 from rich.console import Console
 
 from idefix_cli import __version__
 from idefix_cli._theme import set_theme
-from idefix_cli.lib import get_config_file
-from idefix_cli.lib import get_option
-from idefix_cli.lib import print_err
-from idefix_cli.lib import print_warning
+from idefix_cli.lib import get_config_file, get_option, print_err, print_warning
 
 CommandMap = Dict[str, Tuple[FunctionType, bool]]
 

@@ -5,13 +5,11 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from shutil import rmtree
-from shutil import which
+from shutil import rmtree, which
 
 from rich.prompt import Confirm
 
-from idefix_cli.lib import files_from_patterns
-from idefix_cli.lib import make_file_tree
+from idefix_cli.lib import files_from_patterns, make_file_tree
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir

@@ -9,11 +9,13 @@ from tempfile import TemporaryDirectory
 
 from rich import print
 
-from idefix_cli.lib import files_from_patterns
-from idefix_cli.lib import get_option
-from idefix_cli.lib import make_file_tree
-from idefix_cli.lib import print_err
-from idefix_cli.lib import print_warning
+from idefix_cli.lib import (
+    files_from_patterns,
+    get_option,
+    make_file_tree,
+    print_err,
+    print_warning,
+)
 
 BASE_INCLUDE = frozenset(
     (
