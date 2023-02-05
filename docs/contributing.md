@@ -7,7 +7,7 @@ style and common pitfals.
 Before you commit to your local copy of the repo, please run this from the top level
 ```shell
 $ python -m pip install -u -e .
-$ python -m pip install -r test_requirements.txt
+$ python -m pip install -r requirements/tests.txt
 ```
 
 It is also recommended to install `pre-commit` on your machine and then run,
