@@ -32,7 +32,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install "."
-        python -m pip install -r test_requirements.txt
+        python -m pip install -r requirements/tests.txt
     - name: Run tests
       run: |
         pytest --color=yes
@@ -56,7 +56,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install ".[isolated]"
-        python -m pip install -r test_requirements.txt
+        python -m pip install -r requirements/tests.txt
     - name: Run tests
       run: |
         pytest --color=yes
@@ -82,7 +82,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install "."
-        python -m pip install -r typecheck_requirements.txt
+        python -m pip install -r requirements/typecheck.txt
 
     - name: Run mypy
       run: mypy idefix_cli
