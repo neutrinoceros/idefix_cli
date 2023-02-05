@@ -1,7 +1,7 @@
 import sys
 
 import pytest
-from pytest import assume
+from pytest_check import check
 
 from idefix_cli._main import main
 
@@ -31,8 +31,11 @@ HELP_MESSAGE = (
 @pytest.mark.usefixtures("isolated_conf_dir")
 def test_no_command_passed(capsys):
     ret = main([])
-    assume(ret != 0)
+    with check:
+        assert ret != 0
     out, err = capsys.readouterr()
-    assume(out == "")
-    # skip the first lines because they differ between macos and linux
-    assert err.splitlines()[2:] == HELP_MESSAGE.splitlines()[2:]
+    with check:
+        assert out == ""
+    with check:
+        # skip the first lines because they differ between macos and linux
+        assert err.splitlines()[2:] == HELP_MESSAGE.splitlines()[2:]

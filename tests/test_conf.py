@@ -2,7 +2,7 @@ import os
 
 import pytest
 from packaging.version import Version
-from pytest import assume
+from pytest_check import check
 
 from idefix_cli._commands.conf import substitute_cmake_args
 from idefix_cli._main import main
@@ -27,11 +27,14 @@ def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
     )
 
     ret = main(["conf"])
-    assume(ret != 0)
+    with check:
+        assert ret != 0
 
     out, err = capsys.readouterr()
-    assume(out == "")
-    assert f"💥 cmake is required from {usr_config.absolute()}, but " in err
+    with check:
+        assert out == ""
+    with check:
+        assert f"💥 cmake is required from {usr_config.absolute()}, but " in err
 
 
 @pytest.mark.parametrize(

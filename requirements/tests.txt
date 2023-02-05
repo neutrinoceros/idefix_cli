@@ -1,2 +1,2 @@
-pytest>=6.1
-pytest-assume>=2.4.3
+pytest>=7.2.1
+pytest-check>=2.1.2
