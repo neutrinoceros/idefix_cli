@@ -1,6 +1,6 @@
 import json
 
-from pytest import assume
+from pytest_check import check
 
 from idefix_cli._main import main
 
@@ -8,18 +8,24 @@ from idefix_cli._main import main
 def test_read_not_a_file(tmp_path, capsys):
     target = tmp_path / "not_a_file"
     ret = main(["read", str(target.absolute())])
-    assume(ret != 0)
+    with check:
+        assert ret != 0
+
     out, err = capsys.readouterr()
-    assume(out == "")
-    assume(err == f"💥 no such file {target.absolute()}\n")
+    with check:
+        assert out == ""
+    with check:
+        assert err == f"💥 no such file {target.absolute()}\n"
 
 
 def test_read(inifile, capsys):
     ret = main(["read", str(inifile.absolute())])
-    assume(ret == 0)
+    with check:
+        assert ret == 0
 
     out, err = capsys.readouterr()
 
     # json validation
     json.loads(out)
-    assume(err == "")
+    with check:
+        assert err == ""
