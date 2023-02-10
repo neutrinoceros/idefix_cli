@@ -242,7 +242,7 @@ def _validate_engine(query: str) -> tuple[EngineRequirement | None, ErrorMessage
         validate_selected_engine = validate_python_support
     else:
         msg = (
-            f"Got unknown value engine={engine_req!r} "
+            f"Got unknown value engine={query!r} "
             f"from {get_config_file()}, "
             "expected 'cmake' or 'python'"
         )
