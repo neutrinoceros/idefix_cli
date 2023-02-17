@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 from copy import deepcopy
+from enum import Enum, auto
 from multiprocessing import cpu_count
 from pathlib import Path
 from subprocess import CalledProcessError, check_call
@@ -16,6 +17,8 @@ from rich.prompt import Confirm
 
 from idefix_cli.lib import (
     files_from_patterns,
+    get_config_file,
+    get_option,
     print_err,
     print_subcommand,
     print_warning,
@@ -24,8 +27,17 @@ from idefix_cli.lib import (
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
+    from typing import assert_never
 else:
+    from typing_extensions import assert_never
+
     from idefix_cli.lib import chdir
+
+
+class RecompileMode(Enum):
+    ALWAYS = auto()
+    PROMPT = auto()
+
 
 # known end messages in Idefix
 KNOWN_SUCCESS: Final = (
@@ -165,59 +177,81 @@ def command(
             for entry in output_types:
                 output_sec[entry] = time_step
 
-    compilation_is_required: bool
-    if not exe.is_file():
-        compilation_is_required = True
-    else:
-        last_compilation_time = os.stat(exe).st_mtime
-        source_patterns = (
-            "**/*.hpp",
-            "**/*.cpp",
-            "**/*.h",
-            "**/*.c",
-            "**/CMakeLists.txt",
-            "**/Makefile.cmake",
-        )
-        files_to_check = files_from_patterns(d, *source_patterns, recursive=True)
-        idefix_dir = Path(os.environ["IDEFIX_DIR"])
-        try:
-            with chdir(idefix_dir):
-                git_indexed_idefix_files = [
-                    os.path.abspath(_)
-                    for _ in subprocess.run(["git", "ls-files"], capture_output=True)
-                    .stdout.decode()
-                    .split("\n")
-                ]
-        except subprocess.CalledProcessError:
-            # emmit no warning here as Idefix might not be installed as a git copy
-            pass
-        else:
-            source_files = files_from_patterns(
-                idefix_dir / "src", *source_patterns, recursive=True
-            )
-            files_to_check.extend(
-                set(git_indexed_idefix_files).intersection(source_files)
-            )
+    recompile_mode_str: str = get_option("idfx run", "recompile")
+    if not recompile_mode_str:
+        recompile_mode_str = "always"
 
-        source_edit_times = tuple(
-            (file, os.stat(file).st_mtime) for file in files_to_check
+    recompile_mode: RecompileMode
+    if recompile_mode_str == "always":
+        recompile_mode = RecompileMode.ALWAYS
+    elif recompile_mode == "prompt":
+        recompile_mode = RecompileMode.PROMPT
+    else:
+        print_warning(
+            "[idfx run].recompile expects either 'always' (default) or 'prompt'. "
+            f"Got {recompile_mode} from {get_config_file()}\n"
         )
-        time_deltas = tuple(
-            (file, edit_time - last_compilation_time)
-            for file, edit_time in source_edit_times
-        )
-        if updated_since_compilation := tuple(
-            file for file, td in time_deltas if td > 0
-        ):
-            print_warning(
-                "The following files were updated since last successful compilation:",
+        print_warning("Falling back to 'prompt' mode.")
+        recompile_mode = RecompileMode.PROMPT
+
+    compilation_is_required: bool
+    if recompile_mode is RecompileMode.ALWAYS:
+        compilation_is_required = True
+    elif recompile_mode is RecompileMode.PROMPT:
+        if exe.is_file():
+            last_compilation_time = os.stat(exe).st_mtime
+            source_patterns = (
+                "**/*.hpp",
+                "**/*.cpp",
+                "**/*.h",
+                "**/*.c",
+                "**/CMakeLists.txt",
+                "**/Makefile.cmake",
             )
-            print("\n".join(updated_since_compilation), file=sys.stderr)
-            compilation_is_required = Confirm.ask(
-                "Would you like to recompile before running the program ?"
+            files_to_check = files_from_patterns(d, *source_patterns, recursive=True)
+            idefix_dir = Path(os.environ["IDEFIX_DIR"])
+            try:
+                with chdir(idefix_dir):
+                    git_indexed_idefix_files = [
+                        os.path.abspath(_)
+                        for _ in subprocess.run(
+                            ["git", "ls-files"], capture_output=True
+                        )
+                        .stdout.decode()
+                        .split("\n")
+                    ]
+            except subprocess.CalledProcessError:
+                # emmit no warning here as Idefix might not be installed as a git copy
+                pass
+            else:
+                source_files = files_from_patterns(
+                    idefix_dir / "src", *source_patterns, recursive=True
+                )
+                files_to_check.extend(
+                    set(git_indexed_idefix_files).intersection(source_files)
+                )
+
+            source_edit_times = tuple(
+                (file, os.stat(file).st_mtime) for file in files_to_check
             )
-        else:
-            compilation_is_required = False
+            time_deltas = tuple(
+                (file, edit_time - last_compilation_time)
+                for file, edit_time in source_edit_times
+            )
+            if updated_since_compilation := tuple(
+                file for file, td in time_deltas if td > 0
+            ):
+                print_warning(
+                    "The following files were updated since last successful compilation:",
+                )
+                print("\n".join(updated_since_compilation), file=sys.stderr)
+                compilation_is_required = Confirm.ask(
+                    "Would you like to recompile before running the program ?"
+                )
+            else:
+                compilation_is_required = False
+    else:
+        assert_never(recompile_mode)
 
     if compilation_is_required and (ret := make(directory)) != 0:
         return ret
