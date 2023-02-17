@@ -33,7 +33,8 @@ idfx conf --dir my/setup/dir
 ```
 is equivalent to
 ```shell
-pushd my/setup/dir && idfx conf && popd
+pushd my/setup/dir && idfx conf ; popd
+```
 
 
 ### Configuration
@@ -86,30 +87,6 @@ specified directory. Use `idfx conf` to generate the `Makefile`.
 
 Additional, arbitrary arguments may be passed to the `idefix` executable via this
 command.
-
-*new in `idefix_cli` 1.1.0*
-
-By default, `idfx run` will call `make` before running `idefix` on every invoke,
-which is essentially free when the binary is already up to date, and desired in
-almost every other cases. Alternative behaviours can be enabled with the persistent
-configuration file.
-
-```ini
-# idefix.cfg
-
-[idfx run]
-# default
-recompile = always
-
-# check if source files were updated since
-# the last successful compilation, and if so,
-# ask wether to recompile via a prompt. Skip
-# compilation completely if the binary appears to be
-# up to date.
-recompile = prompt
-```
-
-The 'prompt' mode was the default up to `idefix_cli` 1.0
 
 
 ### minimal example: run a test sequentially
@@ -170,6 +147,31 @@ is equivalent to
 ```
 $ pushd mydir ; mpirun -n 2 ./idefix ; popd
 ```
+
+### Configuration
+*new in `idefix_cli` 1.1.0*
+
+By default, `idfx run` will call `make` before running `idefix` on every invoke,
+which is essentially free when the binary is already up to date, and desired in
+almost every other cases. Alternative behaviours can be enabled with the persistent
+configuration file.
+
+```ini
+# idefix.cfg
+
+[idfx run]
+# default
+recompile = always
+
+# check if source files were updated since
+# the last successful compilation, and if so,
+# ask wether to recompile via a prompt. Skip
+# compilation completely if the binary appears to be
+# up to date.
+recompile = prompt
+```
+
+The 'prompt' mode was the default up to `idefix_cli` 1.0
 
 ## `idfx clean`
 
