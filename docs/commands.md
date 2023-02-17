@@ -33,7 +33,8 @@ idfx conf --dir my/setup/dir
 ```
 is equivalent to
 ```shell
-pushd my/setup/dir && idfx conf && popd
+pushd my/setup/dir && idfx conf ; popd
+```
 
 
 ### Configuration
