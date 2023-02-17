@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 from copy import deepcopy
-from enum import Enum, auto
+from enum import auto
 from multiprocessing import cpu_count
 from pathlib import Path
 from subprocess import CalledProcessError, check_call
@@ -27,14 +27,16 @@ from idefix_cli.lib import (
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
+    from enum import StrEnum
     from typing import assert_never
 else:
     from typing_extensions import assert_never
 
+    from idefix_cli._backports import StrEnum
     from idefix_cli.lib import chdir
 
 
-class RecompileMode(Enum):
+class RecompileMode(StrEnum):
     ALWAYS = auto()
     PROMPT = auto()
 
@@ -177,18 +179,13 @@ def command(
             for entry in output_types:
                 output_sec[entry] = time_step
 
-    recompile_mode_str: str = get_option("idfx run", "recompile")
-    if not recompile_mode_str:
-        recompile_mode_str = "always"
+    recompile_mode_str: str = get_option("idfx run", "recompile") or "always"
 
-    recompile_mode: RecompileMode
-    if recompile_mode_str == "always":
-        recompile_mode = RecompileMode.ALWAYS
-    elif recompile_mode == "prompt":
-        recompile_mode = RecompileMode.PROMPT
-    else:
+    try:
+        recompile_mode = RecompileMode(recompile_mode_str)
+    except ValueError:
         print_warning(
-            "[idfx run].recompile expects either 'always' (default) or 'prompt'. "
+            f"Expected [idfx run].recompile to be any of {[str(_) for _ in RecompileMode]}"
             f"Got {recompile_mode} from {get_config_file()}\n"
         )
         print_warning("Falling back to 'prompt' mode.")
