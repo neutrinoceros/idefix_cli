@@ -69,3 +69,18 @@ def test_include_from_conf_and_cli(capsys, tmp_path, isolated_conf_dir):
     assert "README.md\n" in out
     assert "util.py\n" in out
     assert ret == 0
+
+
+def test_include_dir(tmp_path):
+    # https://github.com/neutrinoceros/idefix_cli/issues/228
+    dest1 = str(tmp_path / "setup_with_mydir")
+    main(["clone", str(BASE_SETUP), dest1])
+    os.mkdir(os.path.join(dest1, "mydir"))
+
+    dest2 = str(tmp_path / "final")
+    ret = main(["clone", dest1, dest2, "--include", "mydir"])
+    assert ret == 0
+
+    dest3 = str(tmp_path / "final_shallow")
+    ret = main(["clone", dest1, dest3, "--include", "mydir", "--shallow"])
+    assert ret == 0

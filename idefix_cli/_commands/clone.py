@@ -73,10 +73,10 @@ def command(
     if include is None:
         include = []
 
-    files_to_copy = files_from_patterns(
+    files_and_dirs_to_copy = files_from_patterns(
         source, *BASE_INCLUDE, *include, *get_include_from_conf()
     )
-    if not files_to_copy:
+    if not files_and_dirs_to_copy:
         print_err(f"did not find any file to copy from {source}")
         return 1
 
@@ -87,18 +87,30 @@ def command(
         )
         dest = dest[:-1]
 
+    def recursive_write(tmpdir: str, files_and_dirs: list[str]) -> None:
+        for fd in files_and_dirs:
+            fdest = os.path.join(tmpdir, os.path.basename(fd))
+            if shallow:
+                os.symlink(fd, fdest)
+            elif os.path.isfile(fd):
+                shutil.copy(fd, fdest)
+            elif os.path.isdir(fd):
+                subdir = os.path.join(tmpdir, os.path.basename(fd))
+                os.mkdir(subdir)
+                recursive_write(tmpdir=subdir, files_and_dirs=os.listdir(fd))
+            else:
+                raise RuntimeError(
+                    "If you see this error message, please report to "
+                    "https://github.com/neutrinoceros/idefix_cli/issues/new"
+                )
+
     with TemporaryDirectory(dir=os.path.dirname(dest)) as tmpdir:
         # using a context manager to guarantee atomicity:
         # either it's a full success or we don't copy anything
         # The temporary directory is created next to the final destination
         # so we can safely use os.replace (atomic) without worrying about
         # possibly sparse filesystems.
-        for file in files_to_copy:
-            fdest = os.path.join(tmpdir, os.path.basename(file))
-            if shallow:
-                os.symlink(file, fdest)
-            else:
-                shutil.copy(file, fdest)
+        recursive_write(tmpdir, files_and_dirs_to_copy)
         os.replace(tmpdir, dest)
 
     output_files = list(glob(os.path.join(dest, "*")))
