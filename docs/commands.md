@@ -201,9 +201,6 @@ Clone an idefix problem directory by copying the main source files
 $ idfx clone $IDEFIX_DIR/test/HD/KHI/ /tmp/myKHI
 ```
 
-<details>
-<summary>More</summary>
-
 Instead of making hard copies, files can be symbolically linked to instead of
 copied, with `--shallow`.
 
@@ -227,7 +224,6 @@ include = *py README.*
 ```
 Note that the `--include` argument can be combined with `idefix.cfg`.
 
-</details>
 
 ## `idfx stamp`
 
