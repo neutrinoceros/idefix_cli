@@ -64,7 +64,6 @@ namespaces = false
 line-length = 88
 
 [tool.ruff]
-target-version = "py38"
 exclude = ["*__init__.py"]
 ignore = ["E501"]
 select = [

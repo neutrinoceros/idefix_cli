@@ -66,7 +66,6 @@ def make(directory) -> int:
 
 
 def add_arguments(parser) -> None:
-
     parser.add_argument("--dir", dest="directory", default=".", help="target directory")
     parser.add_argument(
         "-i",
