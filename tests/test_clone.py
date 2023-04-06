@@ -73,14 +73,15 @@ def test_include_from_conf_and_cli(capsys, tmp_path, isolated_conf_dir):
 
 def test_include_dir(tmp_path):
     # https://github.com/neutrinoceros/idefix_cli/issues/228
-    dest1 = str(tmp_path / "setup_with_mydir")
-    main(["clone", str(BASE_SETUP), dest1])
-    os.mkdir(os.path.join(dest1, "mydir"))
+    dest1 = tmp_path / "setup_with_mydir"
+    main(["clone", str(BASE_SETUP), str(dest1)])
+    os.mkdir(dest1 / "mydir")
+    (dest1 / "mydir" / "myfile").touch()
 
-    dest2 = str(tmp_path / "final")
-    ret = main(["clone", dest1, dest2, "--include", "mydir"])
+    dest2 = tmp_path / "final"
+    ret = main(["clone", str(dest1), str(dest2), "--include", "mydir"])
     assert ret == 0
 
-    dest3 = str(tmp_path / "final_shallow")
-    ret = main(["clone", dest1, dest3, "--include", "mydir", "--shallow"])
+    dest3 = tmp_path / "final_shallow"
+    ret = main(["clone", str(dest1), str(dest3), "--include", "mydir", "--shallow"])
     assert ret == 0
