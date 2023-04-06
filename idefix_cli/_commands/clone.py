@@ -97,7 +97,8 @@ def command(
             elif os.path.isdir(fd):
                 subdir = os.path.join(tmpdir, os.path.basename(fd))
                 os.mkdir(subdir)
-                recursive_write(tmpdir=subdir, files_and_dirs=os.listdir(fd))
+                files_and_dirs = [os.path.join(fd, _) for _ in os.listdir(fd)]
+                recursive_write(subdir, files_and_dirs)
             else:
                 raise RuntimeError(
                     "If you see this error message, please report to "
