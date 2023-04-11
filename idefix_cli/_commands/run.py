@@ -36,7 +36,7 @@ else:
     from idefix_cli.lib import chdir
 
 
-class RecompileMode(StrEnum):
+class RebuildMode(StrEnum):
     ALWAYS = auto()
     PROMPT = auto()
 
@@ -53,7 +53,7 @@ KNOWN_FAIL: Final = (
 
 
 @requires_idefix()
-def make(directory) -> int:
+def build_idefix(directory) -> int:
     ncpus = 2 ** min(3, cpu_count().bit_length())
     cmd = ["make", "-j", str(ncpus)]
     print_subcommand(cmd, loc=Path(directory))
@@ -61,7 +61,7 @@ def make(directory) -> int:
         with chdir(directory):
             return check_call(cmd)
     except CalledProcessError as exc:
-        print_err("failed to compile idefix")
+        print_err("failed to build idefix")
         return exc.returncode
 
 
@@ -178,24 +178,24 @@ def command(
             for entry in output_types:
                 output_sec[entry] = time_step
 
-    recompile_mode_str: str = get_option("idfx run", "recompile") or "always"
+    rebuild_mode_str: str = get_option("idfx run", "recompile") or "always"
 
     try:
-        recompile_mode = RecompileMode(recompile_mode_str)
+        rebuild_mode = RebuildMode(rebuild_mode_str)
     except ValueError:
         print_warning(
-            f"Expected [idfx run].recompile to be any of {[str(_) for _ in RecompileMode]}"
-            f"Got {recompile_mode} from {get_config_file()}\n"
+            f"Expected [idfx run].recompile to be any of {[str(_) for _ in RebuildMode]}"
+            f"Got {rebuild_mode} from {get_config_file()}\n"
         )
         print_warning("Falling back to 'prompt' mode.")
-        recompile_mode = RecompileMode.PROMPT
+        rebuild_mode = RebuildMode.PROMPT
 
-    compilation_is_required: bool
-    if recompile_mode is RecompileMode.ALWAYS:
-        compilation_is_required = True
-    elif recompile_mode is RecompileMode.PROMPT:
+    build_is_required: bool
+    if rebuild_mode is RebuildMode.ALWAYS:
+        build_is_required = True
+    elif rebuild_mode is RebuildMode.PROMPT:
         if exe.is_file():
-            last_compilation_time = os.stat(exe).st_mtime
+            last_build_time = os.stat(exe).st_mtime
             source_patterns = (
                 "**/*.hpp",
                 "**/*.cpp",
@@ -231,7 +231,7 @@ def command(
                 (file, os.stat(file).st_mtime) for file in files_to_check
             )
             time_deltas = tuple(
-                (file, edit_time - last_compilation_time)
+                (file, edit_time - last_build_time)
                 for file, edit_time in source_edit_times
             )
             if updated_since_compilation := tuple(
@@ -241,15 +241,15 @@ def command(
                     "The following files were updated since last successful compilation:",
                 )
                 print("\n".join(updated_since_compilation), file=sys.stderr)
-                compilation_is_required = Confirm.ask(
-                    "Would you like to recompile before running the program ?"
+                build_is_required = Confirm.ask(
+                    "Would you like to rebuild before running the program ?"
                 )
             else:
-                compilation_is_required = False
+                build_is_required = False
     else:
-        assert_never(recompile_mode)
+        assert_never(rebuild_mode)
 
-    if compilation_is_required and (ret := make(directory)) != 0:
+    if build_is_required and (ret := build_idefix(directory)) != 0:
         return ret
 
     if time_step is not None:
