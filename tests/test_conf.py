@@ -8,6 +8,23 @@ from idefix_cli._commands.conf import substitute_cmake_args
 from idefix_cli._main import main
 
 
+def test_conf_without_setup_cpp(capsys, tmp_path, monkeypatch):
+    tmp_idefix_dir = tmp_path / "idefix"
+    os.makedirs(tmp_idefix_dir / ".git")
+    monkeypatch.setenv("IDEFIX_DIR", str(tmp_idefix_dir))
+
+    monkeypatch.chdir(tmp_path)
+    ret = main(["conf"])
+    with check:
+        assert ret != 0
+
+    out, err = capsys.readouterr()
+    with check:
+        assert out == ""
+    with check:
+        assert "💥 Cannot configure a directory that doesn't contain a setup.cpp" in err
+
+
 def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
     tmp_idefix_dir = tmp_path / "idefix"
     os.makedirs(tmp_idefix_dir / ".git")
@@ -25,6 +42,7 @@ def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
     monkeypatch.setattr(
         "idefix_cli._commands.conf.CMAKE_MIN_VERSIONS", mock_requirements
     )
+    (tmp_path / "setup.cpp").touch()
 
     ret = main(["conf"])
     with check:

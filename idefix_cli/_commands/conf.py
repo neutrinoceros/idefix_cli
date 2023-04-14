@@ -276,6 +276,14 @@ def command(*args: str, directory: str, interactive: bool) -> int | NoReturn:
     python_cmd = ["python3", os.path.join(os.environ["IDEFIX_DIR"], "configure.py")]
     cmake_cmd = ["ccmake" if interactive else "cmake", os.environ["IDEFIX_DIR"]]
 
+    path = Path(directory)
+    setup_cpp = path.resolve().joinpath("setup.cpp")
+    if not setup_cpp.is_file():
+        # CMake is perfectly happy to run in empty directories, but we block it early
+        # to avoid confusing errors at compilation time
+        print_err("Cannot configure a directory that doesn't contain a setup.cpp")
+        return 1
+
     clargs = list(args)
     engine_req, st = _get_engine()
     if engine_req is None:
@@ -293,7 +301,7 @@ def command(*args: str, directory: str, interactive: bool) -> int | NoReturn:
         assert_never(engine_req)
 
     cmd.extend(clargs)
-    print_subcommand(cmd, loc=Path(directory))
+    print_subcommand(cmd, loc=path)
 
     with chdir(directory):
         os.execvp(cmd[0], cmd)
