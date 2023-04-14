@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2003-04-14
+
+RFC: replace 'compile' with 'build' internally and in error messages
+ENH: bail out of idfx conf if setup.cpp does not exist
+
 ## [1.1.3] - 2023-04-06
 
 BUG: fix a bug where `idfx clone` would crash when including a non-empty directory
