@@ -86,7 +86,7 @@ def add_arguments(parser) -> None:
         "--one",
         "--one-step",
         dest="one_step",
-        nargs="*",
+        type=lambda _: set(_.split()),
         help="run only for one time step. "
         "Accepts arbitrary output type name(s) (e.g. dmp or vtk).",
     )
@@ -122,7 +122,7 @@ def command(
     inifile: str = "idefix.ini",
     duration: float | None = None,
     time_step: float | None = None,
-    one_step: list[str] | None = None,
+    one_step: set[str] | None = None,
     multiplier: int = 1,
     nproc: int = 1,
 ) -> int:
@@ -175,6 +175,9 @@ def command(
                     "expected 'Output' to be a section title, not a parameter name."
                 )
                 return 1
+            if "log" in output_types:
+                output_sec["log"] = multiplier
+                output_types.remove("log")
             for entry in output_types:
                 output_sec[entry] = time_step
 
