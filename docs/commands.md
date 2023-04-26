@@ -104,11 +104,11 @@ Note that `idfx run` looks for the inifile relative to the cwd, and _then_ relat
 the specified directory.
 
 ### running a shorter version of a problem
-Use the `--duration` and `--time-step` arguments to run a modified version of a base
-inifile.
+Use the `--tstop` and `--time-step` arguments to override `TimeIntegrator.tstop`
+and `TimeIntegrator.fixed_dt` parameters from the inifile.
 
 ```shell
-$ idfx run --duration 1e-4
+$ idfx run --tstop 1e-4
 ```
 
 Note that `--time-step` maps to Idefix's inifile `TimeIntegrator.first_dt`.
@@ -116,14 +116,14 @@ Note that `--time-step` maps to Idefix's inifile `TimeIntegrator.first_dt`.
 Use `--one-step/--one` to run a single time step (total simulation time equates to the
 first time step).
 The length of the time step can be adjusted in combination with `--time-step`, however,
-`--one-step` is incompatible with `--duration`.
+`--one-step` is incompatible with `--tstop`.
 
 ```shell
 $ idfx run --one
 ```
 is a shortcut for
 ```shell
-$ idfx run --duration x --time-step x
+$ idfx run --tstop x --time-step x
 ```
 where `x`, is the existing value found in the inifile. `idfx run --one` also
 optionally accepts arbitrary output format identifiers. For instance

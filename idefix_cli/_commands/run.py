@@ -129,13 +129,20 @@ def add_arguments(parser) -> None:
         default="idefix.ini",
         help="target inifile",
     )
-    time_group = parser.add_mutually_exclusive_group()
-    time_group.add_argument(
+    tstop_group = parser.add_mutually_exclusive_group()
+    tstop_group.add_argument(
         "--duration",
         action="store",
         type=float,
-        help="run for specified time (in code units)",
+        help="run for specified time (in code units) DEPRECATED",
     )
+    tstop_group.add_argument(
+        "--tstop",
+        action="store",
+        type=float,
+        help="override TimeIntegrator.tstop",
+    )
+    time_group = parser.add_mutually_exclusive_group()
     time_group.add_argument(
         "--one",
         "--one-step",
@@ -149,7 +156,7 @@ def add_arguments(parser) -> None:
         dest="time_step",
         action="store",
         type=float,
-        help="patch the inifile TimeIntegrator.first_dt parameter",
+        help="override TimeIntegrator.first_dt",
     )
     parser.add_argument(
         "--nproc",
@@ -174,6 +181,7 @@ def command(
     *unknown_args: str,
     directory: str = ".",
     inifile: str = "idefix.ini",
+    tstop: float | None = None,
     duration: float | None = None,
     time_step: float | None = None,
     one_step: list[str] | None = None,
@@ -233,6 +241,14 @@ def command(
                 output_sec[entry] = 0  # output on every time step
 
         multiplier = max(1, multiplier)
+
+    if time_step is not None:
+        conf["TimeIntegrator"]["first_dt"] = time_step
+    if duration is not None:
+        print_warning("The --duration argument is deprecated. Use --tstop instead.")
+        conf["TimeIntegrator"]["tstop"] = duration
+    elif tstop is not None:
+        conf["TimeIntegrator"]["tstop"] = tstop
 
     rebuild_mode_str: str = get_option("idfx run", "recompile") or "always"
 
@@ -307,11 +323,6 @@ def command(
 
     if build_is_required and (ret := build_idefix(directory)) != 0:
         return ret
-
-    if time_step is not None:
-        conf["TimeIntegrator"]["first_dt"] = time_step
-    if duration is not None:
-        conf["TimeIntegrator"]["tstop"] = duration
 
     if conf != base_conf:
         tmp_inifile = NamedTemporaryFile()

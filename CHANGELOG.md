@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
        This version is agnostic of how the time step is set, and will interupt idefix
        in a safe way as soon as the desired number of cycles is completed.
 - API: disallow abbreviation in command line arguments
+- DEPR: deprecate --duration parameter in idfx run
 
 ## [1.2.0] - 2003-04-14
 
