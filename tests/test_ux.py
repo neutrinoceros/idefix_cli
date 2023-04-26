@@ -3,7 +3,7 @@ import sys
 import pytest
 from pytest_check import check
 
-from idefix_cli._main import main
+from idefix_cli.__main__ import main
 
 if sys.version_info >= (3, 10):
     OPTIONAL_SEC = "options"

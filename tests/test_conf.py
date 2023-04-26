@@ -4,8 +4,8 @@ import pytest
 from packaging.version import Version
 from pytest_check import check
 
+from idefix_cli.__main__ import main
 from idefix_cli._commands.conf import substitute_cmake_args
-from idefix_cli._main import main
 
 
 def test_conf_without_setup_cpp(capsys, tmp_path, monkeypatch):

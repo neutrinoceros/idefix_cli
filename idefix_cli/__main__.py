@@ -160,3 +160,7 @@ def alt_main(argv: "List[str] | None" = None) -> Any:
         console.print(":arrow_backward: :tennis:")
 
     return retv
+
+
+if __name__ == "__main__":
+    sys.exit(main())
