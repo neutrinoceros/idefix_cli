@@ -6,7 +6,7 @@ import subprocess
 import pytest
 from pytest_check import check
 
-from idefix_cli._main import main
+from idefix_cli.__main__ import main
 
 jq_available = subprocess.run(["which", "jq"]).returncode == 0
 

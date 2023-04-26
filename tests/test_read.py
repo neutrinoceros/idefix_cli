@@ -2,7 +2,7 @@ import json
 
 from pytest_check import check
 
-from idefix_cli._main import main
+from idefix_cli.__main__ import main
 
 
 def test_read_not_a_file(tmp_path, capsys):

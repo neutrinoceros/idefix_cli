@@ -7,7 +7,7 @@ from typing import Tuple
 import pytest
 from pytest_check import check
 
-from idefix_cli._main import main
+from idefix_cli.__main__ import main
 
 mock_data = {
     "latest ancestor version": "unknown version",

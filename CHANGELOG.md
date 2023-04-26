@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 - BUG: fix a bug where idfx run --one log would lead to undefined behaviour
+- ENH: add support for running idefix_cli as module script (`python -m idefix_cli`)
 
 ## [1.2.0] - 2003-04-14
 
