@@ -174,6 +174,31 @@ def print_warning(message: ErrorMessage) -> None:
     err_console.print(f"{emoji}[italic magenta] {message}[/]")
 
 
+def print_success(message: str) -> None:
+    """Print some exciting news to stdout.
+
+    Args:
+        message (str): the message to be printed
+
+    Returns:
+        None
+
+    Examples:
+        >>> def my_command() -> int:
+        ...    print_success("Successfully did nothing !")
+        ...    return 0
+    """
+    console = Console(width=500, file=sys.stdout)
+    THEME = get_theme()
+    if THEME is Theme.DEFAULT:
+        emoji = ":tada:"
+    elif THEME is Theme.BABALLE:
+        emoji = ":guide_dog:"
+    else:
+        assert_never(THEME)
+    console.print(f"{emoji}[bold chartreuse1] {message}[/]")
+
+
 def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
     """Print a command, which is to be executed as a subprocess.
 

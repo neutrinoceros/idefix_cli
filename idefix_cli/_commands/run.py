@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import sys
 from copy import deepcopy
@@ -10,6 +11,7 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from subprocess import CalledProcessError, check_call
 from tempfile import NamedTemporaryFile
+from time import sleep, time
 from typing import Final
 
 import inifix
@@ -21,6 +23,7 @@ from idefix_cli.lib import (
     get_option,
     print_err,
     print_subcommand,
+    print_success,
     print_warning,
     requires_idefix,
 )
@@ -34,6 +37,57 @@ else:
 
     from idefix_cli._backports import StrEnum
     from idefix_cli.lib import chdir
+
+MAIN_LOG_FILE = "idefix.0.log"
+TIME_INTEGRATOR_LOG_LINE = re.compile(
+    "^TimeIntegrator:\\s*(?P<time>.+) \\|\\s*(?P<cycle>\\d+) \\|"
+)
+JOB_COMPLETED = re.compile("Main: Job completed")
+
+
+def spawn_idefix(cmd: list[str], *, step_count: int) -> int:
+    if step_count < 0:
+        # infinite steps: simple call
+        return subprocess.call(cmd)
+
+    if sys.platform.startswith("win"):
+        print_err("idfx run --one isn't supported on Windows")
+        return -3
+    else:
+        from signal import SIGUSR2  # not available on Windows
+
+    # spawn idefix in the background and kill it (or exit) as soon as completion is detected
+    if os.path.exists(MAIN_LOG_FILE):
+        os.remove(MAIN_LOG_FILE)
+    prog = subprocess.Popen(cmd)
+    start_wait = time()
+    while not os.path.exists(MAIN_LOG_FILE):
+        # idefix is not necessarily well behaved regarding retcodes,
+        # so we don't have a simple way to check wether the process
+        # has returned already or not, creating the opportunity for
+        # an infinite loop here, hence the timeout mechanism
+        if (time() - start_wait) > 60:
+            return -2
+        sleep(0.1)
+
+    complete = False
+    last_edit = -1.0
+    while not complete:
+        if last_edit != (new_edit := os.stat(MAIN_LOG_FILE).st_mtime):
+            with open(MAIN_LOG_FILE) as fh:
+                for line in fh:
+                    if JOB_COMPLETED.match(line):
+                        complete = True
+                        break
+                    if (match := TIME_INTEGRATOR_LOG_LINE.match(line)) is None:
+                        continue
+                    if int(match["cycle"]) == step_count:
+                        prog.send_signal(SIGUSR2)
+                        complete = True
+                        break
+            last_edit = new_edit
+        sleep(0.01)
+    return -1
 
 
 class RebuildMode(StrEnum):
@@ -86,7 +140,7 @@ def add_arguments(parser) -> None:
         "--one",
         "--one-step",
         dest="one_step",
-        type=lambda _: set(_.split()),
+        nargs="*",
         help="run only for one time step. "
         "Accepts arbitrary output type name(s) (e.g. dmp or vtk).",
     )
@@ -111,7 +165,7 @@ def add_arguments(parser) -> None:
         "--times",
         dest="multiplier",
         type=int,
-        default=1,
+        default=-1,
         help="multiplier for --one (use `--one --times 2` to run for 2 steps)",
     )
 
@@ -122,8 +176,8 @@ def command(
     inifile: str = "idefix.ini",
     duration: float | None = None,
     time_step: float | None = None,
-    one_step: set[str] | None = None,
-    multiplier: int = 1,
+    one_step: list[str] | None = None,
+    multiplier: int = -1,
     nproc: int = 1,
 ) -> int:
     d = Path(directory).resolve()
@@ -158,28 +212,27 @@ def command(
         return 1
 
     if one_step is not None:
-        output_types = one_step
-
+        output_types = set(one_step) - {"log"}
         if time_step is None:
             conf["TimeIntegrator"].setdefault("first_dt", 1e-6)
             time_step = conf["TimeIntegrator"]["first_dt"]
 
-        duration = multiplier * time_step
+        conf.setdefault("Output", {})
+        output_sec = conf["Output"]
+        if not isinstance(output_sec, dict):
+            print_err(
+                "configuration file seems malformed, "
+                "expected 'Output' to be a section title, not a parameter name."
+            )
+            return 1
+
+        output_sec["log"] = 1
 
         if len(output_types) > 0:
-            conf.setdefault("Output", {})
-            output_sec = conf["Output"]
-            if not isinstance(output_sec, dict):
-                print_err(
-                    "configuration file seems malformed, "
-                    "expected 'Output' to be a section title, not a parameter name."
-                )
-                return 1
-            if "log" in output_types:
-                output_sec["log"] = multiplier
-                output_types.remove("log")
             for entry in output_types:
-                output_sec[entry] = time_step
+                output_sec[entry] = 0  # output on every time step
+
+        multiplier = max(1, multiplier)
 
     rebuild_mode_str: str = get_option("idfx run", "recompile") or "always"
 
@@ -275,11 +328,21 @@ def command(
 
     print_subcommand(cmd, loc=d)
     with chdir(d):
-        ret = subprocess.call(cmd)
+        ret = spawn_idefix(cmd, step_count=multiplier)
 
-    if ret == 0:
+    if ret < 0:
+        # special retcodes from spawn_idefix
+        if ret == -1:
+            print_success("Sucessfully stopped idefix mid-air")
+        elif ret == -2:
+            print_err("idefix timed out (startup took more than a minute)")
+        elif ret == -3:
+            # unsupported operation
+            ret = 1
+        ret = 0
+    elif ret == 0:
         # Idefix newer than 1.0 intentionally always returns 0, even on failure
-        with open(d / "idefix.0.log") as fh:
+        with open(d / MAIN_LOG_FILE) as fh:
             last_line = fh.read().strip().split("\n")[-1].strip()
         if last_line in KNOWN_FAIL:
             ret = 1
