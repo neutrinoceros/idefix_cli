@@ -60,7 +60,7 @@ def test_broken_command_plugin(isolated_conf_dir, tmp_path, content, msg):
             RuntimeError,
             match=re.escape(f"command plugin {module_name}{msg}"),
         ):
-            _setup_commands(argparse.ArgumentParser())
+            _setup_commands(argparse.ArgumentParser(allow_abbrev=False))
 
 
 def test_unknown_args(capsys):
@@ -93,7 +93,7 @@ def test_plugins(isolated_conf_dir, tmp_path, capsys):
 
     def _main_mock(argv):
         """A simplified version of the main function that can be trashed with no side effects on other tests"""
-        parser = argparse.ArgumentParser()
+        parser = argparse.ArgumentParser(allow_abbrev=False)
         commands = _setup_commands(parser)
 
         known_args, unknown_args = parser.parse_known_args(argv)

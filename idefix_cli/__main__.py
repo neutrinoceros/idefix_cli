@@ -125,7 +125,7 @@ def main(
     # the return value is deleguated to sub commands so its type is arbitrary
     # In practice it should be either 'int' or 'typing.NoReturn'
     if parser is None:
-        parser = ArgumentParser(prog="idfx")
+        parser = ArgumentParser(prog="idfx", allow_abbrev=False)
     parser.add_argument("-v", "--version", action="version", version=__version__)
     commands = _setup_commands(parser)
 
@@ -154,7 +154,7 @@ def alt_main(argv: "List[str] | None" = None) -> Any:
 
     set_theme("baballe")
     try:
-        retv = main(argv, parser=ArgumentParser(prog="baballe"))
+        retv = main(argv, parser=ArgumentParser(prog="baballe", allow_abbrev=False))
     finally:
         set_theme("default")
         console.print(":arrow_backward: :tennis:")
