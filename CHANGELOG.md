@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - RFC: replace 'compile' with 'build' internally and in error messages
 - ENH: bail out of idfx conf if setup.cpp does not exist
+- ENH: add actual support for running idefix step by step with `idfx run --one ...`
+       In previous versions this was done by fixing the time step value at the initial
+       value, and didn't work with `-restart`.
+       This version is agnostic of how the time step is set, and will interupt idefix
+       in a safe way as soon as the desired number of cycles is completed.
+
 
 ## [1.1.3] - 2023-04-06
 

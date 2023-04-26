@@ -68,6 +68,9 @@ The `idefix_cli.lib` module contains some common utility functions that can be i
 ### print_warning
 ::: idefix_cli.lib.print_warning
 
+### print_success
+::: idefix_cli.lib.print_success
+
 ### print_subcommand
 ::: idefix_cli.lib.print_subcommand
 
