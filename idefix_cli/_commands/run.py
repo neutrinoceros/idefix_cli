@@ -188,9 +188,17 @@ def command(
     multiplier: int | None = None,
     nproc: int = 1,
 ) -> int:
-    if one_step is None and multiplier is not None:
-        print_err("--times argument is invalid if --one/--one-step isn't passed too")
-        return 1
+    if multiplier is not None:
+        if one_step is None:
+            print_err(
+                "--times argument is invalid if --one/--one-step isn't passed too"
+            )
+            return 1
+        if multiplier < 1:
+            print_err(
+                f"--times argument expects a strictly positive integer (got {multiplier})"
+            )
+            return 1
 
     d = Path(directory).resolve()
     exe = d / "idefix"

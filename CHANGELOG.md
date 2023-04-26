@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-- BUG: fix a bug where idfx run --one log would lead to undefined behaviour
+- BUG: fix a bug where `idfx run --one log` would lead to undefined behaviour
 - ENH: add support for running idefix_cli as module script (`python -m idefix_cli`)
 - ENH: add actual support for running idefix step by step with `idfx run --one ...`
        In previous versions this was done by fixing the time step value at the initial
@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DEPR: deprecate --duration parameter in idfx run
 - BUG: fix a bug in `idfx run` where `--times` argument would be silently
   ignored if passed without `--one-step`
+- BUG: fix a bug where `idfx run --times -1` would not stop until `tstop` was reached
+
 ## [1.2.0] - 2003-04-14
 
 - RFC: replace 'compile' with 'build' internally and in error messages
