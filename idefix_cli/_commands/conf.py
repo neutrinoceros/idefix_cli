@@ -185,7 +185,7 @@ def substitute_cmake_archs(args: list[str]) -> list[str]:
             if "-gpu" not in args:
                 args.append("-gpu")
 
-    parser = ArgumentParser()
+    parser = ArgumentParser(allow_abbrev=False)
     parser.add_argument("-arch", nargs="+", required=False)
     _args, unknown_args = parser.parse_known_args(args)
 
@@ -202,7 +202,7 @@ def substitute_cmake_cxx(args: list[str]) -> list[str]:
         if compiler_req := get_option("compilation", "compiler"):
             args.extend(["-cxx", compiler_req])
 
-    parser = ArgumentParser()
+    parser = ArgumentParser(allow_abbrev=False)
     parser.add_argument("-cxx")
     _args, unknown_args = parser.parse_known_args(args)
 
