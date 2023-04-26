@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
        in a safe way as soon as the desired number of cycles is completed.
 - API: disallow abbreviation in command line arguments
 - DEPR: deprecate --duration parameter in idfx run
-
+- BUG: fix a bug in `idfx run` where `--times` argument would be silently
+  ignored if passed without `--one-step`
 ## [1.2.0] - 2003-04-14
 
 - RFC: replace 'compile' with 'build' internally and in error messages

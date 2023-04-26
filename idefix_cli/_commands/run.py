@@ -185,9 +185,13 @@ def command(
     duration: float | None = None,
     time_step: float | None = None,
     one_step: list[str] | None = None,
-    multiplier: int = -1,
+    multiplier: int | None = None,
     nproc: int = 1,
 ) -> int:
+    if one_step is None and multiplier is not None:
+        print_err("--times argument is invalid if --one/--one-step isn't passed too")
+        return 1
+
     d = Path(directory).resolve()
     exe = d / "idefix"
     if not exe.is_file() and not (d / "Makefile").is_file():
@@ -240,7 +244,7 @@ def command(
             for entry in output_types:
                 output_sec[entry] = 0  # output on every time step
 
-        multiplier = max(1, multiplier)
+    multiplier = multiplier or 1
 
     if time_step is not None:
         conf["TimeIntegrator"]["first_dt"] = time_step
