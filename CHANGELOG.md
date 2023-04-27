@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+Improvements to `idfx run`:
+  - step-by-step mode is now more reliable (`--one --times` is translated
+    to`-maxcycles`).
+  - output types for step-by-step modecan now be specified with the new `--out` option
+    (previously they were only parsed from the `--one` option)
+  - the `--times` option is deprecated. It is now recommended to use idefix's `-maxcycles` option directly.
+
 ## [2.2.0] - 2023-05-06
 
 ENH: let `--nproc` argument in `idfx run` be implicit if `-dec` is also present.
@@ -18,6 +27,7 @@ ENH: let `--nproc` argument in `idfx run` be implicit if `-dec` is also present.
 
 - ENH: add `idefix_cli.lib.run_subcommand` helper function
 - ENH: add new command (`idfx switch`) for switching git branches in `$IDEFIX_DIR`
+
 
 ## [2.0.0] - 2023-04-26
 

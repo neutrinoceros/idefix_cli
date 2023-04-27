@@ -15,11 +15,13 @@ from time import sleep, time
 from typing import Final
 
 import inifix
+from packaging.version import Version
 from rich.prompt import Confirm
 
 from idefix_cli.lib import (
     files_from_patterns,
     get_config_file,
+    get_idefix_version,
     get_option,
     print_err,
     print_subcommand,
@@ -46,8 +48,11 @@ TIME_INTEGRATOR_LOG_LINE = re.compile(
 JOB_COMPLETED = re.compile("Main: Job completed")
 
 
-def spawn_idefix(cmd: list[str], *, step_count: int) -> int:
-    if step_count < 0:
+def _spawn_idefix_lt_1(cmd: list[str], *, ncycles: int) -> int:
+    if get_idefix_version() >= Version("1.0"):
+        raise RuntimeError("if you're seeing this error, please file a bug report")
+
+    if ncycles < 0:
         # infinite steps: simple call
         return subprocess.call(cmd)
 
@@ -82,7 +87,7 @@ def spawn_idefix(cmd: list[str], *, step_count: int) -> int:
                         break
                     if (match := TIME_INTEGRATOR_LOG_LINE.match(line)) is None:
                         continue
-                    if int(match["cycle"]) == step_count:
+                    if int(match["cycle"]) == ncycles:
                         prog.send_signal(SIGUSR2)
                         complete = True
                         break
@@ -142,6 +147,29 @@ def build_idefix(directory) -> int:
     return run_subcommand(cmd, loc=Path(directory), err="failed to build idefix")
 
 
+class MultipleMaxCycles(Exception):
+    pass
+
+
+def parse_ncycles(unknown_args: tuple[str, ...], ncycles: int) -> tuple[str, ...]:
+    if "-maxcycles" in unknown_args:
+        # it is assumed that this function is only called when --one is passed
+        raise MultipleMaxCycles
+
+    if get_idefix_version() >= Version("1.0"):
+        # -maxcycles is new in idefix 1.0.0
+        # we support older versions with a far more fragile implementation
+        # (see _spawn_idefix_lt_1)
+        if ncycles != 1:
+            print_warning(
+                "the --times option is deprecated. "
+                "Use idefix's -maxcycles argument instead."
+            )
+        return ("-maxcycles", str(ncycles), *unknown_args)
+    else:
+        return unknown_args
+
+
 def add_arguments(parser) -> None:
     parser.add_argument("--dir", dest="directory", default=".", help="target directory")
     parser.add_argument(
@@ -172,7 +200,16 @@ def add_arguments(parser) -> None:
         dest="one_step",
         nargs="*",
         help="run only for one time step. "
-        "Accepts arbitrary output type name(s) (e.g. dmp or vtk).",
+        "Arguments are interpreted as output types (see --output)",
+    )
+    parser.add_argument(
+        "--out",
+        dest="outputs",
+        nargs="+",
+        help=(
+            "Output types (dmp, vtk, ...) to be produced on each cycle "
+            "(requires -maxcycles, cannot be combined with --one-step)"
+        ),
     )
     parser.add_argument(
         "--time-step",
@@ -194,10 +231,10 @@ def add_arguments(parser) -> None:
     )
     parser.add_argument(
         "--times",
-        dest="multiplier",
+        dest="ncycles",
         type=int,
         default=None,
-        help="multiplier for --one (use `--one --times 2` to run for 2 steps)",
+        help="ncycles for --one (use `--one --times 2` to run for 2 steps)",
     )
 
 
@@ -209,20 +246,36 @@ def command(
     duration: float | None = None,
     time_step: float | None = None,
     one_step: list[str] | None = None,
-    multiplier: int | None = None,
     nproc: int = -1,
+    ncycles: int | None = None,
+    outputs: list[str] | None = None,
 ) -> int:
-    if multiplier is not None:
-        if one_step is None:
+    if one_step is None:
+        if ncycles is not None:
             print_err(
-                "--times argument is invalid if --one/--one-step isn't passed too"
+                "the --times parameter is invalid if --one/--one-step isn't passed too"
             )
             return 1
-        if multiplier < 1:
+        ncycles = -1  # unlimited run
+    elif ncycles is not None:
+        if ncycles < 1:
             print_err(
-                f"--times argument expects a strictly positive integer (got {multiplier})"
+                "the --times parameter expects a strictly "
+                f"positive integer (got {ncycles})"
             )
             return 1
+        try:
+            unknown_args = parse_ncycles(unknown_args, ncycles=ncycles)
+        except MultipleMaxCycles:
+            print_err("-maxcycles cannot be combined with --one/--one-step")
+            return 1
+    else:
+        try:
+            unknown_args = parse_ncycles(unknown_args, ncycles=1)
+        except MultipleMaxCycles:
+            print_err("-maxcycles cannot be combined with --one/--one-step")
+            return 1
+        ncycles = -1  # unlimited run
 
     d = Path(directory).resolve()
     exe = d / "idefix"
@@ -255,8 +308,19 @@ def command(
         )
         return 1
 
-    if one_step is not None:
-        output_types = set(one_step) - {"log"}
+    if outputs and "-maxcycles" not in unknown_args:
+        print_err("--out requires -maxcycles")
+        return 1
+    if outputs and one_step:
+        print_err(
+            "--one-step/--one cannot be followed by output "
+            "types if --out is also passed"
+        )
+        return 1
+    if one_step:
+        outputs = one_step
+    if outputs:
+        output_types = set(outputs) - {"log"}
         if time_step is None:
             conf["TimeIntegrator"].setdefault("first_dt", 1e-6)
             time_step = conf["TimeIntegrator"]["first_dt"]
@@ -275,8 +339,6 @@ def command(
         if len(output_types) > 0:
             for entry in output_types:
                 output_sec[entry] = 0  # output on every time step
-
-    multiplier = multiplier or -1
 
     if time_step is not None:
         conf["TimeIntegrator"]["first_dt"] = time_step
@@ -371,29 +433,35 @@ def command(
     cmd = get_command(inputfile, nproc=nproc, idefix_args=unknown_args)
 
     print_subcommand(cmd, loc=d)
-    with chdir(d):
-        ret = spawn_idefix(cmd, step_count=multiplier)
+    if get_idefix_version() >= Version("1.0.0"):
+        with chdir(d):
+            ret = subprocess.call(cmd)
 
-    if ret < 0:
-        # special retcodes from spawn_idefix
-        if ret == -1:
-            print_success("Sucessfully stopped idefix mid-air")
-        elif ret == -2:
-            print_err("idefix timed out (startup took more than a minute)")
-        elif ret == -3:
-            # unsupported operation
-            ret = 1
-        ret = 0
-    elif ret == 0:
-        # Idefix newer than 1.0 intentionally always returns 0, even on failure
-        with open(d / MAIN_LOG_FILE) as fh:
-            last_line = fh.read().strip().split("\n")[-1].strip()
-        if last_line in KNOWN_FAIL:
-            ret = 1
-        elif last_line not in KNOWN_SUCCESS:
-            print_warning(
-                "Command completed with an unknown status. Please check log files."
-            )
+        if ret == 0:
+            # Idefix >= 1.0 intentionally always returns 0, even on failure
+            with open(d / MAIN_LOG_FILE) as fh:
+                last_line = fh.read().strip().split("\n")[-1].strip()
+            if last_line in KNOWN_FAIL:
+                ret = 1
+            elif last_line not in KNOWN_SUCCESS:
+                print_warning(
+                    "Command completed with an unknown status. Please check log files."
+                )
+
+    else:
+        with chdir(d):
+            ret = _spawn_idefix_lt_1(cmd, ncycles=ncycles)
+
+        if ret < 0:
+            # special retcodes from spawn_idefix
+            if ret == -1:
+                print_success("Sucessfully stopped idefix mid-air")
+            elif ret == -2:
+                print_err("idefix timed out (startup took more than a minute)")
+            elif ret == -3:
+                # unsupported operation
+                ret = 1
+            ret = 0
 
     if ret != 0:
         print_err(f"{cmd[0]} terminated with an error")

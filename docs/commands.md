@@ -113,28 +113,36 @@ $ idfx run --tstop 1e-4
 
 Note that `--time-step` maps to Idefix's inifile `TimeIntegrator.first_dt`.
 
-Use `--one-step/--one` to run a single time step (total simulation time equates to the
-first time step).
-The length of the time step can be adjusted in combination with `--time-step`, however,
-`--one-step` is incompatible with `--tstop`.
+### running idefix step-by-step
+
+`idefix` (since version 1.0) supports running step-by-step via the `-maxcycles` argument.
+
+`idfx run` augments this mode by providing an `--out` option, which
+can be used to specify arbitrary output types to be produced *on each cycle*.
+
+Use `--one-step/--one` to run a single cycle (total simulation time equates to the first
+cycle). The length of the cycle can be adjusted in combination with `--time-step`,
+however, `--one-step` is incompatible with `--tstop`.
 
 ```shell
 $ idfx run --one
 ```
 is a shortcut for
 ```shell
-$ idfx run --tstop x --time-step x
+$ idfx run -maxcycles 1
 ```
-where `x`, is the existing value found in the inifile. `idfx run --one` also
-optionally accepts arbitrary output format identifiers. For instance
+where `x`, is the existing value found in the inifile. `--one` can optionally be followed by output types, which will be interpreted as the `--out` parameter. For instance
 ```shell
 $ idfx run --one dmp vtk
 ```
-will run the curdir setup for one time step and output both a dmp file and a vtk file.
+is equivalent to
+```shell
+$ idfx run -maxcycles 1 --out dmp vtk
+```
+and will run the curdir setup for one time step and output both a dmp file and a vtk file (not including outputs 0 for initial conditions).
 
-The `--times <n>` argument can also be supplied in combination with `--one` to
-run for an arbitry number of steps. It is close to idefix's `-maxcycles`
-argument.
+All of these options can also be combined with `-restart`.
+
 
 ### running in parallel
 
