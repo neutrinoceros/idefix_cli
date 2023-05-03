@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 - ENH: add `idefix_cli.lib.run_subcommand` helper function
+- ENH: add new command (`idfx switch`) for switching git branches in `$IDEFIX_DIR`
 
 ## [2.0.0] - 2023-04-26
 
