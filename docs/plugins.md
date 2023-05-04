@@ -74,6 +74,9 @@ The `idefix_cli.lib` module contains some common utility functions that can be i
 ### print_subcommand
 ::: idefix_cli.lib.print_subcommand
 
+### run_subcommand
+::: idefix_cli.lib.run_subcommand
+
 ### chdir
 
 This function is backported [from the standard library](https://docs.python.org/3/library/contextlib.html?highlight=chdir#contextlib.chdir), and is provided for portability.

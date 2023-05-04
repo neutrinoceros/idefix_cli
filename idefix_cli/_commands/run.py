@@ -9,7 +9,6 @@ from copy import deepcopy
 from enum import auto
 from multiprocessing import cpu_count
 from pathlib import Path
-from subprocess import CalledProcessError, check_call
 from tempfile import NamedTemporaryFile
 from time import sleep, time
 from typing import Final
@@ -26,6 +25,7 @@ from idefix_cli.lib import (
     print_success,
     print_warning,
     requires_idefix,
+    run_subcommand,
 )
 
 if sys.version_info >= (3, 11):
@@ -110,13 +110,7 @@ KNOWN_FAIL: Final = (
 def build_idefix(directory) -> int:
     ncpus = 2 ** min(3, cpu_count().bit_length())
     cmd = ["make", "-j", str(ncpus)]
-    print_subcommand(cmd, loc=Path(directory))
-    try:
-        with chdir(directory):
-            return check_call(cmd)
-    except CalledProcessError as exc:
-        print_err("failed to build idefix")
-        return exc.returncode
+    return run_subcommand(cmd, loc=Path(directory), err="failed to build idefix")
 
 
 def add_arguments(parser) -> None:
