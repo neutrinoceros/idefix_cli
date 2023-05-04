@@ -199,12 +199,12 @@ def print_success(message: str) -> None:
     console.print(f"{emoji}[bold chartreuse1] {message}[/]")
 
 
-def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
+def print_subcommand(cmd: list[str], *, loc: os.PathLike[str] | None = None) -> None:
     """Print a command, which is to be executed as a subprocess.
 
     Args:
         cmd (list[str]): equivalent argument to be passed to, e.g., subprocess.run
-        loc (pathlib.Path | None): the directory (other than cwd)
+        loc (os.PathLike[str] | None): the directory (other than cwd)
             from which the command is meant to be executed.
 
     Returns:
@@ -220,14 +220,13 @@ def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
         ...    subprocess.run(cmd)
         ...    return 0
         >>> my_command()
-        🚀 running (from ...) which gcc
+        🚀 running which gcc (from ...)
         ...
     """
     msg = " ".join(cmd)
-
-    header = "running"
-    if loc is not None and loc.resolve() != Path.cwd():
-        header += f" (from {loc}{os.sep})"
+    trailer = ""
+    if loc is not None and Path(loc).resolve() != Path.cwd():
+        trailer = f" (from {loc}{os.sep})"
 
     console = Console(width=500, highlight=False)
     THEME = get_theme()
@@ -237,7 +236,40 @@ def print_subcommand(cmd: list[str], *, loc: Path | None = None) -> None:
         emoji = ":dog_face:"
     else:
         assert_never(THEME)
-    console.print(f"{emoji}[italic cornflower_blue] {header}[/] [bold]{msg}[/]")
+    console.print(f"{emoji}[italic cornflower_blue] running[/] [bold]{msg}[/]{trailer}")
+
+
+def run_subcommand(
+    cmd: list[str], *, loc: os.PathLike[str] | None = None, err: str | None = None
+) -> int:
+    """
+    Convenience function to run subprocess while logging with print_subcommand
+
+    Args:
+        cmd (list[str]): equivalent argument to be passed to subprocess.run
+        loc (os.PathLike[str] | None): the directory (other than cwd)
+            from which the command is meant to be executed.
+        err (str | None): error message to be printed in case the subprocess fails
+
+    Returns:
+      retcode (int): the return code of the subprocess
+    """
+    from subprocess import CalledProcessError, run
+
+    chdir = __getattr__("chdir")
+    if loc is None:
+        loc = Path.cwd()
+    print_subcommand(cmd, loc=loc)
+    try:
+        with chdir(loc):
+            p = run(cmd, check=True)
+    except CalledProcessError as exc:
+        if err is None:
+            err = f"failed to run {' '.join(cmd)!r}"
+        print_err(err)
+        return exc.returncode
+    else:
+        return p.returncode
 
 
 def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]:
