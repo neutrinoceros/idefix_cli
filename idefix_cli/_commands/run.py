@@ -166,7 +166,7 @@ def add_arguments(parser) -> None:
         "--times",
         dest="multiplier",
         type=int,
-        default=-1,
+        default=None,
         help="multiplier for --one (use `--one --times 2` to run for 2 steps)",
     )
 
@@ -246,7 +246,7 @@ def command(
             for entry in output_types:
                 output_sec[entry] = 0  # output on every time step
 
-    multiplier = multiplier or 1
+    multiplier = multiplier or -1
 
     if time_step is not None:
         conf["TimeIntegrator"]["first_dt"] = time_step
