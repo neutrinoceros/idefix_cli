@@ -224,6 +224,20 @@ include = *py README.*
 ```
 Note that the `--include` argument can be combined with `idefix.cfg`.
 
+## `idfx switch`
+
+Switch to another existing git branch in `$IDEFIX_DIR`.
+No cleaning is performed, this command simply wraps the following script
+```shell
+$ pushd $IDEFIX_DIR && git checkout mybranch ; popd
+```
+into
+```
+$ idfx switch mybranch
+```
+
+Bonus: if no branch is specified, switch the most recently visited other branch.
+
 
 ## `idfx stamp`
 
