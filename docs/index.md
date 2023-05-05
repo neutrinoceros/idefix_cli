@@ -1,8 +1,8 @@
 # idefix_cli
 
 `idefix_cli` is command line framework to facilitate working with
-[Idefix](https://gricad-gitlab.univ-grenoble-alpes.fr/lesurg/idefix-public),
-written by Geoffroy Lesur et al.
+[Idefix](https://github.com/idefix-code/idefix), written by
+[Lesur et al](https://ui.adsabs.harvard.edu/abs/2023arXiv230413746L/abstract).
 
 It defines a `idfx` command namespace, ships with a collection of common helper
 script (`idfx conf`, `idfx run`, ...), and can be extended to include arbitrary
