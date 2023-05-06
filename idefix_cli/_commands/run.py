@@ -7,6 +7,7 @@ import subprocess
 import sys
 from copy import deepcopy
 from enum import auto
+from math import prod
 from multiprocessing import cpu_count
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -90,6 +91,34 @@ def spawn_idefix(cmd: list[str], *, step_count: int) -> int:
     return -1
 
 
+def get_command(
+    inputfile: str, *, nproc: int, idefix_args: tuple[str, ...]
+) -> list[str]:
+    cmd = ["./idefix", "-i", inputfile, *idefix_args]
+
+    if nproc < 0 and "-dec" in idefix_args:
+        # try to guess the number of processes
+        i0 = idefix_args.index("-dec")
+        dec_args: list[int] = []
+        for i in range(i0 + 1, len(idefix_args)):
+            try:
+                dec_args.append(int(idefix_args[i]))
+            except ValueError:
+                break
+        if dec_args:
+            nproc = prod(dec_args)
+        else:
+            print_warning(
+                "Couldn't parse -dec parameters, "
+                "this will likely result in idefix crashing at startup time "
+                "(if it doesn't, please report this)"
+            )
+
+    if nproc > 1:
+        cmd = ["mpirun", "-n", str(nproc), *cmd]
+    return cmd
+
+
 class RebuildMode(StrEnum):
     ALWAYS = auto()
     PROMPT = auto()
@@ -156,10 +185,11 @@ def add_arguments(parser) -> None:
         "--nproc",
         action="store",
         type=int,
-        default=1,
+        default=-1,
         help=(
             "run idefix in parallel over selected number of ALU. "
-            "Requires the code to be configured for MPI."
+            "Requires the code to be configured for MPI. "
+            "This parameter can be left unspecified if -dec is passed."
         ),
     )
     parser.add_argument(
@@ -180,7 +210,7 @@ def command(
     time_step: float | None = None,
     one_step: list[str] | None = None,
     multiplier: int | None = None,
-    nproc: int = 1,
+    nproc: int = -1,
 ) -> int:
     if multiplier is not None:
         if one_step is None:
@@ -338,10 +368,7 @@ def command(
     else:
         inputfile = str(pinifile.relative_to(d.resolve()))
 
-    cmd = ["./idefix", "-i", inputfile, *unknown_args]
-
-    if nproc > 1:
-        cmd = ["mpirun", "-n", str(nproc), *cmd]
+    cmd = get_command(inputfile, nproc=nproc, idefix_args=unknown_args)
 
     print_subcommand(cmd, loc=d)
     with chdir(d):

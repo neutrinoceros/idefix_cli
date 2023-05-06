@@ -148,6 +148,11 @@ is equivalent to
 $ pushd mydir ; mpirun -n 2 ./idefix ; popd
 ```
 
+*new in idefix_cli 2.2.0*
+
+`--nproc` can be left unspecified if domain decomposition is explicitly set with
+idefix's `-dec` argument.
+
 ### Configuration
 *new in `idefix_cli` 1.1.0*
 
