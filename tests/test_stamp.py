@@ -65,7 +65,7 @@ def test_stamp_simple(capsys, monkeypatch, tmp_path):
     out, err = capsys.readouterr()
     # skiping the last line as it contains a date and I'm not sure how to test it.
     with check:
-        assert out.splitlines()[:-1] == [v for v in mock_data.values()]
+        assert out.splitlines()[:-1] == list(mock_data.values())
     with check:
         assert err == ""
 
