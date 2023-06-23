@@ -17,7 +17,7 @@ from idefix_cli.lib import print_err
 @pytest.mark.parametrize(
     "content, msg",
     (
-        (("\n"), " is missing required functions " "'command' and 'add_arguments'"),
+        (("\n"), " is missing required functions 'command' and 'add_arguments'"),
         (
             ("def add_arguments():\n", "    return\n"),
             " is missing a 'command' function",
