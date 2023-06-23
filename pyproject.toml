@@ -73,6 +73,7 @@ select = [
     "C4",  # flake8-comprehensions
     "B",   # flake8-bugbear
     "YTT", # flake8-2020
+    "ISC", # flake8-implicit-string-concatenation
     "I",   # isort
     "UP",  # pyupgrade
 ]
