@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Improvements to `idfx run`:
+- BLD: migrate to src layout
+- ENH: Improvements to `idfx run`:
   - step-by-step mode is now more reliable (`--one --times` is translated
     to`-maxcycles`).
   - output types for step-by-step modecan now be specified with the new `--out` option

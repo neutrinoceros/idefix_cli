@@ -54,10 +54,7 @@ license-files = [
 include-package-data = false
 
 [tool.setuptools.packages.find]
-exclude = [
-    "tests*",
-    "testing*",
-]
+where = ["src"]
 namespaces = false
 
 [tool.black]
@@ -80,6 +77,7 @@ select = [
 
 [tool.ruff.isort]
 combine-as-imports = true
+known-first-party = ["idefix_cli"]
 
 [tool.mypy]
 python_version = 3.8
