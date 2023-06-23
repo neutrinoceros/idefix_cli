@@ -2,3 +2,9 @@ mkdocs==1.4.2
 mkdocs-material==8.5.10
 mkdocs-include-markdown-plugin==4.0.3
 mkdocstrings[python]==0.19.1
+
+# workaround for readthedocs + src layout
+# point to the "current dir":
+# assuming this is installed from the top level of the repo
+# as `pip install -r docs/requirements.txt`
+.
