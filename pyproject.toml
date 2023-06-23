@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "idefix_cli"
-version = "2.2.0"
 description = "A CLI to automate mundane tasks with Idefix"
 authors = [
     { name = "C.M.T. Robert" },
@@ -23,6 +22,7 @@ dependencies = [
     "rich>=10.7.0",
     "typing-extensions>=4.1.0;python_version < '3.11'",
 ]
+dynamic = ["version"]
 
 [project.license]
 text = "GPL-3.0"
@@ -52,6 +52,9 @@ license-files = [
     "LICENSE",
 ]
 include-package-data = false
+
+[tool.setuptools.dynamic]
+ version = {attr = "idefix_cli.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
