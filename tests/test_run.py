@@ -7,7 +7,7 @@ def test_times_without_one_step(capsys):
     out, err = capsys.readouterr()
     assert out == ""
     assert err == (
-        "💥 the --times parameter is invalid if" " --one/--one-step isn't passed too\n"
+        "💥 the --times parameter is invalid if --one/--one-step isn't passed too\n"
     )
 
 
