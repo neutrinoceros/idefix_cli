@@ -4,7 +4,10 @@ on:
     tags: v*
 jobs:
   publish:
+    name: Upload release to PyPI
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3
@@ -17,8 +20,5 @@ jobs:
     - name: Build distributions
       shell: bash -l {0}
       run: python -m build
-    - name: Publish package to PyPI
-      uses: pypa/gh-action-pypi-publish@v1.8.7
-      with:
-        user: __token__
-        password: ${{ secrets.pypi_token }}
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
