@@ -8,6 +8,11 @@ updates:
   schedule:
     interval: monthly
 
+- package-ecosystem: pip
+  directory: /docs
+  schedule:
+    interval: monthly
+
 - package-ecosystem: github-actions
   directory: /.github/workflows
   schedule:
