@@ -1,6 +1,6 @@
 mkdocs==1.4.2
 mkdocs-material==8.5.10
-mkdocs-include-markdown-plugin==4.0.3
+mkdocs-include-markdown-plugin==4.0.4
 mkdocstrings[python]==0.22.0
 
 # workaround for readthedocs + src layout
