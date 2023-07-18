@@ -5,7 +5,7 @@ from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import FunctionType, ModuleType
-from typing import Any, Dict, Final, List, Optional, Tuple
+from typing import Any, Final, Optional
 
 from rich.console import Console
 
@@ -13,13 +13,13 @@ from idefix_cli import __version__
 from idefix_cli._theme import set_theme
 from idefix_cli.lib import get_config_file, get_option, print_err, print_warning
 
-CommandMap = Dict[str, Tuple[FunctionType, bool]]
+CommandMap = dict[str, tuple[FunctionType, bool]]
 
 
 BASE_COMMAND_PATH: Final[str] = str(Path(__file__).parent / "_commands")
 
 
-def _get_command_paths() -> List[str]:
+def _get_command_paths() -> list[str]:
     dirs = [BASE_COMMAND_PATH]
 
     if ext_dir_v1 := get_option("idefix_cli", "extension_dir"):
@@ -120,7 +120,7 @@ def _setup_commands(parser: ArgumentParser) -> CommandMap:
 
 
 def main(
-    argv: "List[str] | None" = None, parser: "ArgumentParser | None" = None
+    argv: "list[str] | None" = None, parser: "ArgumentParser | None" = None
 ) -> Any:
     # the return value is deleguated to sub commands so its type is arbitrary
     # In practice it should be either 'int' or 'typing.NoReturn'
@@ -148,7 +148,7 @@ def main(
     return cmd(*unknown_args, **vars(known_args))
 
 
-def alt_main(argv: "List[str] | None" = None) -> Any:
+def alt_main(argv: "list[str] | None" = None) -> Any:
     console = Console(width=500, highlight=False)
     console.print(":tennis: :arrow_forward:")
 
