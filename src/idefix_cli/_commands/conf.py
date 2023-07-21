@@ -170,6 +170,7 @@ def substitute_cmake_flags(args: list[str]) -> list[str]:
         "-mpi": "-DIdefix_MPI=ON",
         "-openmp": "-DKokkos_ENABLE_OPENMP=ON",
         "-gpu": "-DKokkos_ENABLE_CUDA=ON",
+        "-cpu": "-DKokkos_ENABLE_CUDA=OFF",
     }
     return [subs.get(_) or _ for _ in args]
 

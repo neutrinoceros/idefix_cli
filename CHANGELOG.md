@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - BLD: drop support for Python 3.8
+- ENH: add '-cpu' alias option '-DKokkos_ENABLE_CUDA=OFF' to idfx conf
 
 ## [2.3.0] - 2023-06-23
 
