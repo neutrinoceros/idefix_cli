@@ -5,7 +5,7 @@
 
 ## `idfx conf`
 
-`idfx conf` is a unified wrapper for `cmake` and the historical Python script
+`idfx conf` is a unified wrapper for `(c)cmake` and the historical Python script
 `$IDEFIX_DIR/configure.py`. All arguments and flags are passed down to the
 relevant configuration system.
 
@@ -36,6 +36,10 @@ is equivalent to
 pushd my/setup/dir && idfx conf ; popd
 ```
 
+Switching from `cmake` to `ccmake` is done by passing the `-i/--interactive` flag
+```shell
+$ idfx conf -i
+```
 
 ### Configuration
 

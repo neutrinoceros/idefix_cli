@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - BLD: drop support for Python 3.8
 - BUG: avoid spurious warnings and errors when running idefix with `-nolog` or `-nowrite` flags
+- DOC: document how to use ccmake through idfx conf
 
 ## [2.3.0] - 2023-06-23
 
