@@ -4,11 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.3.2] - 2023-07-26
 
 - BLD: drop support for Python 3.8
 - BUG: avoid spurious warnings and errors when running idefix with `-nolog` or `-nowrite` flags
 - DOC: document how to use ccmake through idfx conf
+
+## [2.3.1] - 2023-07-12
+
+There are no functional changes in this release. Infrastructures dependencies were
+updated, and this is the first release using PyPI trusted publishers mechanism.
 
 ## [2.3.0] - 2023-06-23
 
