@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - BLD: drop support for Python 3.8
+- BUG: avoid spurious warnings and errors when running idefix with `-nolog` or `-nowrite` flags
 
 ## [2.3.0] - 2023-06-23
 

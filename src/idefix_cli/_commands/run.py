@@ -11,7 +11,7 @@ from math import prod
 from multiprocessing import cpu_count
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from time import sleep, time
+from time import sleep, time, time_ns
 from typing import Final
 
 import inifix
@@ -433,11 +433,14 @@ def command(
     cmd = get_command(inputfile, nproc=nproc, idefix_args=unknown_args)
 
     print_subcommand(cmd, loc=d)
+
     if get_idefix_version() >= Version("1.0.0"):
+        tstart = time_ns()
         with chdir(d):
             ret = subprocess.call(cmd)
 
-        if ret == 0:
+        logfile = d / MAIN_LOG_FILE
+        if ret == 0 and logfile.is_file() and logfile.stat().st_mtime_ns > tstart:
             # Idefix >= 1.0 intentionally always returns 0, even on failure
             with open(d / MAIN_LOG_FILE) as fh:
                 last_line = fh.read().strip().split("\n")[-1].strip()
@@ -447,6 +450,11 @@ def command(
                 print_warning(
                     "Command completed with an unknown status. Please check log files."
                 )
+        else:
+            # Either the retcode is !=0 or no log files were produced, which may be
+            # perfectly legit (-nolog and -nowrite exist). In any case, resist the
+            # temptation to guess what happened.
+            pass
 
     else:
         with chdir(d):
