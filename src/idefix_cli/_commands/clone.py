@@ -19,7 +19,7 @@ from idefix_cli.lib import (
 
 BASE_INCLUDE = frozenset(
     (
-        "idefix.ini",
+        "*.ini",
         "*.hpp",
         "*.cpp",
         "*.h",
