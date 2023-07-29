@@ -29,6 +29,15 @@ HELP_MESSAGE = (
 )
 
 
+def get_lines(help_message: str) -> list[str]:
+    # skip the first lines because they differ between macos and linux
+    lines = iter(help_message.splitlines())
+    while not next(lines).startswith(OPTIONAL_SEC):
+        continue
+
+    return list(lines)
+
+
 @pytest.mark.usefixtures("isolated_conf_dir")
 def test_no_command_passed(capsys):
     ret = main([])
@@ -38,5 +47,4 @@ def test_no_command_passed(capsys):
     with check:
         assert out == ""
     with check:
-        # skip the first lines because they differ between macos and linux
-        assert err.splitlines()[2:] == HELP_MESSAGE.splitlines()[2:]
+        assert get_lines(err) == get_lines(HELP_MESSAGE)
