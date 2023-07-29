@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - ENH: add a `idfx digest`` command to pre-process performance logs
+- TST: test on Python 3.12
 
 ## [2.3.3] - 2023-07-28
 
