@@ -38,7 +38,7 @@ def test_timer(capsys):
     assert ret == 0
     json.loads(out)  # validate output
 
-    assert re.fullmatch(r"took \d\.\d\d\d ms\n", err)
+    assert re.fullmatch(r"took \d+\.\d\d\d ms\n", err)
 
 
 def test_invalid_dir(tmp_path, capsys):
