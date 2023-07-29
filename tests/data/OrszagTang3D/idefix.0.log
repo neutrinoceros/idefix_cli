@@ -1,0 +1,124 @@
+                                  .:HMMMMHn:.  ..:n..
+                                .H*'``     `'%HM'''''!x.
+         :x                    x*`           .(MH:    `#h.
+        x.`M                   M>        :nMMMMMMMh.     `n.
+         *kXk..                XL  nnx:.XMMMMMMMMMMML   .. 4X.
+          )MMMMMx              'M   `^?M*MMMMMMMMMMMM:HMMMHHMM.
+          MMMMMMMX              ?k    'X ..'*MMMMMMM.#MMMMMMMMMx
+         XMMMMMMMX               4:    M:MhHxxHHHx`MMx`MMMMMMMMM>
+         XM!`   ?M                `x   4MM'`''``HHhMMX  'MMMMMMMM
+         4M      M                 `:   *>     `` .('MX   '*MMMM'
+          MX     `X.nnx..                        ..XMx`     'M*X
+           ?h.    ''```^'*!Hx.     :Mf     xHMh  M**MMM      4L`
+            `*Mx           `'*n.x. 4M>   :M` `` 'M    `       %
+             '%                ``*MHMX   X>      !
+            :!                    `#MM>  X>      `   :x
+           :M                        ?M  `X     .  ..'M
+           XX                       .!*X  `x   XM( MMx`h
+          'M>::                        `M: `+  MMX XMM `:
+          'M> M                         'X    'MMX ?MMk.Xx..
+          'M> ?L                     ...:!     MMX.H**'MMMM*h
+           M>  #L                  :!'`MM.    . X*`.xHMMMMMnMk.
+           `!   #h.      :L           XM'*hxHMM*MhHMMMMMMMMMM'#h
+           +     XMh:    4!      x   :f   MM'   `*MMMMMMMMMM%  `X
+           M     Mf``tHhxHM      M>  4k xxX'      `#MMMMMMMf    `M .>
+          :f     M   `MMMMM:     M>   M!MMM:         '*MMf'     'MH*
+          !     Xf   'MMMMMX     `X   X>'h.`          :P*Mx.   .d*~..
+        :M      X     4MMMMM>     !   X~ `Mh.      .nHL..M#'%nnMhH!'`
+       XM      d>     'X`'**h     'h  M   ^'MMHH+*'`  ''''   `'**'
+    %nxM>      *x+x.:. XL.. `k     `::X
+:nMMHMMM:.  X>  Mn`*MMMMMHM: `:     ?MMn.
+    `'**MML M>  'MMhMMMMMMMM  #      `M:^*x
+         ^*MMttnnMMMMMMMMMMMH>.        M:.4X
+                        `MMMM>X   (   .MMM:MM!   .
+                          `'''4x.dX  +^ `''MMMMHM?L..
+                                ``'           `'`'`'`
+
+              Idefix version 2.0.00-bfa4ba69
+              Built against Kokkos 40100
+
+
+Main: Initialization stage.
+Main: initialisation finished.
+-----------------------------------------------------------------------------
+Input Parameters using input file idefix.ini:
+-----------------------------------------------------------------------------
+[Boundary]
+	X1-beg		periodic
+	X1-end		periodic
+	X2-beg		periodic
+	X2-end		periodic
+	X3-beg		periodic
+	X3-end		periodic
+[Grid]
+	X1-grid		1	0.0	32	u	1.0
+	X2-grid		1	0.0	64	u	1.0
+	X3-grid		1	0.0	32	u	1.0
+[Hydro]
+	gamma		1.66667
+	solver		hlld
+[Output]
+	log		10
+	vtk		0.2
+[TimeIntegrator]
+	CFL		0.9
+	CFL_max_var		1.1
+	check_nan		100
+	first_dt		1.e-4
+	max_runtime		-1
+	maxdivB		1e-06
+	nstages		2
+	tstop		0.2
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+Input: Compiled with DOUBLE PRECISION arithmetic.
+Input: DIMENSIONS=3.
+Input: COMPONENTS=3.
+Input: MPI ENABLED.
+Grid: full grid size is
+	 Direction X1: periodic	0....32....1	periodic
+	 Direction X2: periodic	0....64....1	periodic
+	 Direction X3: periodic	0....32....1	periodic
+Grid: MPI domain decomposition is ( 1  2  1 )
+Grid: Current MPI proc coordinates (0, 0, 0)
+DataBlock: this process grid size is
+	 Direction X1: 0....32....1
+	 Direction X2: 0....32....0.5
+	 Direction X3: 0....32....1
+Hydro: solving MHD equations.
+Hydro: Reconstruction: 2nd order (PLM Van Leer)
+Hydro: EOS: ideal with gamma=1.66667
+RiemannSolver: hlld (MHD).
+ConstrainedTransport: Using UCT_CONTACT averaging scheme.
+TimeIntegrator: using 2nd Order (RK2) integrator.
+TimeIntegrator: Using adaptive dt with CFL=0.9 .
+Main: Creating initial conditions.
+Vtk: Write file n 0...done in 0.36528 s.
+Main: Cycling Time Integrator...
+TimeIntegrator:             time |            cycle |        time step | cell (updates/s) | MPI overhead (%) |            div B
+TimeIntegrator:     0.000000e+00 |                0 |     1.000000e-04 |              N/A |              N/A |     0.000000e+00
+TimeIntegrator:     1.593742e-03 |               10 |     2.593742e-04 |     1.348727e+06 |         0.448231 |     3.019807e-14
+TimeIntegrator:     5.727500e-03 |               20 |     6.727500e-04 |     1.286524e+06 |         0.366899 |     4.618528e-14
+TimeIntegrator:     1.644940e-02 |               30 |     1.744940e-03 |     1.371459e+06 |         0.373543 |     6.394885e-14
+TimeIntegrator:     3.902434e-02 |               40 |     2.409827e-03 |     1.444343e+06 |         0.362761 |     7.283063e-14
+TimeIntegrator:     6.309882e-02 |               50 |     2.412961e-03 |     1.453049e+06 |         0.323486 |     6.927792e-14
+TimeIntegrator:     8.731838e-02 |               60 |     2.440021e-03 |     1.431257e+06 |         0.322347 |     7.727152e-14
+TimeIntegrator:     1.119115e-01 |               70 |     2.471728e-03 |     1.414285e+06 |         0.371612 |     9.059420e-14
+TimeIntegrator:     1.357259e-01 |               80 |     2.296937e-03 |     1.166388e+06 |         0.876001 |     8.704149e-14
+TimeIntegrator:     1.583259e-01 |               90 |     2.235797e-03 |     1.108309e+06 |         0.793147 |     9.325873e-14
+TimeIntegrator:     1.806985e-01 |              100 |     2.245806e-03 |     1.099178e+06 |         0.610841 |     1.030287e-13
+Vtk: Write file n 1...done in 5.515257e-03 s.
+Main: Reached t=2.000000e-01
+Main: Completed in 5 seconds and 109 cycles
+Main: Perfs are 1.278438e+06 cell updates/second
+MPI overhead represents 0% of total run time.
+Outputs represent 0% of total run time.
+Profiler: maximum memory usage for Host memory space: 2.390811e+01 MB.
+Emf: Cleaning up MPI persistent communication channels
+Mpi(1): Cleaning up MPI persistent communication channels
+Mpi(1): measured throughput is 3.533900e+03 MB/s
+Mpi(1): message sizes were
+        X1: 1.259766e-01 MB
+        X2: 1.416626e-01 MB
+        X3: 1.593018e-01 MB
+Main: Job completed successfully.

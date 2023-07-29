@@ -241,6 +241,50 @@ include = *py README.*
 ```
 Note that the `--include` argument can be combined with `idefix.cfg`.
 
+## `idfx digest`
+*new in idefix_cli 2.4*
+
+Reduce idefix performance logs to a `json` report, outputted to stdout.
+
+```shell
+$ idfx digest > report.json
+```
+No data reduction is performed other than type casting. This choice allows the resulting
+report to be plugged in arbitrary plotting scripts.
+
+This command supports an optional `--timeit` flag to output execution time to stderr.
+
+Here's an example Python script to process the report into a plot of simulation
+performance VS time, for each MPI process
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+series = pd.read_json("report.json", typ="series")
+
+stacked = np.empty((len(series[0]["time"]), len(series)), dtype="float")
+
+fig, ax = plt.subplots()
+ax.set(
+    xlabel="time",
+    ylabel="perf (cell updates/s)",
+    yscale="log",
+)
+for i, s in enumerate(series):
+    stacked[:, i] = s["cell (updates/s)"]
+    ax.plot("time", "cell (updates/s)", data=s, lw=0.3, alpha=0.7, color="C0")
+
+ax.plot(series[0]["time"], stacked.mean(axis=1), color="C0", lw=2)
+ax.axhline(np.nanmean(stacked), ls="--", color="black")
+
+sfile = "perfs.png"
+print(f"saving to {sfile}")
+fig.savefig(sfile)
+```
+
+
 ## `idfx switch`
 
 Switch to another existing git branch in `$IDEFIX_DIR`.
