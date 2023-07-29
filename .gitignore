@@ -1,6 +1,19 @@
 # tmp files
 *~
+\#*
 
-#
+# generated files
+*.vtk
+*.json
+idefix
+cmake*
+CMake*
+Makefile
+generated
+git-state.txt
+
+# Python caches
 *.egg-info
 __pycache__
+dist
+.coverage
