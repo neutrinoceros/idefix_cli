@@ -1,4 +1,4 @@
-mkdocs==1.4.3
+mkdocs==1.5.1
 mkdocs-material==9.1.18
 mkdocs-include-markdown-plugin==4.0.4
 mkdocstrings[python]==0.22.0
