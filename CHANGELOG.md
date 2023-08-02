@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PERF: faster type casting in `idfx digest``
 - PERF: avoid unnecessary json serialization in `idfx digest`
 - ENH: sort log files by process number in `idfx digest`
+- API: only parse the first log by default in `idfx digest`
 
 ## [2.4.0] - 2023-07-29
 

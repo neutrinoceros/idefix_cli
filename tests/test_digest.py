@@ -3,6 +3,8 @@ import re
 import sys
 from pathlib import Path
 
+import pytest
+
 from idefix_cli.__main__ import main
 from idefix_cli._commands.digest import command as digest
 
@@ -23,18 +25,27 @@ def test_digest_in_situ(capsys):
     assert err == ""
 
 
-def test_digest_dir(capsys):
-    ret = main(["digest", "--dir", str(BASE_SETUP.absolute())])
+@pytest.mark.parametrize("supp_args", [(), ("--all",)])
+def test_digest_dir(capsys, supp_args):
+    ret = main(["digest", "--dir", str(BASE_SETUP.absolute()), *supp_args])
     out, err = capsys.readouterr()
     assert ret == 0
     json.loads(out)  # validate output
     assert err == ""
 
 
-def test_output(capsys, tmp_path):
+@pytest.mark.parametrize("supp_args", [(), ("--all",)])
+def test_output(capsys, tmp_path, supp_args):
     output_file = tmp_path / "out.json"
     ret = main(
-        ["digest", "--dir", str(BASE_SETUP.absolute()), "--output", str(output_file)]
+        [
+            "digest",
+            "--dir",
+            str(BASE_SETUP.absolute()),
+            "--output",
+            str(output_file),
+            *supp_args,
+        ]
     )
     out, err = capsys.readouterr()
     assert ret == 0

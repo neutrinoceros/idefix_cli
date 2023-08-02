@@ -68,6 +68,12 @@ def add_arguments(parser: ArgumentParser) -> None:
         dest="output",
         default=sys.stdout,
         help="output file (stdout by default)",
+    ),
+    parser.add_argument(
+        "--all",
+        dest="all_files",
+        action="store_true",
+        help="parse all log files (by default, only the first one is read)",
     )
     parser.add_argument(
         "--timeit",
@@ -79,6 +85,7 @@ def add_arguments(parser: ArgumentParser) -> None:
 def command(
     dir: str,
     output=sys.stdout,
+    all_files: bool = False,
     timeit: bool = False,
     *,
     _log_line_regexp=_LOG_LINE_REGEXP,
@@ -97,6 +104,9 @@ def command(
     if not log_files:
         print_err(f"No log files found in {dir!r}")
         return 1
+
+    if not all_files:
+        log_files = [log_files[0]]
 
     data: list[list[str]] = []
     _success = False
