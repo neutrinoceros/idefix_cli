@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ENH: add `-o/--output` argument to `idfx digest`
 - PERF: faster type casting in `idfx digest``
-
+- PERF: avoid unnecessary json serialization in `idfx digest`
 
 ## [2.4.0] - 2023-07-29
 
