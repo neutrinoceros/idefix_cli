@@ -12,44 +12,23 @@ from idefix_cli.lib import print_err
 _LOG_LINE_REGEXP = re.compile(r"^(?P<trailer>TimeIntegrator:)(?P<data>.*\|.*)")
 
 
-def _parse_token(raw_data: str):
-    sdata = raw_data.strip()
-    if sdata == "N/A":
-        return float("nan")
-    try:
-        return int(sdata)
-    except ValueError:
-        pass
-    try:
-        return float(sdata)
-    except ValueError:
-        pass
-    return sdata
-
-
 def _log_to_data(log: list[str]):
     columns: dict[str, list[Any]] = {name.strip(): [] for name in log[0].split("|")}
-    types = [type(_parse_token(t)) for t in log[1].split("|")]
     tokenized_log = [line.replace("N/A", "NaN").split("|") for line in log[1:]]
     for i, name in enumerate(columns.keys()):
         columns[name] = [L[i] for L in tokenized_log]
-    return columns, types
+    return columns
 
 
-def _data_to_json(header: str, data: dict[str, list[str]], types: list[type]) -> str:
+def _data_to_json(header: str, data: dict[str, list[str]]) -> str:
     res: list[str] = ['"%s": {' % header]
-    ncolumns = len(types)
-    for icol, ((name, record), t) in enumerate(zip(data.items(), types)):
+    ncolumns = len(data)
+    for icol, (name, record) in enumerate(data.items()):
         if icol < ncolumns - 1:
             trail = ","
         else:
             trail = ""
-        line = '"%s":' % name
-        if t is str:
-            line += '  ["' + ', "'.join(record) + '"]' + trail
-        else:
-            line += "  [" + ", ".join(record) + "]" + trail
-        res.append(line)
+        res.append(f'"{name}":[{",".join([_.strip() for _ in record])}]{trail}')
 
     res.append("}")
     return "\n".join(res)
@@ -131,8 +110,8 @@ def command(
 
     final_result: list[str] = []
     for p, d in zip(log_files, data):
-        columns, types = _log_to_data(d)
-        final_result.append(_data_to_json(p.name, columns, types))
+        columns = _log_to_data(d)
+        final_result.append(_data_to_json(p.name, columns))
 
     _json = "{\n" + ",\n".join(final_result) + "\n}"
     if isinstance(output, str):
