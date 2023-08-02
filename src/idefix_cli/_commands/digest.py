@@ -6,6 +6,7 @@ import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from time import monotonic_ns
+from typing import Any
 
 from idefix_cli.lib import print_err
 
@@ -28,10 +29,15 @@ def _parse_token(raw_data: str):
 
 
 def _log_to_json(log: list[str]):
-    tokenized_log = [[_parse_token(t) for t in line.split("|")] for line in log]
-    columns: dict[str, list] = {name: [] for name in tokenized_log[0]}
+    columns: dict[str, list[Any]] = {name.strip(): [] for name in log[0].split("|")}
+    types = [type(_parse_token(t)) for t in log[1].split("|")]
+    tokenized_log = [
+        [_type(t) for t, _type in zip(line.replace("N/A", "nan").split("|"), types)]
+        for line in log[1:]
+    ]
+
     for i, name in enumerate(columns.keys()):
-        columns[name] = [L[i] for L in tokenized_log[1:]]
+        columns[name] = [L[i] for L in tokenized_log]
     return columns
 
 
