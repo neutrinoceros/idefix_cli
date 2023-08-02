@@ -31,6 +31,18 @@ def test_digest_dir(capsys):
     assert err == ""
 
 
+def test_output(capsys, tmp_path):
+    output_file = tmp_path / "out.json"
+    ret = main(
+        ["digest", "--dir", str(BASE_SETUP.absolute()), "--output", str(output_file)]
+    )
+    out, err = capsys.readouterr()
+    assert ret == 0
+    assert out == ""
+    assert err == ""
+    json.loads(output_file.read_text())
+
+
 def test_timer(capsys):
     with chdir(BASE_SETUP):
         ret = main(["digest", "--timeit"])
