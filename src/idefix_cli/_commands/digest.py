@@ -89,7 +89,10 @@ def command(
         return 1
 
     tstart = monotonic_ns()
-    log_files = sorted(pdir.glob(r"idefix*log"))
+    log_files = sorted(
+        pdir.glob(r"idefix*log"),
+        key=lambda p: int(re.search(r"\d+", p.name).group()),  # type: ignore [union-attr]
+    )
 
     if not log_files:
         print_err(f"No log files found in {dir!r}")
