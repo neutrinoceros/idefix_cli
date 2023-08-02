@@ -43,6 +43,13 @@ def add_arguments(parser: ArgumentParser) -> None:
         help="target directory where log files are to be found",
     )
     parser.add_argument(
+        "-o",
+        "--output",
+        dest="output",
+        default=sys.stdout,
+        help="output file (stdout by default)",
+    )
+    parser.add_argument(
         "--timeit",
         action="store_true",
         help="print time used to perform the operation to stderr",
@@ -50,7 +57,11 @@ def add_arguments(parser: ArgumentParser) -> None:
 
 
 def command(
-    dir: str, timeit: bool = False, *, _log_line_regexp=_LOG_LINE_REGEXP
+    dir: str,
+    output=sys.stdout,
+    timeit: bool = False,
+    *,
+    _log_line_regexp=_LOG_LINE_REGEXP,
 ) -> int:
     pdir = Path(dir)
     if not pdir.is_dir():
@@ -89,7 +100,12 @@ def command(
     for p, d in zip(log_files, data):
         final_result.update({str(p.relative_to(dir)): _log_to_json(d)})
 
-    print(json.dumps(final_result, indent=2))
+    _json = json.dumps(final_result, indent=2)
+    if isinstance(output, str):
+        with open(output, "w") as fh:
+            print(_json, file=fh)
+    else:
+        print(_json, file=output)
 
     if timeit:
         tstop = monotonic_ns()

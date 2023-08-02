@@ -244,10 +244,12 @@ Note that the `--include` argument can be combined with `idefix.cfg`.
 ## `idfx digest`
 *new in idefix_cli 2.4*
 
-Reduce idefix performance logs to a `json` report, outputted to stdout.
+Reduce idefix performance logs to a `json` report, outputted to stdout by default, or to
+a file specified by `-o/--output`, e.g., the following styles are equivalent
 
 ```shell
 $ idfx digest > report.json
+$ idfx digest -o report.json
 ```
 No data reduction is performed other than type casting. This choice allows the resulting
 report to be plugged in arbitrary plotting scripts.
