@@ -199,7 +199,7 @@ CMake cache files and directories
 $ idfx clean .
 ```
 This command will print a list of purgable files, and will not remove anything
-without confirmation.
+without confirmation (unless confirmation is explicitly skipped with `--no-confirm`).
 
 To also remove `Makefile`, `idefix` executables, use the `--all` flag
 ```shell

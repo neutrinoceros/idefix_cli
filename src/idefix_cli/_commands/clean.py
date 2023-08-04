@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+from argparse import ArgumentParser
 from pathlib import Path
 from shutil import rmtree, which
 
@@ -39,7 +40,7 @@ gpatterns = frozenset(("Makefile", "idefix"))
 GENERATED_DIRS = frozenset(("CMakeFiles",))
 
 
-def add_arguments(parser) -> None:
+def add_arguments(parser: ArgumentParser) -> None:
     parser.add_argument(
         "directory", nargs="?", default=".", help="the target directory to clean"
     )
@@ -49,16 +50,25 @@ def add_arguments(parser) -> None:
         action="store_true",
         help="also clean generated Makefiles, idefix excutable files",
     )
-    parser.add_argument(
+    no_prompt_group = parser.add_mutually_exclusive_group()
+    no_prompt_group.add_argument(
         "--dry-run",
         "--dry",
         dest="dry",
         action="store_true",
         help="skip prompt, exit without cleaning",
     )
+    no_prompt_group.add_argument(
+        "--no-confirm",
+        dest="confirm",
+        action="store_false",
+        help="skip prompt confirmation",
+    )
 
 
-def command(directory, clean_all: bool = False, dry: bool = False) -> int:
+def command(
+    directory, clean_all: bool = False, dry: bool = False, confirm: bool = True
+) -> int:
     origin = os.path.abspath(os.curdir)
     with chdir(directory):
         patterns = bpatterns | kokkos_files | cmake_files | GENERATED_DIRS
@@ -93,7 +103,7 @@ def command(directory, clean_all: bool = False, dry: bool = False) -> int:
             )
         )
 
-        if dry or not Confirm.ask("\nPerform cleaning ?"):
+        if dry or (confirm and not Confirm.ask("\nPerform cleaning ?")):
             return 0
 
         for t in targets:
