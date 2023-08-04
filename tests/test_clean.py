@@ -55,6 +55,18 @@ def test_patterns():
     assert not kokkos_files.intersection(gpatterns)
 
 
+@pytest.mark.parametrize("pattern", [p for p in kokkos_files if "*" in p])
+def test_clean_no_confirmation(pattern, capsys, tmp_path):
+    file_to_clean = tmp_path / pattern.replace("*", "legit_file_prefix")
+    file_to_clean.touch()
+
+    ret = main(["clean", str(tmp_path.absolute()), "--no-confirm"])
+    assert ret == 0
+    _out, err = capsys.readouterr()
+    assert err == ""
+    assert not list(tmp_path.iterdir())
+
+
 @pytest.mark.parametrize("usr_input", VALID_USER_INPUTS)
 @pytest.mark.parametrize("pattern", [p for p in kokkos_files if "*" in p])
 def test_clean_wildcards(pattern, usr_input, monkeypatch, tmp_path):
