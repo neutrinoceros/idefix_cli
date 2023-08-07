@@ -5,7 +5,6 @@ on:
     - main
   pull_request:
     paths-ignore:
-    - '**/*.md'
     - .pre-commit-config.yaml
   workflow_dispatch:
 

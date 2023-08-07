@@ -255,6 +255,7 @@ No data reduction is performed other than type casting. This choice allows the r
 report to be plugged in arbitrary plotting scripts.
 
 This command supports the following optional flags:
+
 - `--timeit` output execution time to stderr
 - `--all` parse all log files instead of just the first one (may be slow)
 
