@@ -107,6 +107,7 @@ def command(
         for p, c in zip(log_files[1:], data[1:]):
             if c[0] != header:  # pragma: no cover
                 print_err(f"header mismatch from {p} and {log_files[0]}")
+                return 1
 
     final_result: list[str] = []
     for p, d in zip(log_files, data):
