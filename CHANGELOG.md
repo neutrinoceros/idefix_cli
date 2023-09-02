@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [3.1.1] - 2023-09-02
 
 - BUG: exit program after error (`idfx digest`)
 - BUG: fix a bug where `idfx digest` would generate invalid json from logs that end with
