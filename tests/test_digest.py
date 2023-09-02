@@ -89,3 +89,12 @@ def test_failed_parsing(capsys):
     assert ret != 0
     assert out == ""
     assert err == "💥 Failed to parse any data\n"
+
+
+def test_digest_log_with_crash(capsys):
+    with chdir(DATADIR / "log_crash"):
+        ret = main(["digest"])
+    out, err = capsys.readouterr()
+    assert ret == 0
+    json.loads(out)  # validate output
+    assert err == ""

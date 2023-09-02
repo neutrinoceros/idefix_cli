@@ -1,0 +1,252 @@
+                                  .:HMMMMHn:.  ..:n..
+                                .H*'``     `'%HM'''''!x.
+         :x                    x*`           .(MH:    `#h.
+        x.`M                   M>        :nMMMMMMMh.     `n.
+         *kXk..                XL  nnx:.XMMMMMMMMMMML   .. 4X.
+          )MMMMMx              'M   `^?M*MMMMMMMMMMMM:HMMMHHMM.
+          MMMMMMMX              ?k    'X ..'*MMMMMMM.#MMMMMMMMMx
+         XMMMMMMMX               4:    M:MhHxxHHHx`MMx`MMMMMMMMM>
+         XM!`   ?M                `x   4MM'`''``HHhMMX  'MMMMMMMM
+         4M      M                 `:   *>     `` .('MX   '*MMMM'
+          MX     `X.nnx..                        ..XMx`     'M*X
+           ?h.    ''```^'*!Hx.     :Mf     xHMh  M**MMM      4L`
+            `*Mx           `'*n.x. 4M>   :M` `` 'M    `       %
+             '%                ``*MHMX   X>      !
+            :!                    `#MM>  X>      `   :x
+           :M                        ?M  `X     .  ..'M
+           XX                       .!*X  `x   XM( MMx`h
+          'M>::                        `M: `+  MMX XMM `:
+          'M> M                         'X    'MMX ?MMk.Xx..
+          'M> ?L                     ...:!     MMX.H**'MMMM*h
+           M>  #L                  :!'`MM.    . X*`.xHMMMMMnMk.
+           `!   #h.      :L           XM'*hxHMM*MhHMMMMMMMMMM'#h
+           +     XMh:    4!      x   :f   MM'   `*MMMMMMMMMM%  `X
+           M     Mf``tHhxHM      M>  4k xxX'      `#MMMMMMMf    `M .>
+          :f     M   `MMMMM:     M>   M!MMM:         '*MMf'     'MH*
+          !     Xf   'MMMMMX     `X   X>'h.`          :P*Mx.   .d*~..
+        :M      X     4MMMMM>     !   X~ `Mh.      .nHL..M#'%nnMhH!'`
+       XM      d>     'X`'**h     'h  M   ^'MMHH+*'`  ''''   `'**'
+    %nxM>      *x+x.:. XL.. `k     `::X
+:nMMHMMM:.  X>  Mn`*MMMMMHM: `:     ?MMn.
+    `'**MML M>  'MMhMMMMMMMM  #      `M:^*x
+         ^*MMttnnMMMMMMMMMMMH>.        M:.4X
+                        `MMMM>X   (   .MMM:MM!   .
+                          `'''4x.dX  +^ `''MMMMHM?L..
+                                ``'           `'`'`'`
+
+
+
+       This is Idefix v1.1.0-249-g56fc92b0
+Main: Initialization stage.
+Gravity:: Allocating gravitational potential PhiP
+Main: initialisation finished.
+Main: detected your configuration needed Kokkos to be initialised before MPI.
+-----------------------------------------------------------------------------
+Input Parameters using input file idefix.ini:
+-----------------------------------------------------------------------------
+[Boundary]
+	X1-beg		userdef
+	X1-end		userdef
+	X2-beg		axis
+	X2-end		axis
+	X3-beg		periodic
+	X3-end		periodic
+[CommandLine]
+	dec		4	2	8
+	restart		126
+[Gravity]
+	Mcentral		1.0
+	gravCst		1
+	potential		central	planet
+	skip		1
+[Grid]
+	X1-grid		1	0.08	512	l	5.0
+	X2-grid		3	0.0	54	s+	1.2793395323170293	148	u	1.8622531212727638	54	s-	3.141592653589793
+	X3-grid		1	0.0	1024	u	6.283185307179586
+	coarsening		static	X3
+[Hydro]
+	ambipolar		explicit	userdef
+	gamma		1.66667
+	resistivity		explicit	userdef
+	solver		hlld
+[Output]
+	analysis		0.3141592653589793
+	dmp		62.83185307179586
+	log		1
+	uservar		BX1BX3	BX2BX3	RHOVX1	RHOVX1VX3	RHOVX1_RMN	RHOVX2_RMN	TQ	InvDt	Am
+	vtk		1.5707963267948966
+[Planet]
+	feelDisk		True
+	feelPlanets		false
+	hillCut		no
+	indirectPlanets		true
+	initialDistance		1.0
+	initialEccentricity		0.0
+	initialInclination		0
+	integrator		rk4
+	masstaper		62.83185307179586
+	planetToPrimary		1.0e-3
+	smoothing		plummer	0.009	0.0
+	tOffset		0
+	torqueNormalization		10.0
+[Setup]
+	Am		1.0
+	Hideal		6.0
+	beta		1000
+	densityFloor		1.0e-12
+	flaringIndex		0.0
+	h0		0.05
+	h0Top		0.3
+	sigma0		1.0e-4
+	sigmaSlope		0.5
+	wkzDamping		0.1
+	wkzMax		4.7
+	wkzMin		0.15
+[TimeIntegrator]
+	CFL		0.8
+	CFL_max_var		1.1
+	check_nan		100
+	first_dt		1.e-7
+	max_runtime		19.8
+	maxdivB		0.01
+	nstages		2
+	tstop		2513.28
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+Input: Compiled with DOUBLE PRECISION arithmetic.
+Input: DIMENSIONS=3.
+Input: COMPONENTS=3.
+Input: MPI ENABLED.
+Input: Kokkos CUDA target ENABLED.
+Grid: full grid size is
+	 Direction X1: userdef	0.08....512....5	userdef
+	 Direction X2: axis	0....256....3.14159	axis
+	 Direction X3: periodic	0....1024....6.28319	periodic
+Grid: MPI domain decomposition is ( 4  2  8 )
+Grid: Current MPI proc coordinates (0, 0, 0)
+Grid: static grid coarsening enabled in direction(s) X3
+DataBlock: this process grid size is
+	 Direction X1: 0.08....128....0.224937
+	 Direction X2: -4.44089e-15....128....1.5708
+	 Direction X3: 0....128....0.785398
+Hydro: solving MHD equations.
+Hydro: Reconstruction: 2nd order (PLM Van Leer)
+Hydro: EOS: ideal with gamma=1.66667
+Hydro: Riemann solver: hlld.
+Hydro: Ohmic resistivity ENABLED with user-defined resistivity function.
+Hydro: Ohmic resistivity uses an explicit time integration.
+Hydro: Ambipolar diffusion ENABLED with user-defined diffusivity function.
+Hydro: Ambipolar diffusion uses an explicit time integration.
+Hydro: user-defined source terms ENABLED.
+ElectroMotiveForce: Using UCT_CONTACT averaging scheme.
+Axis: Axis regularisation ENABLED.
+Axis: Full 2pi regularisation around the axis.
+Axis: Using MPI exchanges for axis regularisation
+PlanetarySystem: have 1 planets.
+PlanetarySystem: uses RK4 integration for planet location.
+PlanetarySystem: uses plummer expression for planet potential.
+Planet[0]: mass qp=0.001
+Planet[0]: initial location dp=1
+Gravity: ENABLED.
+Gravity: G=1.
+Gravity: central mass gravitational potential ENABLED with M=1
+Gravity: planet(s) potential ENABLED.
+TimeIntegrator: using 2nd Order (RK2) integrator.
+TimeIntegrator: Using adaptive dt with CFL=0.8 .
+TimeIntegrator: will stop after 19.8 hours.
+Main: Restarting from dump file.
+Dump: Reading restart file n 126...
+1 planets read at restart.
+done in 15.2551 s.
+Restarting from t=2194.68.
+Main: Cycling Time Integrator...
+TimeIntegrator:             time |            cycle |        time step | cell (updates/s) | MPI overhead (%) |            div B
+TimeIntegrator:     2.194675e+03 |                0 |     1.258612e-05 |              N/A |              N/A |     5.845698e-04
+TimeIntegrator:     2.194675e+03 |                1 |     1.258605e-05 |     3.236574e+09 |        26.666983 |     6.157855e-04
+TimeIntegrator:     2.194675e+03 |                2 |     1.258598e-05 |     3.835482e+09 |        24.014021 |     6.770488e-04
+TimeIntegrator:     2.194675e+03 |                3 |     1.258591e-05 |     3.836731e+09 |        23.671185 |     7.903247e-04
+TimeIntegrator:     2.194675e+03 |                4 |     1.258584e-05 |     3.825418e+09 |        22.648654 |     9.035118e-04
+TimeIntegrator:     2.194675e+03 |                5 |     1.258577e-05 |     3.932583e+09 |        20.374953 |     1.016737e-03
+TimeIntegrator:     2.194675e+03 |                6 |     1.258569e-05 |     3.940734e+09 |        21.982442 |     1.130019e-03
+TimeIntegrator:     2.194675e+03 |                7 |     1.258562e-05 |     3.952207e+09 |        24.063750 |     1.243325e-03
+TimeIntegrator:     2.194675e+03 |                8 |     1.258555e-05 |     3.940424e+09 |        24.093659 |     1.356753e-03
+TimeIntegrator:     2.194675e+03 |                9 |     1.258547e-05 |     3.949420e+09 |        24.227671 |     1.470101e-03
+TimeIntegrator:     2.194675e+03 |               10 |     1.258539e-05 |     3.980003e+09 |        24.226185 |     1.583470e-03
+TimeIntegrator:     2.194675e+03 |               11 |     1.258532e-05 |     3.995325e+09 |        22.308956 |     1.696858e-03
+TimeIntegrator:     2.194675e+03 |               12 |     1.258524e-05 |     3.970705e+09 |        24.888313 |     1.810251e-03
+TimeIntegrator:     2.194675e+03 |               13 |     1.258517e-05 |     3.976314e+09 |        22.623149 |     1.923675e-03
+TimeIntegrator:     2.194675e+03 |               14 |     1.258509e-05 |     3.999126e+09 |        23.393996 |     2.037130e-03
+TimeIntegrator:     2.194675e+03 |               15 |     1.258501e-05 |     3.988327e+09 |        23.806947 |     2.150594e-03
+TimeIntegrator:     2.194675e+03 |               16 |     1.258493e-05 |     4.004837e+09 |        23.719854 |     2.264052e-03
+TimeIntegrator:     2.194675e+03 |               17 |     1.258485e-05 |     4.002847e+09 |        23.407304 |     2.377550e-03
+TimeIntegrator:     2.194676e+03 |               18 |     1.258477e-05 |     3.993983e+09 |        24.971837 |     2.491066e-03
+TimeIntegrator:     2.194676e+03 |               19 |     1.258470e-05 |     3.988433e+09 |        21.528868 |     2.604599e-03
+TimeIntegrator:     2.194676e+03 |               20 |     1.258462e-05 |     3.993958e+09 |        24.859483 |     2.718169e-03
+TimeIntegrator:     2.194676e+03 |               21 |     1.258454e-05 |     4.007923e+09 |        24.232592 |     2.831738e-03
+TimeIntegrator:     2.194676e+03 |               22 |     1.258446e-05 |     3.999382e+09 |        23.746288 |     2.945324e-03
+TimeIntegrator:     2.194676e+03 |               23 |     1.258438e-05 |     4.000116e+09 |        24.414294 |     3.058916e-03
+TimeIntegrator:     2.194676e+03 |               24 |     1.258429e-05 |     4.002741e+09 |        23.851708 |     3.172538e-03
+TimeIntegrator:     2.194676e+03 |               25 |     1.258421e-05 |     4.007475e+09 |        23.747469 |     3.286151e-03
+TimeIntegrator:     2.194676e+03 |               26 |     1.258413e-05 |     3.996123e+09 |        24.674294 |     3.399808e-03
+TimeIntegrator:     2.194676e+03 |               27 |     1.258405e-05 |     4.004980e+09 |        23.731472 |     3.513482e-03
+TimeIntegrator:     2.194676e+03 |               28 |     1.258397e-05 |     3.993339e+09 |        23.608870 |     3.627178e-03
+TimeIntegrator:     2.194676e+03 |               29 |     1.258388e-05 |     3.998110e+09 |        24.085221 |     3.740811e-03
+TimeIntegrator:     2.194676e+03 |               30 |     1.258380e-05 |     4.002311e+09 |        22.856411 |     3.854537e-03
+TimeIntegrator:     2.194676e+03 |               31 |     1.258371e-05 |     4.011261e+09 |        24.119116 |     3.968279e-03
+TimeIntegrator:     2.194676e+03 |               32 |     1.258362e-05 |     3.938711e+09 |        23.279443 |     4.082036e-03
+TimeIntegrator:     2.194676e+03 |               33 |     1.258353e-05 |     3.998490e+09 |        24.426687 |     4.195812e-03
+TimeIntegrator:     2.194676e+03 |               34 |     1.258344e-05 |     3.981523e+09 |        24.620788 |     4.309603e-03
+TimeIntegrator:     2.194676e+03 |               35 |     1.258336e-05 |     4.001945e+09 |        22.600031 |     4.423425e-03
+TimeIntegrator:     2.194676e+03 |               36 |     1.258327e-05 |     3.999566e+09 |        23.728395 |     4.537196e-03
+TimeIntegrator:     2.194676e+03 |               37 |     1.258318e-05 |     4.000043e+09 |        20.374145 |     4.651031e-03
+TimeIntegrator:     2.194676e+03 |               38 |     1.258309e-05 |     4.004222e+09 |        23.987463 |     4.764890e-03
+TimeIntegrator:     2.194676e+03 |               39 |     1.258299e-05 |     4.001370e+09 |        24.424787 |     4.878767e-03
+TimeIntegrator:     2.194676e+03 |               40 |     1.258290e-05 |     4.003648e+09 |        22.764338 |     4.992660e-03
+TimeIntegrator:     2.194676e+03 |               41 |     1.258282e-05 |     3.983801e+09 |        22.582388 |     5.106569e-03
+TimeIntegrator:     2.194676e+03 |               42 |     1.258273e-05 |     3.992422e+09 |        21.800167 |     5.220495e-03
+TimeIntegrator:     2.194676e+03 |               43 |     1.258264e-05 |     3.993103e+09 |        24.819383 |     5.334437e-03
+TimeIntegrator:     2.194676e+03 |               44 |     1.258256e-05 |     3.998795e+09 |        23.381262 |     5.448345e-03
+TimeIntegrator:     2.194676e+03 |               45 |     1.258247e-05 |     3.989402e+09 |        23.200792 |     5.562239e-03
+TimeIntegrator:     2.194676e+03 |               46 |     1.258238e-05 |     3.982936e+09 |        25.542849 |     5.676230e-03
+TimeIntegrator:     2.194676e+03 |               47 |     1.258229e-05 |     3.993462e+09 |        20.159474 |     5.790238e-03
+TimeIntegrator:     2.194676e+03 |               48 |     1.258220e-05 |     3.980431e+09 |        22.877088 |     5.904153e-03
+TimeIntegrator:     2.194676e+03 |               49 |     1.258211e-05 |     4.007106e+09 |        22.593354 |     6.018082e-03
+TimeIntegrator:     2.194676e+03 |               50 |     1.258202e-05 |     4.008978e+09 |        22.834019 |     6.132138e-03
+TimeIntegrator:     2.194676e+03 |               51 |     1.258192e-05 |     3.994985e+09 |        24.339962 |     6.246210e-03
+TimeIntegrator:     2.194676e+03 |               52 |     1.258183e-05 |     3.999985e+09 |        22.985993 |     6.360303e-03
+TimeIntegrator:     2.194676e+03 |               53 |     1.258173e-05 |     4.001682e+09 |        24.832279 |     6.474397e-03
+TimeIntegrator:     2.194676e+03 |               54 |     1.258164e-05 |     4.003596e+09 |        22.474065 |     6.588517e-03
+TimeIntegrator:     2.194676e+03 |               55 |     1.258154e-05 |     3.973510e+09 |        22.380763 |     6.702653e-03
+TimeIntegrator:     2.194676e+03 |               56 |     1.258145e-05 |     3.999562e+09 |        23.843689 |     6.816748e-03
+TimeIntegrator:     2.194676e+03 |               57 |     1.258136e-05 |     4.002442e+09 |        24.394835 |     6.930916e-03
+TimeIntegrator:     2.194676e+03 |               58 |     1.258126e-05 |     3.988932e+09 |        24.219524 |     7.045099e-03
+TimeIntegrator:     2.194676e+03 |               59 |     1.258117e-05 |     4.006085e+09 |        22.137608 |     7.159297e-03
+TimeIntegrator:     2.194676e+03 |               60 |     1.258107e-05 |     3.993440e+09 |        25.529010 |     7.273552e-03
+TimeIntegrator:     2.194676e+03 |               61 |     1.258098e-05 |     3.992776e+09 |        22.317359 |     7.387723e-03
+TimeIntegrator:     2.194676e+03 |               62 |     1.258088e-05 |     4.002566e+09 |        24.103886 |     7.501969e-03
+TimeIntegrator:     2.194676e+03 |               63 |     1.258079e-05 |     4.011059e+09 |        21.225822 |     7.616197e-03
+TimeIntegrator:     2.194676e+03 |               64 |     1.258069e-05 |     4.000936e+09 |        24.667396 |     7.730474e-03
+TimeIntegrator:     2.194676e+03 |               65 |     1.258060e-05 |     4.002516e+09 |        23.336218 |     7.844766e-03
+TimeIntegrator:     2.194676e+03 |               66 |     1.258050e-05 |     3.996310e+09 |        24.524032 |     7.959073e-03
+TimeIntegrator:     2.194676e+03 |               67 |     1.258041e-05 |     3.976382e+09 |        24.485622 |     8.073359e-03
+TimeIntegrator:     2.194676e+03 |               68 |     1.258031e-05 |     3.996975e+09 |        23.283992 |     8.187644e-03
+TimeIntegrator:     2.194676e+03 |               69 |     1.258021e-05 |     3.972340e+09 |        22.025317 |     8.301978e-03
+TimeIntegrator:     2.194676e+03 |               70 |     1.258011e-05 |     3.985046e+09 |        23.515728 |     8.416347e-03
+TimeIntegrator:     2.194676e+03 |               71 |     1.258002e-05 |     4.016622e+09 |        21.957139 |     8.530731e-03
+TimeIntegrator:     2.194676e+03 |               72 |     1.257992e-05 |     3.994778e+09 |        23.172695 |     8.645097e-03
+TimeIntegrator:     2.194676e+03 |               73 |     1.257982e-05 |     4.002305e+09 |        21.963724 |     8.759486e-03
+TimeIntegrator:     2.194676e+03 |               74 |     1.257972e-05 |     4.001797e+09 |        24.275869 |     8.873916e-03
+TimeIntegrator:     2.194676e+03 |               75 |     1.257962e-05 |     3.999548e+09 |        23.189320 |     8.988361e-03
+TimeIntegrator:     2.194676e+03 |               76 |     1.257952e-05 |     3.612897e+09 |        19.996280 |     9.102798e-03
+TimeIntegrator:     2.194676e+03 |               77 |     1.257942e-05 |     3.983636e+09 |        25.258831 |     9.217263e-03
+TimeIntegrator:     2.194676e+03 |               78 |     1.257932e-05 |     3.935023e+09 |        21.742333 |     9.332015e-03
+TimeIntegrator:     2.194676e+03 |               79 |     1.257922e-05 |     3.998354e+09 |        23.538323 |     9.446258e-03
+TimeIntegrator:     2.194676e+03 |               80 |     1.257912e-05 |     3.974607e+09 |        24.358413 |     9.565220e-03
+TimeIntegrator:     2.194676e+03 |               81 |     1.257902e-05 |     4.004784e+09 |        23.691502 |     9.684857e-03
+TimeIntegrator:     2.194676e+03 |               82 |     1.257891e-05 |     4.011544e+09 |        23.710033 |     9.795734e-03
+TimeIntegrator:     2.194676e+03 |               83 |     1.257881e-05 |     3.988071e+09 |        25.698028 |     9.908077e-03
+TimeIntegrator:     2.194676e+03 |               84 |     1.257871e-05 |     3.993063e+09 |        24.240476 |     1.002966e-02Main: WARNING! Caught an exception in TimeIntegrator.
+
+divB too large, check your calculation
+Main: attempting to save the current state for inspection.
+Vtk: Write file n 1398...
