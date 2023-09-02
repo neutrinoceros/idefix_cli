@@ -16,10 +16,20 @@ def _log_to_data(log: list[str]):
     columns: dict[str, list[Any]] = {name.strip(): [] for name in log[0].split("|")}
     tokenized_log = [line.replace("N/A", "NaN").split("|") for line in log[1:]]
     for i, name in enumerate(columns.keys()):
-        columns[name] = [
-            re.sub(r"\D+$", "", L[i]) if "NaN" not in L[i] else L[i]
-            for L in tokenized_log
-        ]
+        columns[name] = [L[i] for L in tokenized_log]
+
+    # the very last line in a log may be polluted by a trailing warning or error
+    # in practice this is only known to happen on the last column.
+    # Let's sanitize this value:
+
+    # rely on Python leaking variables binded by for loops
+    data = columns[name]
+    last_entry = data[-1]
+    if "NaN" in last_entry:
+        data[-1] = "NaN"
+    else:
+        data[-1] = re.sub(r"\D+$", "", last_entry)
+
     return columns
 
 
