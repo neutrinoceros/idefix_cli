@@ -16,7 +16,10 @@ def _log_to_data(log: list[str]):
     columns: dict[str, list[Any]] = {name.strip(): [] for name in log[0].split("|")}
     tokenized_log = [line.replace("N/A", "NaN").split("|") for line in log[1:]]
     for i, name in enumerate(columns.keys()):
-        columns[name] = [L[i] for L in tokenized_log]
+        columns[name] = [
+            re.sub(r"\D+$", "", L[i]) if "NaN" not in L[i] else L[i]
+            for L in tokenized_log
+        ]
     return columns
 
 

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 - BUG: exit program after error (`idfx digest`)
+- BUG: fix a bug where `idfx digest` would generate invalid json from logs that end with
+  an inlined warning or an error
 
 ## [3.1.0] - 2023-08-04
 
