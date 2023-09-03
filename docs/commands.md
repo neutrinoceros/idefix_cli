@@ -269,7 +269,7 @@ import matplotlib.pyplot as plt
 
 series = pd.read_json("report.json", typ="series")
 
-stacked = np.empty((len(series[0]["time"]), len(series)), dtype="float")
+stacked = np.empty((len(series.iloc[0]["time"]), len(series)), dtype="float")
 
 fig, ax = plt.subplots()
 ax.set(
@@ -281,7 +281,7 @@ for i, s in enumerate(series):
     stacked[:, i] = s["cell (updates/s)"]
     ax.plot("time", "cell (updates/s)", data=s, lw=0.3, alpha=0.7, color="C0")
 
-ax.plot(series[0]["time"], stacked.mean(axis=1), color="C0", lw=2)
+ax.plot(series.iloc[0]["time"], stacked.mean(axis=1), color="C0", lw=2)
 ax.axhline(np.nanmean(stacked), ls="--", color="black")
 
 sfile = "perfs.png"
