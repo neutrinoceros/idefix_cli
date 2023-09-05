@@ -65,8 +65,8 @@ def add_arguments(parser: ArgumentParser) -> None:
     select_group.add_argument(
         "-i",
         "--input",
-        default=None,
         dest="input",
+        default=r"idefix*.log",
         nargs="+",
         help="target log file",
     )
@@ -85,7 +85,7 @@ def add_arguments(parser: ArgumentParser) -> None:
 
 def command(
     dir: str,
-    input=None,
+    input=r"idefix*.log",
     output=sys.stdout,
     all_files: bool = False,
     timeit: bool = False,
@@ -97,14 +97,16 @@ def command(
         print_err(f"No such directory: {dir!r}")
         return 1
 
-    if input is None:
-        input = r"idefix*.out"
-
     tstart = monotonic_ns()
-    log_files = sorted(
-        pdir.glob(input),
-        key=lambda p: int(re.search(r"\d+", p.name).group()),  # type: ignore [union-attr]
-    )
+    if isinstance(input, list):
+        log_files = [pdir.joinpath(ipt) for ipt in input]
+        # log_files = sorted(pdir.glob(input))
+    else:
+        log_files = sorted(
+            pdir.glob(input),
+            # pdir.glob(r"idefix*.log"),
+            key=lambda p: int(re.search(r"\d+", p.name).group()),  # type: ignore [union-attr]
+        )
 
     if not log_files:
         print_err(f"No log files found in {dir!r}")

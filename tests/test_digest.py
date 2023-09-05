@@ -98,3 +98,19 @@ def test_digest_log_with_crash(capsys):
     assert ret == 0
     json.loads(out)  # validate output
     assert err == ""
+
+
+def test_digest_with_input(capsys):
+    with chdir(DATADIR / "log_crash"):
+        ret = main(["digest", "--input", "idefix.0.log"])
+    out, err = capsys.readouterr()
+    assert ret == 0
+    assert err == ""
+
+    with chdir(DATADIR / "log_crash"):
+        ret2 = main(["digest"])
+    out2, err2 = capsys.readouterr()
+    assert ret2 == 0
+    assert err2 == ""
+
+    assert out == out2
