@@ -61,7 +61,16 @@ def add_arguments(parser: ArgumentParser) -> None:
         default=sys.stdout,
         help="output file (stdout by default)",
     ),
-    parser.add_argument(
+    select_group = parser.add_mutually_exclusive_group()
+    select_group.add_argument(
+        "-i",
+        "--input",
+        default=None,
+        dest="input",
+        nargs="+",
+        help="target log file",
+    )
+    select_group.add_argument(
         "--all",
         dest="all_files",
         action="store_true",
@@ -76,6 +85,7 @@ def add_arguments(parser: ArgumentParser) -> None:
 
 def command(
     dir: str,
+    input=None,
     output=sys.stdout,
     all_files: bool = False,
     timeit: bool = False,
@@ -87,9 +97,12 @@ def command(
         print_err(f"No such directory: {dir!r}")
         return 1
 
+    if input is None:
+        input = r"idefix*.out"
+
     tstart = monotonic_ns()
     log_files = sorted(
-        pdir.glob(r"idefix*log"),
+        pdir.glob(input),
         key=lambda p: int(re.search(r"\d+", p.name).group()),  # type: ignore [union-attr]
     )
 
