@@ -114,3 +114,32 @@ def test_digest_with_input(capsys):
     assert err2 == ""
 
     assert out == out2
+
+
+# @pytest.mark.parametrize("supp_args", [(), ("--input", "idefix.0.log", "idefix.1.log")])
+# @pytest.mark.parametrize("supp_args", [(), ("--all",)])
+# def test_digest_multiple_input(capsys, supp_args):
+def test_digest_multiple_input(capsys):
+    # ret = main(["digest", "--dir", str(BASE_SETUP.absolute()), *supp_args])
+    ret = main(
+        [
+            "digest",
+            "--dir",
+            str(BASE_SETUP.absolute()),
+            "--input",
+            "idefix.0.log",
+            "idefix.1.log",
+        ]
+    )
+    out, err = capsys.readouterr()
+    assert ret == 0
+    json.loads(out)  # validate output
+    assert err == ""
+
+    ret2 = main(["digest", "--dir", str(BASE_SETUP.absolute()), "--all"])
+    out2, err2 = capsys.readouterr()
+    assert ret2 == 0
+    json.loads(out2)  # validate output
+    assert err2 == ""
+
+    assert out == out2

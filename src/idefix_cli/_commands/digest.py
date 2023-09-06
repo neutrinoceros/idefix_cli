@@ -112,7 +112,7 @@ def command(
         print_err(f"No log files found in {dir!r}")
         return 1
 
-    if not all_files:
+    if not all_files and len(input) <= 1:
         log_files = [log_files[0]]
 
     data: list[list[str]] = []
