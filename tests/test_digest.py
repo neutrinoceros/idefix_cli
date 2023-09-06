@@ -116,11 +116,7 @@ def test_digest_with_input(capsys):
     assert out == out2
 
 
-# @pytest.mark.parametrize("supp_args", [(), ("--input", "idefix.0.log", "idefix.1.log")])
-# @pytest.mark.parametrize("supp_args", [(), ("--all",)])
-# def test_digest_multiple_input(capsys, supp_args):
 def test_digest_multiple_input(capsys):
-    # ret = main(["digest", "--dir", str(BASE_SETUP.absolute()), *supp_args])
     ret = main(
         [
             "digest",

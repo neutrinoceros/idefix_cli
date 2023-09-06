@@ -100,11 +100,9 @@ def command(
     tstart = monotonic_ns()
     if isinstance(input, list):
         log_files = [pdir.joinpath(ipt) for ipt in input]
-        # log_files = sorted(pdir.glob(input))
     else:
         log_files = sorted(
             pdir.glob(input),
-            # pdir.glob(r"idefix*.log"),
             key=lambda p: int(re.search(r"\d+", p.name).group()),  # type: ignore [union-attr]
         )
 
