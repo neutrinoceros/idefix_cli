@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [3.2.1] - 2023-09-06
 
 - BUG: fix `baballe digest > file.json`
 - BUG: fix a bug where `idfx digest` would choke on files where no line is captured
