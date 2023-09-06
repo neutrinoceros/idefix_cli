@@ -1,11 +1,10 @@
 """agregate performance data from log files as json"""
-
 import re
 import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from time import monotonic_ns
-from typing import Any
+from typing import Any, Optional
 
 from idefix_cli.lib import print_err
 
@@ -61,7 +60,14 @@ def add_arguments(parser: ArgumentParser) -> None:
         default=sys.stdout,
         help="output file (stdout by default)",
     ),
-    parser.add_argument(
+    select_group = parser.add_mutually_exclusive_group()
+    select_group.add_argument(
+        "--input",
+        dest="input_",
+        nargs="*",
+        help="target log file",
+    )
+    select_group.add_argument(
         "--all",
         dest="all_files",
         action="store_true",
@@ -76,6 +82,7 @@ def add_arguments(parser: ArgumentParser) -> None:
 
 def command(
     dir: str,
+    input_: Optional[list[str]] = None,
     output=sys.stdout,
     all_files: bool = False,
     timeit: bool = False,
@@ -88,16 +95,19 @@ def command(
         return 1
 
     tstart = monotonic_ns()
-    log_files = sorted(
-        pdir.glob(r"idefix*log"),
-        key=lambda p: int(re.search(r"\d+", p.name).group()),  # type: ignore [union-attr]
-    )
+    if input_ is None:
+        log_files = sorted(
+            pdir.glob(r"idefix*log"),
+            key=lambda p: int(re.search(r"\d+", p.name).group()),  # type: ignore [union-attr]
+        )
+    else:
+        log_files = [pdir / _ for _ in input_]
 
     if not log_files:
         print_err(f"No log files found in {dir!r}")
         return 1
 
-    if not all_files:
+    if input_ is None and not all_files:
         log_files = [log_files[0]]
 
     data: list[list[str]] = []
