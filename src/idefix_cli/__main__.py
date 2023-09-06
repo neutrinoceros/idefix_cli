@@ -149,7 +149,7 @@ def main(
 
 
 def alt_main(argv: "list[str] | None" = None) -> Any:
-    console = Console(width=500, highlight=False)
+    console = Console(width=500, highlight=False, stderr=True)
     console.print(":tennis: :arrow_forward:")
 
     set_theme("baballe")
