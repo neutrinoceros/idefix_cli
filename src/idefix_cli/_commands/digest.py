@@ -112,12 +112,18 @@ def command(
 
     data: list[list[str]] = []
     _success = False
-    for log in log_files:
+
+    for log in log_files.copy():
         captured: list[str] = []
         for line in log.read_text().splitlines():
             if (match := _log_line_regexp.fullmatch(line)) is not None:
                 captured.append(match.group("data"))
                 _success = True
+        if not captured:
+            # dynamically exclude files without any data
+            log_files.remove(log)
+            continue
+
         data.append(captured)
 
     if not _success:
