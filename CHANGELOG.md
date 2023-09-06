@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-BUG: fix `baballe digest > file.json`
+- BUG: fix `baballe digest > file.json`
+- BUG: fix a bug where `idfx digest` would choke on files where no line is captured
 
 ## [3.2.0] - 2023-09-06
 

@@ -139,3 +139,29 @@ def test_digest_multiple_input(capsys):
     assert err2 == ""
 
     assert out == out2
+
+
+def test_digest_empty_file(capsys):
+    ret = main(["digest", "--dir", str(BASE_SETUP.absolute()), "--input", "empty.log"])
+    assert ret != 0
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err == "💥 Failed to parse any data\n"
+
+
+@pytest.mark.parametrize(
+    "logs",
+    [
+        ("empty.log", "idefix.0.log"),
+        ("empty.log", "idefix.1.log"),
+        # order shouldn't matter
+        ("idefix.0.log", "empty.log"),
+        ("idefix.1.log", "empty.log"),
+    ],
+)
+def test_digest_mixed_contents(capsys, logs):
+    ret = main(["digest", "--dir", str(BASE_SETUP.absolute()), "--input", *logs])
+    assert ret == 0
+    out, err = capsys.readouterr()
+    json.loads(out)  # validate output
+    assert err == ""
