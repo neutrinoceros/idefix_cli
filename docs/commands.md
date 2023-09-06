@@ -254,10 +254,11 @@ $ idfx digest -o report.json
 No data reduction is performed other than type casting. This choice allows the resulting
 report to be plugged in arbitrary plotting scripts.
 
-This command supports the following optional flags:
+By default, files matching the expression `idefix.*.log` are listed, and only the first
+one is parsed. Adding the `--all` flag enables parsing *all* files matching this expression.
+Alternatively, one or more file(s) with arbitrary name(s) may be specified via `--input` (*new in idefix_cli 3.2*).
 
-- `--timeit` output execution time to stderr
-- `--all` parse all log files instead of just the first one (may be slow)
+Pass the `--timeit` flag to output execution time to stderr.
 
 Here's an example Python script to process the report into a plot of simulation
 performance VS time, for each MPI process
