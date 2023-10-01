@@ -15,7 +15,7 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "inifix>=3.0.0",
+    "inifix>=4.2.2",
     "packaging>=21.0",
     "termcolor>=2.3.0",
     "typing-extensions>=4.1.0;python_version < '3.11'",
@@ -27,7 +27,7 @@ text = "GPL-3.0"
 
 [project.optional-dependencies]
 isolated = [
-    "inifix==3.0.0",
+    "inifix==4.2.2",
     "packaging==21.0",
     "termcolor==2.3.0",
     "typing-extensions==4.1.0;python_version < '3.11'",
