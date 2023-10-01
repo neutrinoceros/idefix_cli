@@ -10,21 +10,20 @@ if sys.version_info >= (3, 10):
 else:
     OPTIONAL_SEC = "optional arguments"
 HELP_MESSAGE = (
-    "usage: idfx [-h] [-v] {clean,clone,conf,digest,read,run,stamp,switch,write} ...\n"
+    "usage: idfx [-h] [-v] {clean,clone,conf,digest,read,run,switch,write} ...\n"
     "\n"
     f"{OPTIONAL_SEC}:\n"
     "  -h, --help            show this help message and exit\n"
     "  -v, --version         show program's version number and exit\n"
     "\n"
     "commands:\n"
-    "  {clean,clone,conf,digest,read,run,stamp,switch,write}\n"
+    "  {clean,clone,conf,digest,read,run,switch,write}\n"
     "    clean               remove compilation files\n"
     "    clone               clone a problem directory\n"
     "    conf                configure Idefix\n"
     "    digest              agregate performance data from log files as json\n"
     "    read                read an Idefix inifile and print it to json format\n"
     "    run                 run an Idefix problem\n"
-    "    stamp               print relevant data for reproduction to stdout\n"
     "    switch              switch git branch in $IDEFIX_DIR using git checkout\n"
     "    write               write an Idefix inifile from a json string\n"
 )
