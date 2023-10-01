@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - DEP: migrate prompting from rich to termcolor
+- API: remove `idfx stamp` command, drop dependency on GitPython
 
 ## [3.2.1] - 2023-09-06
 

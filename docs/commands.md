@@ -306,52 +306,6 @@ $ idfx switch mybranch
 Bonus: if no branch is specified, switch the most recently visited other branch.
 
 
-## `idfx stamp`
-
-Prints key data for reproduction and development to stdout.
-
-```shell
-$ idfx stamp
-v0.5
-daff799bb64b0993f058f50779873d594376d5bf
-lesurg
-f-dahu
-Sat Jan 16 16:15:28 2021
-```
-<details>
-<summary>More</summary>
-
-This command is roughly equivalent to
-```shell
-$ cd $IDEFIX_DIR \
-  && git describe --tags \
-  && cd - > /dev/null \
-  && date \
-  && hostname \
-  && echo $USER
-```
-Additionnally, one can get the underlying data in json-serializable format
-```shell
-$ idfx stamp --json
-{
-  "tag": "v0.5",
-  "sha": "daff799bb64b0993f058f50779873d594376d5bf",
-  "user": "glesur",
-  "host": "f-dahu",
-  "date": "Sat Jan 16 16:15:54 2021"
-}
-```
-
-This is helpful to quickly store important metadata next to one's datafiles. The git tag
-may be of critical value for reproductability, especially when bugs in Idefix are found
-after simulations are run, like so
-
-```shell
-$ idfx stamp --json > metadata.json
-```
-</details>
-
-
 ## `idfx read`
 
 Read an Idefix inifile and print the resulting dictionnary to stdout in a json parsable
