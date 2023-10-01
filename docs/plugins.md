@@ -110,3 +110,6 @@ from idefix_cli.lib import chdir
 
 ### get_option
 ::: idefix_cli.lib.get_option
+
+### prompt_ask
+::: idefix_cli.lib.prompt_ask

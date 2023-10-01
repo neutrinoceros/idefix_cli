@@ -7,8 +7,6 @@ from glob import glob
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from rich import print
-
 from idefix_cli.lib import (
     files_from_patterns,
     get_option,

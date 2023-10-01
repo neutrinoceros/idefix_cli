@@ -8,9 +8,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 from shutil import rmtree, which
 
-from rich.prompt import Confirm
-
-from idefix_cli.lib import files_from_patterns, make_file_tree
+from idefix_cli.lib import files_from_patterns, make_file_tree, prompt_ask
 
 if sys.version_info >= (3, 11):
     from contextlib import chdir
@@ -103,7 +101,7 @@ def command(
             )
         )
 
-        if dry or (confirm and not Confirm.ask("\nPerform cleaning ?")):
+        if dry or (confirm and not prompt_ask("\nPerform cleaning ?")):
             return 0
 
         for t in targets:

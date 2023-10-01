@@ -10,19 +10,16 @@ from glob import glob
 from itertools import chain
 from pathlib import Path
 from textwrap import indent
-from typing import Any, Callable, TypeVar, Union, cast
+from typing import Any, Callable, TypeVar, cast
 
 from packaging.version import Version
-from rich.console import Console
+from termcolor import cprint
 
-from idefix_cli._theme import Theme, get_theme
+from idefix_cli._theme import get_symbol
 
 if sys.version_info >= (3, 11):
     from enum import StrEnum
-    from typing import assert_never
 else:
-    from typing_extensions import assert_never
-
     from idefix_cli._backports import StrEnum
 
 # workaround mypy not being confortable around decorator preserving signatures
@@ -113,19 +110,12 @@ class requires_idefix:
         return cast(TFun, wrapper)
 
 
-# setup a very large console to prevent rich from wrapping long error messages
-# since it usually has the side effect of truncating file names.
-# This workaround also helps keeping error messages reproducible in CI.
-
-ErrorMessage = Union[str, Exception]
-
-
-def print_err(message: ErrorMessage) -> None:
+def print_err(message: str) -> None:
     """Print a fatal error message to stderr.
     Normally followed by `return 1`.
 
     Args:
-        message (str | Exception): the error message
+        message (str): the error message
 
     Returns:
         None
@@ -137,22 +127,15 @@ def print_err(message: ErrorMessage) -> None:
         ...        return 1
         ...    return 0
     """
-    err_console = Console(width=500, file=sys.stderr)
-    THEME = get_theme()
-    if THEME is Theme.DEFAULT:
-        emoji = ":boom:"
-    elif THEME is Theme.BABALLE:
-        emoji = ":hot_dog:"
-    else:
-        assert_never(THEME)
-    err_console.print(f"{emoji}[bold red3] {message}[/]")
+    cprint(get_symbol("ERROR"), end=" ", file=sys.stderr)
+    cprint(message, color="red", attrs=["bold"], file=sys.stderr)
 
 
-def print_warning(message: ErrorMessage) -> None:
+def print_warning(message: str) -> None:
     """Print a non-fatal error message to stderr.
 
     Args:
-        message (str | Exception): the error message
+        message (str): the error message
 
     Returns:
         None
@@ -163,15 +146,8 @@ def print_warning(message: ErrorMessage) -> None:
         ...        print_warning("Missing MYENVVAR")
         ...    return 0
     """
-    err_console = Console(width=500, file=sys.stderr)
-    THEME = get_theme()
-    if THEME is Theme.DEFAULT:
-        emoji = ":exclamation:"
-    elif THEME is Theme.BABALLE:
-        emoji = ":paw_print:"
-    else:
-        assert_never(THEME)
-    err_console.print(f"{emoji}[italic magenta] {message}[/]")
+    cprint(get_symbol("WARNING"), end=" ", file=sys.stderr)
+    cprint(message, color="magenta", attrs=["underline"], file=sys.stderr)
 
 
 def print_success(message: str) -> None:
@@ -188,15 +164,8 @@ def print_success(message: str) -> None:
         ...    print_success("Successfully did nothing !")
         ...    return 0
     """
-    console = Console(width=500, file=sys.stdout)
-    THEME = get_theme()
-    if THEME is Theme.DEFAULT:
-        emoji = ":tada:"
-    elif THEME is Theme.BABALLE:
-        emoji = ":guide_dog:"
-    else:
-        assert_never(THEME)
-    console.print(f"{emoji}[bold chartreuse1] {message}[/]")
+    cprint(get_symbol("SUCCESS"), end=" ")
+    cprint(message, color="green")
 
 
 def print_subcommand(cmd: list[str], *, loc: os.PathLike[str] | None = None) -> None:
@@ -228,15 +197,10 @@ def print_subcommand(cmd: list[str], *, loc: os.PathLike[str] | None = None) -> 
     if loc is not None and Path(loc).resolve() != Path.cwd():
         trailer = f" (from {loc}{os.sep})"
 
-    console = Console(width=500, highlight=False)
-    THEME = get_theme()
-    if THEME is Theme.DEFAULT:
-        emoji = ":rocket:"
-    elif THEME is Theme.BABALLE:
-        emoji = ":dog_face:"
-    else:
-        assert_never(THEME)
-    console.print(f"{emoji}[italic cornflower_blue] running[/] [bold]{msg}[/]{trailer}")
+    cprint(get_symbol("LAUNCH"), end=" ")
+    cprint("running", color="blue", end=" ")
+    cprint(msg, attrs=["bold"], end="")
+    cprint(trailer)
 
 
 def run_subcommand(
@@ -431,6 +395,19 @@ def make_file_tree(file_list: list[str], parent_dir: str, origin: str) -> str:
         f"{_Tree.ANGLE}{_Tree.BRANCH*2} {os.path.relpath(file_list[-1], start=parent_dir)}"
     )
     return indent("\n".join(ret), " ")
+
+
+def prompt_ask(prompt: str, /) -> bool:
+    """Repeatedly prompt a yes/no alternative until either 'y' or 'n' is received.
+    Return the result as a boolean (yes=True). Case insensitive.
+    """
+    while True:
+        v = input(f"{prompt} [y/n]: ").lower()
+        if v == "y":
+            return True
+        if v == "n":
+            return False
+        print("Please enter y or n", file=sys.stderr)
 
 
 def __getattr__(attr: str):
