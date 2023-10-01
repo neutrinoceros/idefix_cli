@@ -1,13 +1,12 @@
 import inspect
 import os
 import sys
+import unicodedata
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import FunctionType, ModuleType
 from typing import Any, Final, Optional
-
-from rich.console import Console
 
 from idefix_cli import __version__
 from idefix_cli._theme import set_theme
@@ -149,15 +148,22 @@ def main(
 
 
 def alt_main(argv: "list[str] | None" = None) -> Any:
-    console = Console(width=500, highlight=False, stderr=True)
-    console.print(":tennis: :arrow_forward:")
+    print(
+        unicodedata.lookup("BASEBALL")
+        + unicodedata.lookup("BLACK RIGHT-POINTING TRIANGLE"),
+        file=sys.stderr,
+    )
 
     set_theme("baballe")
     try:
         retv = main(argv, parser=ArgumentParser(prog="baballe", allow_abbrev=False))
     finally:
         set_theme("default")
-        console.print(":arrow_backward: :tennis:")
+        print(
+            unicodedata.lookup("BLACK LEFT-POINTING TRIANGLE")
+            + unicodedata.lookup("BASEBALL"),
+            file=sys.stderr,
+        )
 
     return retv
 

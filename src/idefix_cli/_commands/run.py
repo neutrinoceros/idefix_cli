@@ -16,7 +16,6 @@ from typing import Final
 
 import inifix
 from packaging.version import Version
-from rich.prompt import Confirm
 
 from idefix_cli.lib import (
     files_from_patterns,
@@ -27,6 +26,7 @@ from idefix_cli.lib import (
     print_subcommand,
     print_success,
     print_warning,
+    prompt_ask,
     requires_idefix,
     run_subcommand,
 )
@@ -411,7 +411,7 @@ def command(
                     "The following files were updated since last successful compilation:",
                 )
                 print("\n".join(updated_since_compilation), file=sys.stderr)
-                build_is_required = Confirm.ask(
+                build_is_required = prompt_ask(
                     "Would you like to rebuild before running the program ?"
                 )
             else:

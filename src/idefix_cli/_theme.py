@@ -1,24 +1,47 @@
 import sys
-from enum import auto
+import unicodedata
+from typing import Literal, TypedDict
 
 if sys.version_info >= (3, 11):
-    from enum import StrEnum
+    from typing import assert_never
 else:
-    from idefix_cli._backports import StrEnum
+    from typing_extensions import assert_never
 
 
-class Theme(StrEnum):
-    DEFAULT = auto()
-    BABALLE = auto()
+class Theme(TypedDict):
+    LAUNCH: str
+    SUCCESS: str
+    WARNING: str
+    ERROR: str
 
 
-THEME = Theme("default")
+Default = Theme(
+    LAUNCH=unicodedata.lookup("ROCKET"),  # 🚀
+    SUCCESS=unicodedata.lookup("PARTY POPPER"),  # 🎉
+    WARNING=unicodedata.lookup("HEAVY EXCLAMATION MARK SYMBOL"),  # ❗
+    ERROR=unicodedata.lookup("COLLISION SYMBOL"),  # 💥
+)
+
+Baballe = Theme(
+    LAUNCH=unicodedata.lookup("GUIDE DOG"),  # 🦮
+    SUCCESS=unicodedata.lookup("POODLE"),  # 🐩
+    WARNING=unicodedata.lookup("PAW PRINTS"),  # 🐾
+    ERROR=unicodedata.lookup("HOT DOG"),  # 🌭
+)
 
 
-def set_theme(theme: str) -> None:
+THEME = Default
+
+
+def set_theme(theme: Literal["default", "baballe"]) -> None:
     global THEME
-    THEME = Theme(theme)
+    if theme == "default":
+        THEME = Default
+    elif theme == "baballe":
+        THEME = Baballe
+    else:
+        assert_never(theme)
 
 
-def get_theme() -> Theme:
-    return THEME
+def get_symbol(key: Literal["LAUNCH", "SUCCESS", "WARNING", "ERROR"]) -> str:
+    return THEME[key]
