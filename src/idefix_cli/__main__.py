@@ -10,7 +10,7 @@ from typing import Any, Final, Optional
 
 from idefix_cli import __version__
 from idefix_cli._theme import set_theme
-from idefix_cli.lib import get_config_file, get_option, print_err, print_warning
+from idefix_cli.lib import get_config_file, get_option, print_error, print_warning
 
 CommandMap = dict[str, tuple[FunctionType, bool]]
 
@@ -141,7 +141,7 @@ def main(
 
     cmd, accepts_unknown_args = commands[cmd_name]
     if unknown_args and not accepts_unknown_args:
-        print_err(f"received unknown arguments {tuple(unknown_args)!r}")
+        print_error(f"received unknown arguments {tuple(unknown_args)!r}")
         return 1
 
     return cmd(*unknown_args, **vars(known_args))

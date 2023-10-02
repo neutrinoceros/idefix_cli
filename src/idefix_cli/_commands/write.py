@@ -8,7 +8,7 @@ from pathlib import Path
 
 import inifix
 
-from idefix_cli.lib import print_err
+from idefix_cli.lib import print_error
 
 
 def add_arguments(parser) -> None:
@@ -32,18 +32,18 @@ def command(dest: str, source, force: bool = False) -> int:
     try:
         data = json.load(source)
     except json.decoder.JSONDecodeError:
-        print_err("input is not valid json.")
+        print_error("input is not valid json.")
         return 1
 
     try:
         inifix.validate_inifile_schema(data)
     except ValueError:
-        print_err("input is not Pluto inifile format compliant.")
+        print_error("input is not Pluto inifile format compliant.")
         return 1
 
     pdest = Path(dest)
     if pdest.is_file() and not force:
-        print_err(
+        print_error(
             f"destination file {dest} already exists. Use -f/--force to overwrite."
         )
         return 1

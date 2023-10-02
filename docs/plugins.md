@@ -62,8 +62,8 @@ The module-level docstring is also required and serves as the description of the
 
 The `idefix_cli.lib` module contains some common utility functions that can be imported
 
-### print_err
-::: idefix_cli.lib.print_err
+### print_error
+::: idefix_cli.lib.print_error
 
 ### print_warning
 ::: idefix_cli.lib.print_warning

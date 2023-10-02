@@ -33,7 +33,7 @@ from idefix_cli.lib import (
     get_config_file,
     get_idefix_version,
     get_option,
-    print_err,
+    print_error,
     print_subcommand,
     print_warning,
     requires_idefix,
@@ -281,13 +281,13 @@ def command(*args: str, directory: str, interactive: bool) -> int | NoReturn:
     if not setup_cpp.is_file():
         # CMake is perfectly happy to run in empty directories, but we block it early
         # to avoid confusing errors at compilation time
-        print_err("Cannot configure a directory that doesn't contain a setup.cpp")
+        print_error("Cannot configure a directory that doesn't contain a setup.cpp")
         return 1
 
     clargs = list(args)
     engine_req, st = _get_engine()
     if engine_req is None:
-        print_err(st)
+        print_error(st)
         return 1
     elif st is not None:
         print_warning(st)
