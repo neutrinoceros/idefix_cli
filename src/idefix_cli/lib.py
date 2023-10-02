@@ -4,6 +4,7 @@ import os
 import platform
 import re
 import sys
+import warnings
 from configparser import ConfigParser
 from functools import wraps
 from glob import glob
@@ -36,7 +37,7 @@ VERSECT_REGEXP = re.compile(rf"## \[{VERSION_STR}\]\s*-?\s*\d\d\d\d-\d\d-\d\d\s*
 
 __all__ = [
     "requires_idefix",
-    "print_err",
+    "print_error",
     "print_warning",
     "print_subcommand",
     "files_from_patterns",
@@ -96,12 +97,12 @@ class requires_idefix:
         @wraps(f)
         def wrapper(*args, **kwargs) -> Any:
             if (IDEFIX_DIR := os.getenv("IDEFIX_DIR")) is None:
-                print_err(
+                print_error(
                     "this functionality requires $IDEFIX_DIR to be defined",
                 )
                 return 10
             elif not os.path.isdir(IDEFIX_DIR):
-                print_err(
+                print_error(
                     f"env variable $IDEFIX_DIR isn't properly defined: {IDEFIX_DIR} is not a directory",
                 )
                 return 20
@@ -111,6 +112,16 @@ class requires_idefix:
 
 
 def print_err(message: str) -> None:
+    warnings.warn(
+        "idefix_cli.lib.print_err is deprecated. "
+        "Use idefix_cli.lib.print_error instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    print_error(message)
+
+
+def print_error(message: str) -> None:
     """Print a fatal error message to stderr.
     Normally followed by `return 1`.
 
@@ -123,7 +134,7 @@ def print_err(message: str) -> None:
     Examples:
         >>> def my_command() -> int:
         ...    if "MYENVVAR" not in os.environ:
-        ...        print_err("Missing MYENVVAR")
+        ...        print_error("Missing MYENVVAR")
         ...        return 1
         ...    return 0
     """
@@ -230,7 +241,7 @@ def run_subcommand(
     except CalledProcessError as exc:
         if err is None:
             err = f"failed to run {' '.join(cmd)!r}"
-        print_err(err)
+        print_error(err)
         return exc.returncode
     else:
         return p.returncode

@@ -6,7 +6,7 @@ from pathlib import Path
 from time import monotonic_ns
 from typing import Any, Optional
 
-from idefix_cli.lib import print_err
+from idefix_cli.lib import print_error
 
 _LOG_LINE_REGEXP = re.compile(r"^(?P<trailer>TimeIntegrator:)(?P<data>.*\|.*)")
 
@@ -91,7 +91,7 @@ def command(
 ) -> int:
     pdir = Path(dir)
     if not pdir.is_dir():
-        print_err(f"No such directory: {dir!r}")
+        print_error(f"No such directory: {dir!r}")
         return 1
 
     tstart = monotonic_ns()
@@ -104,7 +104,7 @@ def command(
         log_files = [pdir / _ for _ in input_]
 
     if not log_files:
-        print_err(f"No log files found in {dir!r}")
+        print_error(f"No log files found in {dir!r}")
         return 1
 
     if input_ is None and not all_files:
@@ -127,7 +127,7 @@ def command(
         data.append(captured)
 
     if not _success:
-        print_err("Failed to parse any data")
+        print_error("Failed to parse any data")
         return 1
 
     header = data[0][0]  # first line captured from the first log file
@@ -135,7 +135,7 @@ def command(
     if len(data) > 1:
         for p, c in zip(log_files[1:], data[1:]):
             if c[0] != header:  # pragma: no cover
-                print_err(f"header mismatch from {p} and {log_files[0]}")
+                print_error(f"header mismatch from {p} and {log_files[0]}")
                 return 1
 
     final_result: list[str] = []

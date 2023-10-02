@@ -22,7 +22,7 @@ from idefix_cli.lib import (
     get_config_file,
     get_idefix_version,
     get_option,
-    print_err,
+    print_error,
     print_subcommand,
     print_success,
     print_warning,
@@ -57,7 +57,7 @@ def _spawn_idefix_lt_1(cmd: list[str], *, ncycles: int) -> int:
         return subprocess.call(cmd)
 
     if sys.platform.startswith("win"):
-        print_err("idfx run --one isn't supported on Windows")
+        print_error("idfx run --one isn't supported on Windows")
         return -3
     else:
         from signal import SIGUSR2  # not available on Windows
@@ -252,14 +252,14 @@ def command(
 ) -> int:
     if one_step is None:
         if ncycles is not None:
-            print_err(
+            print_error(
                 "the --times parameter is invalid if --one/--one-step isn't passed too"
             )
             return 1
         ncycles = -1  # unlimited run
     elif ncycles is not None:
         if ncycles < 1:
-            print_err(
+            print_error(
                 "the --times parameter expects a strictly "
                 f"positive integer (got {ncycles})"
             )
@@ -267,20 +267,20 @@ def command(
         try:
             unknown_args = parse_ncycles(unknown_args, ncycles=ncycles)
         except MultipleMaxCycles:
-            print_err("-maxcycles cannot be combined with --one/--one-step")
+            print_error("-maxcycles cannot be combined with --one/--one-step")
             return 1
     else:
         try:
             unknown_args = parse_ncycles(unknown_args, ncycles=1)
         except MultipleMaxCycles:
-            print_err("-maxcycles cannot be combined with --one/--one-step")
+            print_error("-maxcycles cannot be combined with --one/--one-step")
             return 1
         ncycles = -1  # unlimited run
 
     d = Path(directory).resolve()
     exe = d / "idefix"
     if not exe.is_file() and not (d / "Makefile").is_file():
-        print_err(
+        print_error(
             f"No idefix executable or Makefile found in the target directory {d} "
             "Run `idfx conf` first"
         )
@@ -292,7 +292,7 @@ def command(
         if pinifile.is_file():
             break
     else:
-        print_err(f"could not find inifile {input_inifile}")
+        print_error(f"could not find inifile {input_inifile}")
         return 1
 
     with open(pinifile, "rb") as fh:
@@ -302,17 +302,17 @@ def command(
     # conf type validation
     conf.setdefault("TimeIntegrator", {})
     if not isinstance(conf["TimeIntegrator"], dict):
-        print_err(
+        print_error(
             "configuration file seems malformed, "
             "expected 'TimeIntegrator' to be a section title, not a parameter name."
         )
         return 1
 
     if outputs and "-maxcycles" not in unknown_args:
-        print_err("--out requires -maxcycles")
+        print_error("--out requires -maxcycles")
         return 1
     if outputs and one_step:
-        print_err(
+        print_error(
             "--one-step/--one cannot be followed by output "
             "types if --out is also passed"
         )
@@ -328,7 +328,7 @@ def command(
         conf.setdefault("Output", {})
         output_sec = conf["Output"]
         if not isinstance(output_sec, dict):
-            print_err(
+            print_error(
                 "configuration file seems malformed, "
                 "expected 'Output' to be a section title, not a parameter name."
             )
@@ -465,13 +465,13 @@ def command(
             if ret == -1:
                 print_success("Sucessfully stopped idefix mid-air")
             elif ret == -2:
-                print_err("idefix timed out (startup took more than a minute)")
+                print_error("idefix timed out (startup took more than a minute)")
             elif ret == -3:
                 # unsupported operation
                 ret = 1
             ret = 0
 
     if ret != 0:
-        print_err(f"{cmd[0]} terminated with an error")
+        print_error(f"{cmd[0]} terminated with an error")
 
     return ret

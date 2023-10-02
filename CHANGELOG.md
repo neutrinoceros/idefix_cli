@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DEP: migrate prompting from rich to termcolor
 - API: remove `idfx stamp` command, drop dependency on GitPython
 - DEP: bump minimal and pinned `inifix` from 3.0.0 to 4.2.2
+- DEPR: print_err to print_error, deprecate old name
 
 ## [3.2.1] - 2023-09-06
 

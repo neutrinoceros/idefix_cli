@@ -6,7 +6,7 @@ from pathlib import Path
 
 import inifix
 
-from idefix_cli.lib import print_err
+from idefix_cli.lib import print_error
 
 
 def add_arguments(parser) -> None:
@@ -19,7 +19,7 @@ def add_arguments(parser) -> None:
 def command(inifile: str, indent: int | None = None) -> int:
     pinifile = Path(inifile)
     if not pinifile.is_file():
-        print_err(f"no such file {inifile}")
+        print_error(f"no such file {inifile}")
         return 1
     with open(pinifile, "rb") as fh:
         payload = inifix.load(fh)

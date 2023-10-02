@@ -11,7 +11,7 @@ from idefix_cli.lib import (
     files_from_patterns,
     get_option,
     make_file_tree,
-    print_err,
+    print_error,
     print_warning,
 )
 
@@ -59,13 +59,13 @@ def command(
     include: list[str] | None = None,
 ) -> int:
     if not os.path.isdir(source):
-        print_err(f"source directory not found {source}")
+        print_error(f"source directory not found {source}")
         return 1
     if not os.listdir(source):
-        print_err(f"{source} appears to be empty")
+        print_error(f"{source} appears to be empty")
         return 1
     if os.path.exists(dest):
-        print_err(f"destination directory exists {dest}")
+        print_error(f"destination directory exists {dest}")
         return 1
 
     if include is None:
@@ -75,7 +75,7 @@ def command(
         source, *BASE_INCLUDE, *include, *get_include_from_conf()
     )
     if not files_and_dirs_to_copy:
-        print_err(f"did not find any file to copy from {source}")
+        print_error(f"did not find any file to copy from {source}")
         return 1
 
     if dest.endswith(os.path.sep):
