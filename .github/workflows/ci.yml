@@ -19,7 +19,7 @@ jobs:
         - windows-latest
         python-version:
         - '3.9'
-        - 3.12-dev
+        - '3.12'
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -43,7 +43,7 @@ jobs:
       matrix:
         python-version:
         - '3.9'
-        - 3.12-dev
+        - '3.12'
 
     runs-on: ubuntu-latest
     steps:
@@ -62,11 +62,18 @@ jobs:
         pytest --color=yes
 
   type-check:
+
+    strategy:
+      matrix:
+        python-version:
+        - '3.9'
+        - '3.12'
+
     runs-on: ubuntu-latest
     name: type check
 
     concurrency:
-      group: ${{ github.ref }}-type
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.python-version }}-typecheck
       cancel-in-progress: true
 
     steps:
@@ -74,9 +81,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        # Match minimal supported Python version
-        # to make sure we're not using unparseable syntax
-        python-version: '3.9'
+        python-version: ${{ matrix.python-version }}
 
     - name: Build
       run: |
@@ -101,7 +106,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: 3.x
     - name: Setup env
       run: |
         python -m pip install --upgrade pip
