@@ -62,6 +62,7 @@ def add_arguments(parser: ArgumentParser) -> None:
     ),
     select_group = parser.add_mutually_exclusive_group()
     select_group.add_argument(
+        "-i",
         "--input",
         dest="input_",
         nargs="*",
