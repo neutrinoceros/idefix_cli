@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "idefix_cli"
-description = "A CLI to automate mundane tasks with Idefix"
+description = "A command line utility belt for Idefix"
 authors = [
     { name = "C.M.T. Robert" },
 ]

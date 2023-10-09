@@ -6,13 +6,10 @@
 
 # `idefix_cli`
 
-`idefix_cli` is command line framework to facilitate working with
-[Idefix](https://github.com/idefix-code/idefix), written by
-[Lesur et al](https://ui.adsabs.harvard.edu/abs/2023arXiv230413746L/abstract).
+`idefix_cli` is a command line utility belt for [Idefix](https://github.com/idefix-code/idefix).
 
-It defines a `idfx` command namespace, ships with a collection of common helper
-script (`idfx conf`, `idfx run`, ...), and can be extended to include arbitrary
-helper scripts.
+It defines a `idfx` command familly. The builtin command set (`idfx conf`, `idfx run`,
+...) can be extended to include arbitrary helper scripts.
 
 
 ## Installation
