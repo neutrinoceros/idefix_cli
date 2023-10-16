@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DEP: bump minimal and pinned `inifix` from 3.0.0 to 4.2.2
 - DEPR: rename print_err to print_error, deprecate old name
 - ENH: add short version `-i` for `idfx digest --input ...`
+- DEPR: expire running deprecations in prep for 4.0 rel
 
 ## [3.2.1] - 2023-09-06
 

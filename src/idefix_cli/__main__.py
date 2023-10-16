@@ -21,12 +21,7 @@ BASE_COMMAND_PATH: Final[str] = str(Path(__file__).parent / "_commands")
 def _get_command_paths() -> list[str]:
     dirs = [BASE_COMMAND_PATH]
 
-    if ext_dir_v1 := get_option("idefix_cli", "extension_dir"):
-        print_warning(
-            "The 'extension_dir' option is deprecated. Use 'plugins_directory' instead."
-        )
-
-    if ext_dir := get_option("idefix_cli", "plugins_directory") or ext_dir_v1:
+    if ext_dir := get_option("idefix_cli", "plugins_directory"):
         if os.path.isdir(ext_dir):
             dirs.append(ext_dir)
         else:
