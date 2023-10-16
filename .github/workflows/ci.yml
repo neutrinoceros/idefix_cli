@@ -20,7 +20,9 @@ jobs:
         python-version:
         - '3.9'
         - '3.12'
-
+        include:
+        - os: ubuntu-latest
+          python-version: 3.13-dev
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
