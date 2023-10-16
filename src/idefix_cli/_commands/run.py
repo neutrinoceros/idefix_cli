@@ -182,12 +182,6 @@ def add_arguments(parser) -> None:
     )
     tstop_group = parser.add_mutually_exclusive_group()
     tstop_group.add_argument(
-        "--duration",
-        action="store",
-        type=float,
-        help="run for specified time (in code units) DEPRECATED",
-    )
-    tstop_group.add_argument(
         "--tstop",
         action="store",
         type=float,
@@ -342,10 +336,7 @@ def command(
 
     if time_step is not None:
         conf["TimeIntegrator"]["first_dt"] = time_step
-    if duration is not None:
-        print_warning("The --duration argument is deprecated. Use --tstop instead.")
-        conf["TimeIntegrator"]["tstop"] = duration
-    elif tstop is not None:
+    if tstop is not None:
         conf["TimeIntegrator"]["tstop"] = tstop
 
     rebuild_mode_str: str = get_option("idfx run", "recompile") or "always"
