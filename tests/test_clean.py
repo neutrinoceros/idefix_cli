@@ -60,7 +60,7 @@ def test_clean_no_confirmation(pattern, capsys, tmp_path):
     file_to_clean = tmp_path / pattern.replace("*", "legit_file_prefix")
     file_to_clean.touch()
 
-    ret = main(["clean", str(tmp_path.absolute()), "--no-confirm"])
+    ret = main(["clean", "--dir", str(tmp_path.absolute()), "--no-confirm"])
     assert ret == 0
     _out, err = capsys.readouterr()
     assert err == ""
@@ -74,7 +74,7 @@ def test_clean_wildcards(pattern, usr_input, monkeypatch, tmp_path):
     file_to_clean.touch()
 
     monkeypatch.setattr("sys.stdin", StringIO(usr_input))
-    main(["clean", str(tmp_path.absolute())])
+    main(["clean", "--dir", str(tmp_path.absolute())])
 
     if usr_input in YESES:
         assert not list(tmp_path.iterdir())
@@ -90,7 +90,7 @@ def test_clean_only_kokkos(usr_input, dirty_tmp_dir, monkeypatch):
         targets, survivors = (), targets + survivors
 
     monkeypatch.setattr("sys.stdin", StringIO(usr_input))
-    main(["clean", str(tmp_path.absolute())])
+    main(["clean", "--dir", str(tmp_path.absolute())])
 
     for name in targets:
         assert not name.is_file()
@@ -108,7 +108,7 @@ def test_clean_all(usr_input, messy_tmp_dir, monkeypatch):
         targets, survivors = (), targets + killable + survivors
 
     monkeypatch.setattr("sys.stdin", StringIO(usr_input))
-    main(["clean", str(tmp_path.absolute()), "--all"])
+    main(["clean", "--dir", str(tmp_path.absolute()), "--all"])
 
     for name in targets:
         assert not name.is_file()
@@ -122,7 +122,7 @@ def test_clean_all(usr_input, messy_tmp_dir, monkeypatch):
 def test_drymode_noop(flags, clean_tmp_dir, capsys):
     tmp_path, targets, survivors = clean_tmp_dir
 
-    ret = main(["clean", *flags, str(tmp_path.absolute())])
+    ret = main(["clean", *flags, "--dir", str(tmp_path.absolute())])
     assert ret == 0
     out, err = capsys.readouterr()
     assert out == "Nothing to remove.\n"
@@ -133,7 +133,7 @@ def test_drymode_noop(flags, clean_tmp_dir, capsys):
 def test_drymode_dirty(flag, dirty_tmp_dir, capsys):
     tmp_path, targets, survivors = dirty_tmp_dir
 
-    ret = main(["clean", flag, str(tmp_path.absolute())])
+    ret = main(["clean", flag, "--dir", str(tmp_path.absolute())])
     assert ret == 0
 
     out, err = capsys.readouterr()
@@ -147,7 +147,7 @@ def test_drymode_dirty(flag, dirty_tmp_dir, capsys):
 def test_drymode_messy(flag, messy_tmp_dir, capsys):
     tmp_path, targets, killable, survivors = messy_tmp_dir
 
-    ret = main(["clean", flag, str(tmp_path.absolute())])
+    ret = main(["clean", flag, "--dir", str(tmp_path.absolute())])
     assert ret == 0
 
     out, err = capsys.readouterr()
@@ -161,7 +161,7 @@ def test_drymode_messy(flag, messy_tmp_dir, capsys):
 def test_drymode_messy_all(flag, messy_tmp_dir, capsys):
     tmp_path, targets, killable, survivors = messy_tmp_dir
 
-    ret = main(["clean", str(tmp_path.absolute()), flag, "--all"])
+    ret = main(["clean", "--dir", str(tmp_path.absolute()), flag, "--all"])
     assert ret == 0
 
     out, err = capsys.readouterr()
