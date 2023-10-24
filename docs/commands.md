@@ -196,18 +196,20 @@ Removes intermediate compilation files (`*.o`, `*.host`, `*.cuda`) as well as
 CMake cache files and directories
 
 ```shell
-$ idfx clean .
+$ idfx clean
 ```
-This command will print a list of purgable files, and will not remove anything
+This command will print a list of purgable files from the current working directory, and will not remove anything
 without confirmation (unless confirmation is explicitly skipped with `--no-confirm`).
 
 To also remove `Makefile`, `idefix` executables, use the `--all` flag
 ```shell
-$ idfx clean . --all
+$ idfx clean --all
 ```
 
 Use the `--dry-run/--dry` flag to skip the prompt and only display the list of
 purgeable items, without actually deleting anything.
+
+`idfx clean` also accepts a `--dir <path>` argument.
 
 ## `idfx clone`
 

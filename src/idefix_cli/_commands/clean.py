@@ -40,7 +40,7 @@ GENERATED_DIRS = frozenset(("CMakeFiles",))
 
 def add_arguments(parser: ArgumentParser) -> None:
     parser.add_argument(
-        "directory", nargs="?", default=".", help="the target directory to clean"
+        "--dir", dest="directory", default=".", help="the target directory to clean"
     )
     parser.add_argument(
         "--all",
