@@ -57,12 +57,9 @@ include-package-data = false
 where = ["src"]
 namespaces = false
 
-[tool.black]
-line-length = 88
-
 [tool.ruff]
 exclude = ["*__init__.py"]
-ignore = ["E501"]
+ignore = ["E501", "ISC001"]
 select = [
     "E",
     "F",
