@@ -59,7 +59,7 @@ def add_arguments(parser: ArgumentParser) -> None:
         dest="output",
         default=sys.stdout,
         help="output file (stdout by default)",
-    ),
+    )
     select_group = parser.add_mutually_exclusive_group()
     select_group.add_argument(
         "-i",
