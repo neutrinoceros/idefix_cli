@@ -7,13 +7,25 @@ updates:
   directory: /requirements
   schedule:
     interval: monthly
+  groups:
+    actions:
+      patterns:
+      - '*'
 
 - package-ecosystem: pip
   directory: /docs
   schedule:
     interval: monthly
+  groups:
+    actions:
+      patterns:
+      - '*'
 
 - package-ecosystem: github-actions
   directory: /.github/workflows
   schedule:
     interval: monthly
+  groups:
+    actions:
+      patterns:
+      - '*'
