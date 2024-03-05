@@ -57,7 +57,7 @@ include-package-data = false
 where = ["src"]
 namespaces = false
 
-[tool.ruff]
+[tool.ruff.lint]
 exclude = ["*__init__.py"]
 ignore = ["E501", "ISC001"]
 select = [
@@ -72,7 +72,7 @@ select = [
     "UP",  # pyupgrade
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 known-first-party = ["idefix_cli"]
 
