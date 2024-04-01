@@ -1,4 +1,5 @@
 """read an Idefix inifile and print it to json format"""
+
 from __future__ import annotations
 
 import json

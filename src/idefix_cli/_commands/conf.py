@@ -15,6 +15,7 @@ translated into CMake flags. Namely:
 Any additional argument is passed directly to cmake.
 Use the -i/--interactive flag to enable ccmake as the backend.
 """
+
 from __future__ import annotations
 
 import os
