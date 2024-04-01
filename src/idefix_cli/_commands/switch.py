@@ -1,4 +1,5 @@
 """switch git branch in $IDEFIX_DIR using git checkout"""
+
 import os
 from pathlib import Path
 

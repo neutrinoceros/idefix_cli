@@ -1,4 +1,5 @@
 """agregate performance data from log files as json"""
+
 import re
 import sys
 from argparse import ArgumentParser
