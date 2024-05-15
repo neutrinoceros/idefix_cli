@@ -10,8 +10,9 @@ on:
 
 jobs:
   tests:
-    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    name: 'Python ${{ matrix.python-version }} on ${{ matrix.os }} (free-threading: ${{ matrix.free-threading }})'
     strategy:
+      fail-fast: false
       matrix:
         os:
         - ubuntu-latest
@@ -20,9 +21,16 @@ jobs:
         python-version:
         - '3.9'
         - '3.12'
+        free-threading:
+        - false
         include:
         - os: ubuntu-latest
           python-version: 3.13-dev
+          free-threading: false
+        - os: ubuntu-latest
+          python-version: 3.13-dev
+          free-threading: true
+
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -30,6 +38,16 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+
+    - uses: actions/setup-python@v5
+      if: ${{ !matrix.free-threading }}
+      with:
+        python-version: ${{ matrix.python-version }}
+    - uses: deadsnakes/action@v3.1.0
+      if: ${{ matrix.free-threading }}
+      with:
+        python-version: ${{ matrix.python-version }}
+        nogil: true
     - name: Setup package
       run: |
         python -m pip install --upgrade pip
