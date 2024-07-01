@@ -34,7 +34,7 @@ def _log_to_data(log: list[str]):
 
 
 def _data_to_json(header: str, data: dict[str, list[str]]) -> str:
-    res: list[str] = ['"%s": {' % header]
+    res: list[str] = [f'"{header}": {{']
     ncolumns = len(data)
     for icol, (name, record) in enumerate(data.items()):
         if icol < ncolumns - 1:
