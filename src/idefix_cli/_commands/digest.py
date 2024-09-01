@@ -5,7 +5,7 @@ import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from time import monotonic_ns
-from typing import Any, Optional
+from typing import Any
 
 from idefix_cli.lib import print_error
 
@@ -84,7 +84,7 @@ def add_arguments(parser: ArgumentParser) -> None:
 
 def command(
     dir: str,
-    input_: Optional[list[str]] = None,
+    input_: list[str] | None = None,
     output=sys.stdout,
     all_files: bool = False,
     timeit: bool = False,
@@ -135,13 +135,13 @@ def command(
     header = data[0][0]  # first line captured from the first log file
 
     if len(data) > 1:
-        for p, c in zip(log_files[1:], data[1:]):
+        for p, c in zip(log_files[1:], data[1:], strict=False):
             if c[0] != header:  # pragma: no cover
                 print_error(f"header mismatch from {p} and {log_files[0]}")
                 return 1
 
     final_result: list[str] = []
-    for p, d in zip(log_files, data):
+    for p, d in zip(log_files, data, strict=False):
         columns = _log_to_data(d)
         final_result.append(_data_to_json(p.name, columns))
 

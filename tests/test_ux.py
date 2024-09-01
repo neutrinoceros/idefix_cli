@@ -1,18 +1,12 @@
-import sys
-
 import pytest
 from pytest_check import check
 
 from idefix_cli.__main__ import main
 
-if sys.version_info >= (3, 10):
-    OPTIONAL_SEC = "options"
-else:
-    OPTIONAL_SEC = "optional arguments"
 HELP_MESSAGE = (
     "usage: idfx [-h] [-v] {clean,clone,conf,digest,read,run,switch,write} ...\n"
     "\n"
-    f"{OPTIONAL_SEC}:\n"
+    "options:\n"
     "  -h, --help            show this help message and exit\n"
     "  -v, --version         show program's version number and exit\n"
     "\n"
@@ -32,7 +26,7 @@ HELP_MESSAGE = (
 def get_lines(help_message: str) -> list[str]:
     # skip the first lines because they differ between macos and linux
     lines = iter(help_message.splitlines())
-    while not next(lines).startswith(OPTIONAL_SEC):
+    while not next(lines).startswith("options:"):
         continue
 
     return list(lines)
