@@ -36,7 +36,6 @@ markdown_extensions:
 plugins:
 - include-markdown
 - mkdocstrings:
-    custom_templates: templates
     default_handler: python
     handlers:
       python:
