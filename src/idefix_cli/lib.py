@@ -5,13 +5,14 @@ import platform
 import re
 import sys
 import warnings
+from collections.abc import Callable
 from configparser import ConfigParser
 from functools import wraps
 from glob import glob
 from itertools import chain
 from pathlib import Path
 from textwrap import indent
-from typing import Any, Callable, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from packaging.version import Version
 from termcolor import cprint

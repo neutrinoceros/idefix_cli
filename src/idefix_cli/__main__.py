@@ -6,7 +6,7 @@ from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import FunctionType, ModuleType
-from typing import Any, Final, Optional
+from typing import Any, Final
 
 from idefix_cli import __version__
 from idefix_cli._theme import set_theme
@@ -94,7 +94,7 @@ def _setup_commands(parser: ArgumentParser) -> CommandMap:
                 f"command plugin {command_name} is missing a module docstring"
             )
 
-        usage: Optional[str]
+        usage: str | None
         help, _, usage = module.__doc__.strip().partition("\n")
         usage = usage or None
         sub_parser = sparsers.add_parser(
