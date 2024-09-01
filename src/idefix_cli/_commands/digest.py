@@ -135,13 +135,13 @@ def command(
     header = data[0][0]  # first line captured from the first log file
 
     if len(data) > 1:
-        for p, c in zip(log_files[1:], data[1:], strict=False):
+        for p, c in zip(log_files[1:], data[1:], strict=True):
             if c[0] != header:  # pragma: no cover
                 print_error(f"header mismatch from {p} and {log_files[0]}")
                 return 1
 
     final_result: list[str] = []
-    for p, d in zip(log_files, data, strict=False):
+    for p, d in zip(log_files, data, strict=True):
         columns = _log_to_data(d)
         final_result.append(_data_to_json(p.name, columns))
 
