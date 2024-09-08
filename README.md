@@ -16,8 +16,7 @@ It defines a `idfx` command familly. The builtin command set (`idfx conf`, `idfx
 `idefix_cli` is distributed via the Python Packaging Index (PyPI).
 
 It is recommended to install this tool at the system level, but still in isolation,
-using for instance with
-[`uv`](https://docs.astral.sh/uv/) as
+using for instance [`uv`](https://docs.astral.sh/uv/) as
 ```shell
 $ uv tool install 'idefix-cli[isolated]'
 ```
