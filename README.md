@@ -15,11 +15,17 @@ It defines a `idfx` command familly. The builtin command set (`idfx conf`, `idfx
 
 `idefix_cli` is distributed via the Python Packaging Index (PyPI).
 
-It is recommended to install this tool in isolation with [`pipx`](https://pipxproject.github.io/pipx/) as
+It is recommended to install this tool at the system levelv, but still in isolation,
+using for instance with
+[`uv`](https://docs.astral.sh/uv/) as
 ```shell
-$ pipx install "idefix_cli[isolated]"
+$ uv tool install 'idefix-cli[isolated]'
 ```
-(adding `[isolated]` has the effect of pinning dependencies)
+or [`pipx`](https://pipxproject.github.io/pipx/)
+```shell
+$ pipx install 'idefix-cli[isolated]'
+```
+(adding `[isolated]` has the effect of pinning dependencies, but is optional)
 
 Otherwise, the most portable way to install the latest stable version is
 ```shell
