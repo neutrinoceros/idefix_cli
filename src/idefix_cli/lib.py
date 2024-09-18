@@ -122,12 +122,13 @@ def print_err(message: str) -> None:
     print_error(message)
 
 
-def print_error(message: str) -> None:
+def print_error(message: str, *, hint: str | None = None) -> None:
     """Print a fatal error message to stderr.
     Normally followed by `return 1`.
 
     Args:
         message (str): the error message
+        hint (str): hint at a potential solution (optional)
 
     Returns:
         None
@@ -141,6 +142,10 @@ def print_error(message: str) -> None:
     """
     cprint(get_symbol("ERROR"), end=" ", file=sys.stderr)
     cprint(message, color="red", attrs=["bold"], file=sys.stderr)
+    if hint is None:
+        return
+    cprint(get_symbol("HINT"), end=" ", file=sys.stderr)
+    cprint(hint, color="magenta", attrs=["underline"], file=sys.stderr)
 
 
 def print_warning(message: str) -> None:
