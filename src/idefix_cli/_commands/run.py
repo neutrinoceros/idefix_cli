@@ -297,8 +297,8 @@ def command(
     exe = d / "idefix"
     if not exe.is_file() and not (d / "Makefile").is_file():
         print_error(
-            f"No idefix executable or Makefile found in the target directory {d} "
-            "Run `idfx conf` first"
+            f"No idefix executable or Makefile found in the target directory {d}",
+            hint="Run `idfx conf` first",
         )
         return 1
 

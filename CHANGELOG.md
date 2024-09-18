@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [5.1.0] - 2024-09-18
 
 - BUG: fix a bug where `idfx run` could request more threads than there are physical CPUs
+- ENH: add support for error messages with hints
 
 ## [5.0.0] - 2023-10-24
 

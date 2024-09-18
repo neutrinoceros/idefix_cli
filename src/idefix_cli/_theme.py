@@ -13,6 +13,7 @@ class Theme(TypedDict):
     SUCCESS: str
     WARNING: str
     ERROR: str
+    HINT: str
 
 
 Default = Theme(
@@ -20,6 +21,7 @@ Default = Theme(
     SUCCESS=unicodedata.lookup("PARTY POPPER"),  # 🎉
     WARNING=unicodedata.lookup("HEAVY EXCLAMATION MARK SYMBOL"),  # ❗
     ERROR=unicodedata.lookup("COLLISION SYMBOL"),  # 💥
+    HINT=unicodedata.lookup("LEFT-POINTING MAGNIFYING GLASS"),  # 🔍
 )
 
 Baballe = Theme(
@@ -27,6 +29,7 @@ Baballe = Theme(
     SUCCESS=unicodedata.lookup("POODLE"),  # 🐩
     WARNING=unicodedata.lookup("PAW PRINTS"),  # 🐾
     ERROR=unicodedata.lookup("HOT DOG"),  # 🌭
+    HINT=unicodedata.lookup("CRYSTAL BALL"),  # 🔮
 )
 
 
@@ -43,5 +46,5 @@ def set_theme(theme: Literal["default", "baballe"]) -> None:
         assert_never(theme)
 
 
-def get_symbol(key: Literal["LAUNCH", "SUCCESS", "WARNING", "ERROR"]) -> str:
+def get_symbol(key: Literal["LAUNCH", "SUCCESS", "WARNING", "ERROR", "HINT"]) -> str:
     return THEME[key]
