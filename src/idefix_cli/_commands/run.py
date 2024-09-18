@@ -9,7 +9,6 @@ import sys
 from copy import deepcopy
 from enum import auto
 from math import prod
-from multiprocessing import cpu_count
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from time import sleep, time, time_ns
@@ -141,9 +140,31 @@ KNOWN_FAIL: Final = (
 )
 
 
+def get_cpu_count() -> int:
+    # this function exists primarily to be mocked
+    # instead of something we don't own
+    base_cpu_count: int | None
+    if sys.version_info >= (3, 13):
+        base_cpu_count = os.process_cpu_count()
+    else:
+        if hasattr(os, "sched_getaffinity"):
+            # this function isn't available on all platforms
+            base_cpu_count = len(os.sched_getaffinity(0))
+        else:
+            # this proxy is good enough in most situations
+            base_cpu_count = os.cpu_count()
+    return base_cpu_count or 1
+
+
+def get_highest_power_of_two(n_max: int) -> int:
+    retv = 2 ** (n_max.bit_length() - 1)
+    assert retv <= n_max
+    return retv
+
+
 @requires_idefix()
 def build_idefix(directory) -> int:
-    ncpus = 2 ** min(3, cpu_count().bit_length())
+    ncpus = min(8, get_highest_power_of_two(get_cpu_count()))
     cmd = ["make", "-j", str(ncpus)]
     return run_subcommand(cmd, loc=Path(directory), err="failed to build idefix")
 
