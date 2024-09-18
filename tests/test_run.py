@@ -1,4 +1,7 @@
+import pytest
+
 from idefix_cli.__main__ import main
+from idefix_cli._commands.run import get_highest_power_of_two
 
 
 def test_times_without_one_step(capsys):
@@ -27,3 +30,12 @@ def test_one_and_maxncycles(capsys):
     out, err = capsys.readouterr()
     assert out == ""
     assert err == "💥 -maxcycles cannot be combined with --one/--one-step\n"
+
+
+@pytest.mark.parametrize("n", range(1, 33))
+def test_get_highest_power_of_two(n):
+    retv = get_highest_power_of_two(n)
+
+    assert retv.bit_count() == 1  # is a power of two
+    assert retv <= n
+    assert retv << 1 > n
