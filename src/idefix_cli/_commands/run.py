@@ -157,9 +157,7 @@ def get_cpu_count() -> int:
 
 
 def get_highest_power_of_two(n_max: int) -> int:
-    retv = 2 ** (n_max.bit_length() - 1)
-    assert retv <= n_max
-    return retv
+    return 2 ** (n_max.bit_length() - 1)
 
 
 @requires_idefix()
