@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0] - 2024-09-18
+
+- BUG: fix a bug where `idfx run` could request more threads than there are physical CPUs
+
 ## [5.0.0] - 2023-10-24
 
 - API: drop positional `directory` parameter to `idfx clean`. Replace it with (optional)
