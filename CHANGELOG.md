@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for setups that use `Pydefix` for initialization
 - ENH: `idfx clone` now supports cloning to a nested directory, creating parent
   directories as needed
+- ENH: `idfx clone` now accepts an `--exclude` argument
 - ENH: `idfx conf` now accepts a `-debug` shorthand for `-DIdefix_DEBUG=ON`
 
 ## [5.1.0] - 2024-09-18

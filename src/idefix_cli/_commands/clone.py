@@ -52,6 +52,12 @@ def add_arguments(parser) -> None:
         nargs="+",
         help="a list of additional file names (or patterns) that should be included in the clone.",
     )
+    parser.add_argument(
+        "--exclude",
+        nargs="+",
+        help="a list of file names (or patterns) that should be excluded from the clone. "
+        "(takes precedent over --include in case of collisions)",
+    )
 
 
 def command(
@@ -59,6 +65,7 @@ def command(
     dest: str,
     shallow: bool = False,
     include: list[str] | None = None,
+    exclude: list[str] | None = None,
 ) -> int:
     if not os.path.isdir(source):
         print_error(f"source directory not found {source}")
@@ -74,7 +81,11 @@ def command(
         include = []
 
     files_and_dirs_to_copy = files_from_patterns(
-        source, *BASE_INCLUDE, *include, *get_include_from_conf()
+        source,
+        *BASE_INCLUDE,
+        *include,
+        *get_include_from_conf(),
+        excludes=exclude,
     )
     if not files_and_dirs_to_copy:
         print_error(f"did not find any file to copy from {source}")
