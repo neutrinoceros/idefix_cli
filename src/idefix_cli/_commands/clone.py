@@ -105,6 +105,7 @@ def command(
                     "https://github.com/neutrinoceros/idefix_cli/issues/new"
                 )
 
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
     with TemporaryDirectory(dir=os.path.dirname(dest)) as tmpdir:
         # using a context manager to guarantee atomicity:
         # either it's a full success or we don't copy anything
