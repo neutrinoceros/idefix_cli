@@ -253,12 +253,18 @@ def run_subcommand(
         return p.returncode
 
 
-def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]:
+def files_from_patterns(
+    source,
+    *patterns,
+    recursive: bool = False,
+    excludes: list[str] | None = None,
+) -> list[str]:
     """
     Args:
         source (os.PathLike[str]): path to the directory to inspect
         patterns (str): file patterns (e.g. "*.py", "*.txt" ...)
         recursive (bool): set to True to recurse into the source directory
+        excludes (list of str): file patterns to dismiss
 
     Returns:
         files (list[str]): files and directories sorted in alphabetical order.
@@ -270,19 +276,27 @@ def files_from_patterns(source, *patterns, recursive: bool = False) -> list[str]
         >>> files_from_patterns(Path.home() / "myproject", "*.py", "*.txt") # doctest: +SKIP
         ["data.txt", "script1.py", "script2.py"]
     """
-    raw = sorted(
+    include_globs = set(
         chain.from_iterable(
             glob(os.path.join(source, p), recursive=recursive) for p in patterns
         )
     )
+    if excludes is None:
+        exclude_globs = set()
+    else:
+        exclude_globs = set(
+            chain.from_iterable(
+                glob(os.path.join(source, p), recursive=recursive) for p in excludes
+            )
+        )
     retv = set()
-    for fp in raw:
+    for fp in include_globs - exclude_globs:
         if os.path.isdir(fp):
             # it is important to append os.path.sep to directory names so
             # it's clear that they are not files when listed with idfx clean --dry
             fp += os.path.sep
         retv.add(os.path.abspath(fp))
-    return list(retv)
+    return sorted(retv)
 
 
 @requires_idefix()

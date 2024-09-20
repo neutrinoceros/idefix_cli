@@ -97,3 +97,15 @@ def test_include_dir(tmp_path):
     dest3 = tmp_path / "final_shallow"
     ret = main(["clone", str(dest1), str(dest3), "--include", "mydir", "--shallow"])
     assert ret == 0
+
+
+def test_exclude(capsys, tmp_path):
+    dest = str(tmp_path / "new")
+    ret = main(["clone", str(BASE_SETUP), dest, "--exclude", "*txt", "*.py"])
+
+    out, err = capsys.readouterr()
+    assert err == ""
+    assert out.startswith("Created the following files\n")
+    assert "util.py\n" not in out
+    assert "note.txt\n" not in out
+    assert ret == 0
