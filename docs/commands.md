@@ -60,14 +60,14 @@ A prefered configuration engine can also be stored as
 # idefix.cfg
 
 [idfx conf]
-# use configure.py
-engine = python
-# or CMake
+# use CMake
 engine = cmake
+# or configure.py (Idefix < 1.0)
+engine = python
 ```
 though this is mostly useful for testing purposes. In general `idfx conf`
 automatically determines which configuration system to use based on
-resources available. Cmake is prefered over Python when both are available.
+available resources. CMake is prefered over Python when both are available.
 
 Any option passed on the command line will override its equivalent persistent
 configuration.
@@ -305,7 +305,7 @@ into
 $ idfx switch mybranch
 ```
 
-Bonus: if no branch is specified, switch the most recently visited other branch.
+Bonus: if no branch is specified, switch to the most recently visited other branch.
 
 
 ## `idfx read`
