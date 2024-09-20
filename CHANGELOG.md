@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.1] - 2024-09-20
+
+BUG: fix an issue where cloning to a dir with missing parents might create
+orphan empty directories if the atomic copy failed. In such an event,
+`idfx clone` now attempts to clean up after itself
+
 ## [5.2.0] - 2024-09-20
 
 - DOC: minor tweaks and typos
