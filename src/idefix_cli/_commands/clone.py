@@ -23,6 +23,7 @@ BASE_INCLUDE = frozenset(
         "*.cpp",
         "*.h",
         "*.c",
+        "*.py",
         "CMakeLists.txt",
     )
 )

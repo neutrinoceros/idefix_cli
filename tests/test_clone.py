@@ -16,6 +16,8 @@ def test_clone_basic(capsys, tmp_path):
     out, err = capsys.readouterr()
     assert err == ""
     assert out.startswith("Created the following files\n")
+    assert "util.py\n" in out
+    assert "note.txt\n" not in out
     assert ret == 0
 
 
@@ -58,7 +60,7 @@ def test_include_from_cli(capsys, tmp_path):
 
 def test_include_from_conf_and_cli(capsys, tmp_path, isolated_conf_dir):
     with open(isolated_conf_dir / "idefix.cfg", "w") as fh:
-        fh.write("[idfx clone]\ninclude = *.py")
+        fh.write("[idfx clone]\ninclude = *.txt")
 
     dest = str(tmp_path / "new") + os.path.sep
     ret = main(["clone", str(BASE_SETUP), dest, "--include", "README*"])
@@ -68,6 +70,7 @@ def test_include_from_conf_and_cli(capsys, tmp_path, isolated_conf_dir):
     assert out.startswith("Created the following files\n")
     assert "README.md\n" in out
     assert "util.py\n" in out
+    assert "note.txt\n" in out
     assert ret == 0
 
 
