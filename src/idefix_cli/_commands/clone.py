@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import os
 import shutil
-from glob import glob
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import TYPE_CHECKING
 
 from idefix_cli.lib import (
     files_from_patterns,
@@ -15,6 +16,13 @@ from idefix_cli.lib import (
     print_error,
     print_warning,
 )
+
+if TYPE_CHECKING:
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
+
 
 BASE_INCLUDE = frozenset(
     (
@@ -29,6 +37,69 @@ BASE_INCLUDE = frozenset(
 )
 
 
+if sys.version_info >= (3, 12):
+
+    class MemorizedPath(Path):
+        def __init__(self, str_path: str) -> None:
+            super().__init__(str_path)
+            self._input = str_path
+
+        @property
+        def _has_trailing_sep(self) -> bool:
+            return self._input.endswith(os.sep)
+
+        def resolve(self) -> Self:
+            retv = super().resolve()
+            retv._input = self._input
+            return retv
+
+        def is_empty(self) -> bool:
+            for _ in self.iterdir():
+                return False
+            return True
+else:
+
+    class MemorizedPath:
+        def __init__(self, str_path: str) -> None:
+            self._input = str_path
+            self._path = Path(str_path)
+
+        @property
+        def _has_trailing_sep(self) -> bool:
+            return self._input.endswith(os.sep)
+
+        def resolve(self) -> Self:
+            retv = object.__new__(self.__class__)
+            retv.__init__(self._input)  # type: ignore[misc]
+            retv._path = retv._path.resolve()
+            return retv
+
+        def is_dir(self) -> bool:
+            return self._path.is_dir()
+
+        def exists(self) -> bool:
+            return self._path.exists()
+
+        @property
+        def parent(self):
+            return self._path.parent
+
+        @property
+        def parents(self):
+            return self._path.parents
+
+        def glob(self, *args):
+            return self._path.glob(*args)
+
+        def __str__(self) -> str:
+            return str(self._path)
+
+        def is_empty(self) -> bool:
+            for _ in self._path.iterdir():
+                return False
+            return True
+
+
 def get_include_from_conf() -> list[str]:
     raw = get_option("idfx clone", "include")
     return raw.split()
@@ -36,10 +107,14 @@ def get_include_from_conf() -> list[str]:
 
 def add_arguments(parser) -> None:
     parser.add_argument(
-        "source", default=".", help="the problem directory to be cloned."
+        "source",
+        default="",
+        type=lambda p: MemorizedPath(p).resolve(),
+        help="the problem directory to be cloned.",
     )
     parser.add_argument(
         "dest",
+        type=lambda p: MemorizedPath(p),
         help="destination directory (cannot exist).",
     )
     parser.add_argument(
@@ -61,27 +136,27 @@ def add_arguments(parser) -> None:
 
 
 def command(
-    source: str,
-    dest: str,
+    source: MemorizedPath,
+    dest: MemorizedPath,
     shallow: bool = False,
     include: list[str] | None = None,
     exclude: list[str] | None = None,
 ) -> int:
-    if not os.path.isdir(source):
+    if not source.is_dir():
         print_error(f"source directory not found {source}")
         return 1
-    if not os.listdir(source):
-        print_error(f"{source} appears to be empty")
+    if source.is_empty():
+        print_error(f"{source._input} appears to be empty")
         return 1
-    if os.path.exists(dest):
-        print_error(f"destination directory exists {dest}")
+    if dest.exists():
+        print_error(f"destination directory exists {dest._input}")
         return 1
 
     if include is None:
         include = []
 
     files_and_dirs_to_copy = files_from_patterns(
-        source,
+        str(source),
         *BASE_INCLUDE,
         *include,
         *get_include_from_conf(),
@@ -91,12 +166,11 @@ def command(
         print_error(f"did not find any file to copy from {source}")
         return 1
 
-    if dest.endswith(os.path.sep):
+    if dest._has_trailing_sep:
         print_warning(
-            f"directory {dest} will be created. "
+            f"directory {dest._input} will be created. "
             f"Drop the trailing {os.path.sep!r} char to turn off this warning."
         )
-        dest = dest[:-1]
 
     def recursive_write(tmpdir: str, files_and_dirs: list[str]) -> None:
         for fd in files_and_dirs:
@@ -116,17 +190,39 @@ def command(
                     "https://github.com/neutrinoceros/idefix_cli/issues/new"
                 )
 
-    os.makedirs(os.path.dirname(dest), exist_ok=True)
-    with TemporaryDirectory(dir=os.path.dirname(dest)) as tmpdir:
-        # using a context manager to guarantee atomicity:
-        # either it's a full success or we don't copy anything
-        # The temporary directory is created next to the final destination
-        # so we can safely use os.replace (atomic) without worrying about
-        # possibly sparse filesystems.
-        recursive_write(tmpdir, files_and_dirs_to_copy)
-        os.replace(tmpdir, dest)
+    dirs_to_manage: list[Path] = []
+    parents = iter(list(dest.parents))
+    while not (p := next(parents)).exists():
+        dirs_to_manage.append(p)
 
-    output_files = list(glob(os.path.join(dest, "*")))
+    if dirs_to_manage:
+        os.makedirs(dirs_to_manage[0])
+
+    try:
+        with TemporaryDirectory(dir=dest.parent) as tmpdir:
+            # using a context manager to guarantee atomicity:
+            # either it's a full success or we don't copy anything
+            # The temporary directory is created next to the final destination
+            # so we can safely use os.replace (atomic) without worrying about
+            # possibly sparse filesystems.
+            recursive_write(tmpdir, files_and_dirs_to_copy)
+            if sys.version_info >= (3, 12):
+                os.replace(tmpdir, dest)
+            else:
+                os.replace(tmpdir, dest._input)
+    except Exception:
+        # attempt to clean up. Don't try to avoid tracebacks here:
+        # if this code runs, something has gone terribly wrong and it's
+        # preferable to not hide the details.
+        if dirs_to_manage:
+            shutil.rmtree(dirs_to_manage[-1])
+        raise
+
+    if sys.version_info >= (3, 12):
+        path_converter = lambda _: _  # noqa
+    else:
+        path_converter = str
+    output_files = [str(_) for _ in dest.glob("*")]
     if shallow:
         objs = "symlinks"
         lencol1 = max(len(_) for _ in output_files)
@@ -134,7 +230,9 @@ def command(
         files_repr = "\n".join(lines)
     else:
         objs = "files"
-        parent = str(Path(dest).parent)
-        files_repr = make_file_tree(output_files, parent_dir=dest, origin=parent)
+        parent = path_converter(dest.parent)
+        files_repr = make_file_tree(
+            output_files, parent_dir=path_converter(dest), origin=parent
+        )
     print(f"Created the following {objs}\n{files_repr}")
     return 0
