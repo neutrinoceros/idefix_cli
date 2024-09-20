@@ -62,6 +62,7 @@ def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
         (["--unknown-option", "1"], ["--unknown-option", "1"]),
         (["--unknown-flag", "-mhd"], ["--unknown-flag", "-DIdefix_MHD=ON"]),
         (["-mpi"], ["-DIdefix_MPI=ON"]),
+        (["-debug"], ["-DIdefix_DEBUG=ON"]),
         (["-arch", "Ampere86"], ["-DKokkos_ARCH_AMPERE86=ON"]),
     ),
 )

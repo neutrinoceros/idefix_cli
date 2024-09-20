@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DOC: minor tweaks and typos
 - ENH: `idfx clone` now includes Python files (`*.py`) by default to improve support
   for setups that use `Pydefix` for initialization
+- ENH: `idfx conf` now accepts a `-debug` shorthand for `-DIdefix_DEBUG=ON`
 
 ## [5.1.0] - 2024-09-18
 

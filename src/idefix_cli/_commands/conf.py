@@ -7,6 +7,7 @@ translated into CMake flags. Namely:
 
   -mhd         -> -DIdefix_MHD=ON
   -mpi         -> -DIdefix_MPI=ON
+  -debug       -> -DIdefix_DEBUG=ON
   -openmp      -> -DKokkos_ENABLE_OPENMP=ON
   -gpu         -> -DKokkos_ENABLE_CUDA=ON
   -arch MYARCH -> -DKokkos_ARCH_MYARCH=ON
@@ -169,6 +170,7 @@ def substitute_cmake_flags(args: list[str]) -> list[str]:
     subs: dict[str, str] = {
         "-mhd": "-DIdefix_MHD=ON",
         "-mpi": "-DIdefix_MPI=ON",
+        "-debug": "-DIdefix_DEBUG=ON",
         "-openmp": "-DKokkos_ENABLE_OPENMP=ON",
         "-gpu": "-DKokkos_ENABLE_CUDA=ON",
     }
