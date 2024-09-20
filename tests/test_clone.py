@@ -21,6 +21,15 @@ def test_clone_basic(capsys, tmp_path):
     assert ret == 0
 
 
+def test_clone_to_nested_directory(capsys, tmp_path):
+    dest = str(tmp_path / "parent1" / "parent2" / "child")
+    main(["clone", str(BASE_SETUP), dest])
+
+    out, err = capsys.readouterr()
+    assert err == ""
+    assert out.startswith("Created the following files\n")
+
+
 def test_clone_with_terminal_sep(capsys, tmp_path):
     # see https://github.com/neutrinoceros/idefix_cli/issues/116
     dest = str(tmp_path / "new") + os.path.sep
