@@ -13,15 +13,14 @@ helper scripts.
 
 `idefix_cli` is distributed via the Python Packaging Index (PyPI).
 
-It is recommended to install this tool in isolation with [`pipx`](https://pipxproject.github.io/pipx/) as
+It is recommended to install this tool in isolation with [`uv`](https://docs.astral.sh/uv/) as
 ```shell
-$ pipx install "idefix_cli[isolated]"
+$ uv tool install idefix-cli
 ```
-(adding `[isolated]` has the effect of pinning dependencies)
 
 Otherwise, the most portable way to install the latest stable version is
 ```shell
-$ python -m pip install --user idefix_cli
+$ python -m pip install --user idefix-cli
 ```
 
 Note that most `idfx` commands explicitly require that the env variable `$IDEFIX_DIR` be
