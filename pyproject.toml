@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "idefix_cli"
+version = "6.0.0dev0"
 description = "A command line utility belt for Idefix"
 authors = [
     { name = "C.M.T. Robert" },
@@ -20,7 +21,6 @@ dependencies = [
     "termcolor>=2.3.0",
     "typing-extensions>=4.1.0;python_version < '3.11'",
 ]
-dynamic = ["version"]
 
 [project.license]
 text = "GPL-3.0"
@@ -52,8 +52,6 @@ license-files = [
 ]
 include-package-data = false
 
-[tool.setuptools.dynamic]
- version = {attr = "idefix_cli.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]

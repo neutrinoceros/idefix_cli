@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - DEP: drop `[isolated]` extra (external tooling should handle dependency pinning)
+- BLD: drop package level `__version__` attribute
 
 ## [5.2.1] - 2024-09-20
 
