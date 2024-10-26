@@ -3,12 +3,12 @@ import os
 import sys
 import unicodedata
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+from importlib.metadata import version
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import FunctionType, ModuleType
 from typing import Any, Final
 
-from idefix_cli import __version__
 from idefix_cli._theme import set_theme
 from idefix_cli.lib import get_config_file, get_option, print_error, print_warning
 
@@ -114,13 +114,16 @@ def _setup_commands(parser: ArgumentParser) -> CommandMap:
 
 
 def main(
-    argv: "list[str] | None" = None, parser: "ArgumentParser | None" = None
+    argv: list[str] | None = None,
+    parser: ArgumentParser | None = None,
 ) -> Any:
     # the return value is deleguated to sub commands so its type is arbitrary
     # In practice it should be either 'int' or 'typing.NoReturn'
     if parser is None:
         parser = ArgumentParser(prog="idfx", allow_abbrev=False)
-    parser.add_argument("-v", "--version", action="version", version=__version__)
+    parser.add_argument(
+        "-v", "--version", action="version", version=version("idefix-cli")
+    )
     commands = _setup_commands(parser)
 
     known_args, unknown_args = parser.parse_known_args(argv)
@@ -142,7 +145,7 @@ def main(
     return cmd(*unknown_args, **vars(known_args))
 
 
-def alt_main(argv: "list[str] | None" = None) -> Any:
+def alt_main(argv: list[str] | None = None) -> Any:
     print(
         unicodedata.lookup("BASEBALL")
         + unicodedata.lookup("BLACK RIGHT-POINTING TRIANGLE"),
