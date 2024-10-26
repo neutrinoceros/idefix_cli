@@ -18,13 +18,12 @@ It defines a `idfx` command familly. The builtin command set (`idfx conf`, `idfx
 It is recommended to install this tool at the system level, but still in isolation,
 using for instance [`uv`](https://docs.astral.sh/uv/) as
 ```shell
-$ uv tool install 'idefix-cli[isolated]'
+$ uv tool install idefix-cli
 ```
 or [`pipx`](https://pipxproject.github.io/pipx/)
 ```shell
-$ pipx install 'idefix-cli[isolated]'
+$ pipx install idefix-cli
 ```
-(adding `[isolated]` has the effect of pinning dependencies, but is optional)
 
 Otherwise, the most portable way to install the latest stable version is
 ```shell
