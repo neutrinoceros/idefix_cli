@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.2"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "idefix_cli"
@@ -45,17 +45,6 @@ test = [
 typecheck = [
     "mypy>=1.11.2",
 ]
-
-[tool.setuptools]
-license-files = [
-    "LICENSE",
-]
-include-package-data = false
-
-
-[tool.setuptools.packages.find]
-where = ["src"]
-namespaces = false
 
 [tool.ruff.lint]
 exclude = ["*__init__.py"]
