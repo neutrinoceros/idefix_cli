@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - DEP: drop `[isolated]` extra (external tooling should handle dependency pinning)
 - BLD: drop package level `__version__` attribute
+- BLD: migrate build backend from `setuptools` to `hatchling`
 
 ## [5.2.1] - 2024-09-20
 
