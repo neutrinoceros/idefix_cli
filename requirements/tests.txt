@@ -1,2 +1,0 @@
-pytest>=7.2.1
-pytest-check>=2.1.2

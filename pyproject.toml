@@ -36,6 +36,16 @@ baballe = "idefix_cli.__main__:alt_main"
 [project.urls]
 Homepage = "https://github.com/neutrinoceros/idefix_cli"
 
+
+[dependency-groups]
+test = [
+    "pytest-check>=2.1.2",
+    "pytest>=7.2.1",
+]
+typecheck = [
+    "mypy>=1.11.2",
+]
+
 [tool.setuptools]
 license-files = [
     "LICENSE",
@@ -78,7 +88,7 @@ show_error_context = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--doctest-modules"
+addopts = "-ra --doctest-modules"
 filterwarnings = [
     "error",
 ]
