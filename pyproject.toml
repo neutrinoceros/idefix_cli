@@ -36,7 +36,6 @@ baballe = "idefix_cli.__main__:alt_main"
 [project.urls]
 Homepage = "https://github.com/neutrinoceros/idefix_cli"
 
-
 [dependency-groups]
 test = [
     "pytest-check>=2.1.2",
@@ -45,6 +44,9 @@ test = [
 typecheck = [
     "mypy>=1.11.2",
 ]
+
+[tool.hatch.build.targets.sdist]
+exclude = [".*"] # exclude dot files (.gitignore is still included)
 
 [tool.ruff.lint]
 exclude = ["*__init__.py"]
