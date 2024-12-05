@@ -7,7 +7,7 @@ from textwrap import dedent
 
 import pytest
 
-from idefix_cli.__main__ import _setup_commands, main
+from idefix_cli.__main__ import _setup_commands, idfx_entry_point as main
 from idefix_cli.lib import print_error
 
 

@@ -30,8 +30,8 @@ file = "README.md"
 content-type = "text/markdown"
 
 [project.scripts]
-idfx = "idefix_cli.__main__:main"
-baballe = "idefix_cli.__main__:alt_main"
+idfx = "idefix_cli.__main__:idfx_entry_point"
+baballe = "idefix_cli.__main__:baballe_entry_point"
 
 [project.urls]
 Homepage = "https://github.com/neutrinoceros/idefix_cli"

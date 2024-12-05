@@ -1,15 +1,14 @@
 import inspect
 import os
 import sys
-import unicodedata
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from importlib.metadata import version
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import FunctionType, ModuleType
-from typing import Any, Final
+from typing import Any, Final, Literal
 
-from idefix_cli._theme import set_theme
+from idefix_cli._theme import theme_ctx
 from idefix_cli.lib import get_config_file, get_option, print_error, print_warning
 
 CommandMap = dict[str, tuple[FunctionType, bool]]
@@ -113,14 +112,10 @@ def _setup_commands(parser: ArgumentParser) -> CommandMap:
     return cmddict
 
 
-def main(
-    argv: list[str] | None = None,
-    parser: ArgumentParser | None = None,
-) -> Any:
+def cli(caller: Literal["idfx", "baballe"], argv: list[str] | None = None) -> Any:
     # the return value is deleguated to sub commands so its type is arbitrary
     # In practice it should be either 'int' or 'typing.NoReturn'
-    if parser is None:
-        parser = ArgumentParser(prog="idfx", allow_abbrev=False)
+    parser = ArgumentParser(prog=caller, allow_abbrev=False)
     parser.add_argument(
         "-v", "--version", action="version", version=version("idefix-cli")
     )
@@ -145,26 +140,20 @@ def main(
     return cmd(*unknown_args, **vars(known_args))
 
 
-def alt_main(argv: list[str] | None = None) -> Any:
-    print(
-        unicodedata.lookup("BASEBALL")
-        + unicodedata.lookup("BLACK RIGHT-POINTING TRIANGLE"),
-        file=sys.stderr,
-    )
+def main(caller: Literal["idfx", "baballe"], argv: list[str] | None = None) -> Any:
+    theme_name = {"idfx": "default", "baballe": "baballe"}[caller]
 
-    set_theme("baballe")
-    try:
-        retv = main(argv, parser=ArgumentParser(prog="baballe", allow_abbrev=False))
-    finally:
-        set_theme("default")
-        print(
-            unicodedata.lookup("BLACK LEFT-POINTING TRIANGLE")
-            + unicodedata.lookup("BASEBALL"),
-            file=sys.stderr,
-        )
-
-    return retv
+    with theme_ctx(theme_name):
+        return cli(caller, argv)
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+def idfx_entry_point(argv: list[str] | None = None) -> Any:
+    return main(caller="idfx", argv=argv)
+
+
+def baballe_entry_point(argv: list[str] | None = None) -> Any:
+    return main(caller="baballe", argv=argv)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    sys.exit(main(caller="idfx"))

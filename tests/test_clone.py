@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from idefix_cli.__main__ import main
+from idefix_cli.__main__ import idfx_entry_point as main
 
 DATADIR = Path(__file__).parent / "data"
 BASE_SETUP = DATADIR / "OrszagTang3D"
