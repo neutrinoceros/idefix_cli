@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "idefix_cli"
-version = "6.0.0dev0"
+version = "6.0.0"
 description = "A command line utility belt for Idefix"
 authors = [
     { name = "C.M.T. Robert" },
