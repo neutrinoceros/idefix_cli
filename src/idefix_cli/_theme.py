@@ -1,14 +1,13 @@
 import sys
 import unicodedata
+from contextlib import contextmanager
+from dataclasses import dataclass
 from typing import Literal, TypedDict
 
-if sys.version_info >= (3, 11):
-    from typing import assert_never
-else:
-    from typing_extensions import assert_never
+__all__ = ["get_symbol", "theme_ctx"]
 
 
-class Theme(TypedDict):
+class SymbolSet(TypedDict):
     LAUNCH: str
     SUCCESS: str
     WARNING: str
@@ -16,35 +15,81 @@ class Theme(TypedDict):
     HINT: str
 
 
-Default = Theme(
-    LAUNCH=unicodedata.lookup("ROCKET"),  # 🚀
-    SUCCESS=unicodedata.lookup("PARTY POPPER"),  # 🎉
-    WARNING=unicodedata.lookup("HEAVY EXCLAMATION MARK SYMBOL"),  # ❗
-    ERROR=unicodedata.lookup("COLLISION SYMBOL"),  # 💥
-    HINT=unicodedata.lookup("LEFT-POINTING MAGNIFYING GLASS"),  # 🔍
+@dataclass(frozen=True, slots=True, kw_only=True)
+class Theme:
+    name: str
+    symbols: SymbolSet
+    enter_msg: str | None
+    exit_msg: str | None
+
+
+class ThemeRegistry:
+    def __init__(self):
+        self._registry: dict[str, Theme] = {}
+
+    def register(
+        self,
+        name: str,
+        *,
+        symbols: SymbolSet,
+        enter: str | None = None,
+        exit: str | None = None,
+    ):
+        self._registry[name] = Theme(
+            name=name, symbols=symbols, enter_msg=enter, exit_msg=exit
+        )
+
+    def __getitem__(self, item: str) -> Theme:
+        return self._registry[item]
+
+
+themes = ThemeRegistry()
+themes.register(
+    name="default",
+    symbols={
+        "LAUNCH": unicodedata.lookup("ROCKET"),  # 🚀
+        "SUCCESS": unicodedata.lookup("PARTY POPPER"),  # 🎉
+        "WARNING": unicodedata.lookup("HEAVY EXCLAMATION MARK SYMBOL"),  # ❗
+        "ERROR": unicodedata.lookup("COLLISION SYMBOL"),  # 💥
+        "HINT": unicodedata.lookup("LEFT-POINTING MAGNIFYING GLASS"),  # 🔍
+    },
 )
 
-Baballe = Theme(
-    LAUNCH=unicodedata.lookup("GUIDE DOG"),  # 🦮
-    SUCCESS=unicodedata.lookup("POODLE"),  # 🐩
-    WARNING=unicodedata.lookup("PAW PRINTS"),  # 🐾
-    ERROR=unicodedata.lookup("HOT DOG"),  # 🌭
-    HINT=unicodedata.lookup("CRYSTAL BALL"),  # 🔮
+themes.register(
+    name="baballe",
+    symbols={
+        "LAUNCH": unicodedata.lookup("GUIDE DOG"),  # 🦮
+        "SUCCESS": unicodedata.lookup("POODLE"),  # 🐩
+        "WARNING": unicodedata.lookup("PAW PRINTS"),  # 🐾
+        "ERROR": unicodedata.lookup("HOT DOG"),  # 🌭
+        "HINT": unicodedata.lookup("CRYSTAL BALL"),  # 🔮
+    },
+    enter=unicodedata.lookup("BASEBALL")
+    + unicodedata.lookup("BLACK RIGHT-POINTING TRIANGLE"),
+    exit=unicodedata.lookup("BLACK LEFT-POINTING TRIANGLE")
+    + unicodedata.lookup("BASEBALL"),
 )
 
 
-THEME = Default
-
-
-def set_theme(theme: Literal["default", "baballe"]) -> None:
-    global THEME
-    if theme == "default":
-        THEME = Default
-    elif theme == "baballe":
-        THEME = Baballe
-    else:
-        assert_never(theme)
+THEME = themes["default"]
 
 
 def get_symbol(key: Literal["LAUNCH", "SUCCESS", "WARNING", "ERROR", "HINT"]) -> str:
-    return THEME[key]
+    return THEME.symbols[key]
+
+
+@contextmanager
+def theme_ctx(name: str):
+    global THEME
+    old_name = THEME.name
+    THEME = themes[name]
+
+    if THEME.enter_msg is not None:
+        print(THEME.enter_msg, file=sys.stderr)
+    try:
+        yield
+    finally:
+        if THEME.exit_msg is not None:
+            print(THEME.exit_msg, file=sys.stderr)
+
+        THEME = themes[old_name]

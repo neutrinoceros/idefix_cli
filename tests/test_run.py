@@ -1,6 +1,6 @@
 import pytest
 
-from idefix_cli.__main__ import main
+from idefix_cli.__main__ import idfx_entry_point as main
 from idefix_cli._commands.run import get_highest_power_of_two
 
 
