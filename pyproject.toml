@@ -37,6 +37,9 @@ baballe = "idefix_cli.__main__:alt_main"
 Homepage = "https://github.com/neutrinoceros/idefix_cli"
 
 [dependency-groups]
+covcheck = [
+    "coverage[toml]>=6.5.0",
+]
 test = [
     "pytest-check>=2.1.2",
     "pytest>=7.2.1",
@@ -66,6 +69,32 @@ select = [
 [tool.ruff.lint.isort]
 combine-as-imports = true
 known-first-party = ["idefix_cli"]
+
+[tool.coverage.run]
+branch = true
+source = [
+    "src/idefix_cli",
+    "tests",
+]
+omit = [
+    # this test generates fake source files that are removed in teardown
+    "*test_broken_command_plugin*"
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    # a more strict default pragma
+    "\\# pragma: no cover\\b",
+
+    # allow defensive code
+    "^\\s*raise NotImplementedError\\b",
+
+    ": \\.\\.\\.(\\s*#.*)?$",
+    "^ +\\.\\.\\.$",
+    "-> ['\"]?NoReturn['\"]?:",
+]
 
 [tool.mypy]
 python_version = '3.10'
