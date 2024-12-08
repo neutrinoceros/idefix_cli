@@ -23,35 +23,45 @@ jobs:
         - '3.11'
         - '3.12'
         - '3.13'
-        free-threading:
-        - false
-        include:
-        - os: ubuntu-latest
-          python-version: '3.13'
-          free-threading: false
-        - os: ubuntu-latest
-          python-version: '3.13'
-          free-threading: true
 
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
     - uses: astral-sh/setup-uv@38f3f104447c67c051c4a08e39b64a148898af3a # v4.2.0
-    - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
-      if: ${{ !matrix.free-threading }}
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: deadsnakes/action@e640ac8743173a67cca4d7d77cd837e514bf98e8 # v3.2.0
-      if: ${{ matrix.free-threading }}
-      with:
-        python-version: ${{ matrix.python-version }}
-        nogil: true
-    - name: Build
-      run: |
-        uv venv --python-preference=only-system -p ${{ matrix.python-version }}
-        uv sync --group test --no-editable
     - name: Run tests
-      run: uv run pytest --color=yes
+      run: uv run --frozen --no-editable --group test pytest --color=yes
+
+  future:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+        - 3.14-dev
+        - 3.13t
+
+    steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+    # TODO: ditch Quansight-Labs/setup-python when either condition is met
+    # - setup-uv support Python pre-releases
+    # - actions/setup-python support free-threaded versions
+    # see https://github.com/actions/setup-python/issues/771
+    - uses: Quansight-Labs/setup-python@b9ab292c751a42bcd2bb465b7fa202ea2c3f5796 # v5.3.1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - uses: astral-sh/setup-uv@38f3f104447c67c051c4a08e39b64a148898af3a # v4.2.0
+    - name: Configure uv
+      run: |
+        echo "UV_PYTHON_PREFERENCE=only-system" >> $GITHUB_ENV
+        pin=${{ matrix.python-version }}
+        echo "UV_PYTHON=${pin%-dev}" >> $GITHUB_ENV
+        echo "UV_PRERELEASE=allow" >> $GITHUB_ENV
+    - run: uv lock --upgrade
+    - name: Run tests
+      run: uv run --frozen --no-editable --group test pytest --color=yes
 
   tests_minimal_env:
     name: Test minimal requirements
@@ -59,12 +69,10 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
     - uses: astral-sh/setup-uv@38f3f104447c67c051c4a08e39b64a148898af3a # v4.2.0
-    - name: Build
-      run: |
-        uv sync -p 3.10 \
-          --resolution=lowest-direct --group test --no-editable
+      with:
+        python-version: 3.10.0
     - name: Run tests
-      run: uv run pytest --color=yes
+      run: uv run --resolution=lowest-direct --no-editable --group test pytest --color=yes
 
   type-check:
     strategy:

@@ -51,7 +51,10 @@ typecheck = [
 ]
 
 [tool.hatch.build.targets.sdist]
-exclude = [".*"] # exclude dot files (.gitignore is still included)
+exclude = [
+    ".*",  # exclude dot files (.gitignore is still included)
+    "uv.lock",
+]
 
 [tool.ruff.lint]
 exclude = ["*__init__.py"]
