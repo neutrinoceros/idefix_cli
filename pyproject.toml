@@ -37,12 +37,14 @@ baballe = "idefix_cli.__main__:baballe_entry_point"
 Homepage = "https://github.com/neutrinoceros/idefix_cli"
 
 [dependency-groups]
-covcheck = [
-    "coverage[toml]>=6.5.0",
-]
 test = [
     "pytest-check>=2.1.2",
     "pytest>=7.2.1",
+]
+covcheck = [
+    {include-group = "test"},
+    "coverage[toml]>=6.5.0 ; python_version < '3.11'",
+    "coverage>=6.5.0 ; python_version >= '3.11'",
 ]
 typecheck = [
     "mypy>=1.11.2",
