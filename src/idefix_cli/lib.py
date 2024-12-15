@@ -53,27 +53,33 @@ __all__ = [
 __all__.append("chdir")
 
 
+class _WindowsTree(StrEnum):
+    TRUNK = "|"
+    FORK = "|-"
+    ANGLE = "'-"
+    BRANCH = "-"
+
+
+class _PosixTree(StrEnum):
+    TRUNK = "│"
+    FORK = "├"
+    ANGLE = "└"
+    BRANCH = "─"
+
+
+_Tree: type[_WindowsTree | _PosixTree]
+
 if platform.system().lower().startswith("win"):
     # Windows
     env_var = "APPDATA"
     default_usr_dir = "AppData"
-
-    class _Tree(StrEnum):
-        TRUNK = "|"
-        FORK = "|-"
-        ANGLE = "'-"
-        BRANCH = "-"
+    _Tree = _WindowsTree
 
 else:
     # POSIX
     env_var = "XDG_CONFIG_HOME"
     default_usr_dir = ".config"
-
-    class _Tree(StrEnum):  # type: ignore [no-redef]
-        TRUNK = "│"
-        FORK = "├"
-        ANGLE = "└"
-        BRANCH = "─"
+    _Tree = _PosixTree
 
 
 XDG_CONFIG_HOME = os.environ.get(
@@ -343,9 +349,9 @@ def get_config_file() -> str:
     If present, the local configuration is returned, otherwise the global one is
     to be considered active, even if non-existent.
     """
-    for parent_dir in (".", XDG_CONFIG_HOME):
-        if os.path.isfile(conf_file := os.path.join(parent_dir, "idefix.cfg")):
-            break
+    local_conf_file = Path("idefix.cfg")
+    global_conf_file = Path(XDG_CONFIG_HOME, "idefix.cfg")
+    conf_file = local_conf_file if local_conf_file.is_file() else global_conf_file
     return os.path.abspath(conf_file)
 
 

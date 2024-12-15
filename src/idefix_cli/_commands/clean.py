@@ -70,7 +70,7 @@ def command(
 ) -> int:
     origin = os.path.abspath(os.curdir)
     with chdir(directory):
-        patterns = bpatterns | kokkos_files | cmake_files | GENERATED_DIRS
+        patterns = set(bpatterns | kokkos_files | cmake_files | GENERATED_DIRS)
         if clean_all:
             patterns |= gpatterns
 

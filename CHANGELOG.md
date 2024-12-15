@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DEP: require inifix 5.1.0 or newer, fix newly detected type-checking errors
 - BUG: fix a crash in `idfx run` where a Python exception would be raised
   instead of an error message
+- TYP: improve typechecking with pyright
 
 ## [6.0.0] - 2024-12-05
 

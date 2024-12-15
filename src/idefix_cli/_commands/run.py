@@ -364,7 +364,7 @@ def command(
         print_warning("Falling back to 'prompt' mode.")
         rebuild_mode = RebuildMode.PROMPT
 
-    build_is_required: bool
+    build_is_required: bool = True
     if rebuild_mode is RebuildMode.ALWAYS:
         build_is_required = True
     elif rebuild_mode is RebuildMode.PROMPT:
