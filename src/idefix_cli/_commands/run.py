@@ -359,7 +359,7 @@ def command(
     except ValueError:
         print_warning(
             f"Expected [idfx run].recompile to be any of {[str(_) for _ in RebuildMode]}"
-            f"Got {rebuild_mode} from {get_config_file()}\n"
+            f"Got {rebuild_mode_str!r} from {get_config_file()}\n"
         )
         print_warning("Falling back to 'prompt' mode.")
         rebuild_mode = RebuildMode.PROMPT
