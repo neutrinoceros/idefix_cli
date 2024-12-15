@@ -115,7 +115,7 @@ typecheck = [
 
 [package.metadata]
 requires-dist = [
-    { name = "inifix", specifier = ">=4.2.2" },
+    { name = "inifix", specifier = ">=5.1.0" },
     { name = "packaging", specifier = ">=21.0" },
     { name = "termcolor", specifier = ">=2.3.0" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'", specifier = ">=4.1.0" },
@@ -145,11 +145,14 @@ wheels = [
 
 [[package]]
 name = "inifix"
-version = "5.0.4"
+version = "5.1.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/06/dd/378a57a3d226fff56d125b82698972e5848586089139ce36c2987a777014/inifix-5.0.4.tar.gz", hash = "sha256:573be2064dcd6858c3beae2b19d2ff6aaa954c020be333cf9f51831ab8e9fee3", size = 40546 }
+dependencies = [
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8c/65/20c789af1af8a1fd8e41e7c2b2339fb6dffdaedfe87280c6a35d17ae0298/inifix-5.1.1.tar.gz", hash = "sha256:046c662fab1c1bbad08a6d9d930dae9f46a4a97137d0fa974612f0827afc4273", size = 42393 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/07/2fb1c5c27c4defc9f154437bd4ecf444b3bbf0f1467163fb3bc806d31195/inifix-5.0.4-py3-none-any.whl", hash = "sha256:61019fae490bc314fab6ef22e5661e551857267d40311d0db4e2d3d16a09e3ff", size = 29685 },
+    { url = "https://files.pythonhosted.org/packages/b3/0f/efde2b62b86ad02b7b51e010ae9e52f56599cca849049b236ec8d8a0ce3a/inifix-5.1.1-py3-none-any.whl", hash = "sha256:b3e3a9137ce1aba9a71e8b0b2ee9a6985338eb26826a3157f4542265fbb40aaf", size = 32118 },
 ]
 
 [[package]]

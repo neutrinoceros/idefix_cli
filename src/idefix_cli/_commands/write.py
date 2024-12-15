@@ -37,7 +37,7 @@ def command(dest: str, source, force: bool = False) -> int:
         return 1
 
     try:
-        inifix.validate_inifile_schema(data)
+        inifix.validate_inifile_schema(data, sections="require")
     except ValueError:
         print_error("input is not Pluto inifile format compliant.")
         return 1
@@ -50,6 +50,6 @@ def command(dest: str, source, force: bool = False) -> int:
         return 1
 
     with open(pdest, "wb") as fh:
-        inifix.dump(data, fh)
+        inifix.dump(data, fh, sections="require")
 
     return 0

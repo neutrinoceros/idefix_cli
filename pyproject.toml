@@ -16,7 +16,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "inifix>=4.2.2",
+    "inifix>=5.1.0",
     "packaging>=21.0",
     "termcolor>=2.3.0",
     "typing-extensions>=4.1.0;python_version < '3.11'",
