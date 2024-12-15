@@ -309,17 +309,18 @@ def command(
         return 1
 
     with open(pinifile, "rb") as fh:
-        conf = inifix.load(fh)
+        try:
+            conf = inifix.load(fh, sections="require", parse_scalars_as_lists=True)
+        except ValueError as exc:
+            print_error(
+                "configuration file seems malformed. "
+                f"The following exception was raised\n{exc}"
+            )
+            return 1
         base_conf = deepcopy(conf)
 
     # conf type validation
     conf.setdefault("TimeIntegrator", {})
-    if not isinstance(conf["TimeIntegrator"], dict):
-        print_error(
-            "configuration file seems malformed, "
-            "expected 'TimeIntegrator' to be a section title, not a parameter name."
-        )
-        return 1
 
     if outputs and "-maxcycles" not in unknown_args:
         print_error("--out requires -maxcycles")
@@ -335,28 +336,21 @@ def command(
     if outputs:
         output_types = set(outputs) - {"log"}
         if time_step is None:
-            conf["TimeIntegrator"].setdefault("first_dt", 1e-6)
-            time_step = conf["TimeIntegrator"]["first_dt"]
+            conf["TimeIntegrator"].setdefault("first_dt", [1e-6])
+            time_step = float(conf["TimeIntegrator"]["first_dt"][0])
 
         conf.setdefault("Output", {})
         output_sec = conf["Output"]
-        if not isinstance(output_sec, dict):
-            print_error(
-                "configuration file seems malformed, "
-                "expected 'Output' to be a section title, not a parameter name."
-            )
-            return 1
-
-        output_sec["log"] = 1
+        output_sec["log"] = [1]
 
         if len(output_types) > 0:
             for entry in output_types:
-                output_sec[entry] = 0  # output on every time step
+                output_sec[entry] = [0]  # output on every time step
 
     if time_step is not None:
-        conf["TimeIntegrator"]["first_dt"] = time_step
+        conf["TimeIntegrator"]["first_dt"] = [time_step]
     if tstop is not None:
-        conf["TimeIntegrator"]["tstop"] = tstop
+        conf["TimeIntegrator"]["tstop"] = [tstop]
 
     rebuild_mode_str: str = get_option("idfx run", "recompile") or "always"
 
@@ -435,7 +429,7 @@ def command(
     if conf != base_conf:
         tmp_inifile = NamedTemporaryFile()
         with open(tmp_inifile.name, "wb") as fh:
-            inifix.dump(conf, fh)
+            inifix.dump(conf, fh, sections="require")
         inputfile = tmp_inifile.name
     else:
         inputfile = str(pinifile.relative_to(d.resolve()))
