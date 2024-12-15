@@ -10,7 +10,7 @@ on:
 
 jobs:
   tests:
-    name: 'Python ${{ matrix.python-version }} on ${{ matrix.os }} (free-threading: ${{ matrix.free-threading }})'
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
