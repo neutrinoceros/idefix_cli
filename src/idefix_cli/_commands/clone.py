@@ -48,8 +48,8 @@ if sys.version_info >= (3, 12):
         def _has_trailing_sep(self) -> bool:
             return self._input.endswith(os.sep)
 
-        def resolve(self) -> Self:
-            retv = super().resolve()
+        def resolve(self, *args, **kwargs) -> Self:
+            retv = super().resolve(*args, **kwargs)
             retv._input = self._input
             return retv
 

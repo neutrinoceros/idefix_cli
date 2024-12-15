@@ -80,12 +80,15 @@ jobs:
         python-version:
         - '3.10'
         - '3.13'
+        typechecker:
+        - mypy
+        - pyright
 
     runs-on: ubuntu-latest
     name: type check
 
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.python-version }}-typecheck
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.python-version }}-${{ matrix.typechecker }}-typecheck
       cancel-in-progress: true
 
     steps:
@@ -93,8 +96,8 @@ jobs:
     - uses: astral-sh/setup-uv@38f3f104447c67c051c4a08e39b64a148898af3a # v4.2.0
     - name: Build
       run: uv sync -p ${{ matrix.python-version }} --group typecheck --no-editable
-    - name: Run mypy
-      run: uv run mypy src/idefix_cli
+    - name: Typecheck
+      run: uv run ${{ matrix.typechecker }} src
 
   docs:
     runs-on: ubuntu-latest

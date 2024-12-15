@@ -18,12 +18,14 @@ def _log_to_data(log: list[str]):
     for i, name in enumerate(columns.keys()):
         columns[name] = [L[i] for L in tokenized_log]
 
+    last_name = list(columns)[-1]
+
     # the very last line in a log may be polluted by a trailing warning or error
     # in practice this is only known to happen on the last column.
     # Let's sanitize this value:
 
     # rely on Python leaking variables binded by for loops
-    data = columns[name]
+    data = columns[last_name]
     last_entry = data[-1]
     if "NaN" in last_entry:
         data[-1] = "NaN"
