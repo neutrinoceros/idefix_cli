@@ -55,6 +55,7 @@ typecheck = [
 exclude = [
     ".*",  # exclude dot files (.gitignore is still included)
     "uv.lock",
+    "renovate.json",
 ]
 
 [tool.ruff.lint]
