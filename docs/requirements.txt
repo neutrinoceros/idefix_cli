@@ -24,7 +24,7 @@ griffe==1.5.4
     # via -r docs/requirements.in
 idna==3.10
     # via requests
-inifix==5.1.1
+inifix==5.1.3
     # via idefix-cli
 jinja2==3.1.5
     # via
