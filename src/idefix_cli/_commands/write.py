@@ -1,10 +1,9 @@
 """write an Idefix inifile from a json string"""
 
-from __future__ import annotations
-
-import argparse
 import json
 import sys
+from contextlib import ExitStack
+from io import TextIOBase
 from pathlib import Path
 
 import inifix
@@ -17,7 +16,6 @@ def add_arguments(parser) -> None:
     parser.add_argument(
         "source",
         nargs="?",
-        type=argparse.FileType("r"),
         default=sys.stdin,
         help="json input",
     )
@@ -29,12 +27,18 @@ def add_arguments(parser) -> None:
     )
 
 
-def command(dest: str, source, force: bool = False) -> int:
-    try:
-        data = json.load(source)
-    except json.decoder.JSONDecodeError:
-        print_error("input is not valid json.")
-        return 1
+def command(dest: str, source: str | TextIOBase, force: bool = False) -> int:
+    with ExitStack() as stack:
+        if isinstance(source, TextIOBase):
+            stream = source
+        else:
+            stream = stack.enter_context(open(source))
+
+        try:
+            data = json.load(stream)
+        except json.decoder.JSONDecodeError:
+            print_error("input is not valid json.")
+            return 1
 
     try:
         inifix.validate_inifile_schema(data, sections="require")
