@@ -109,7 +109,7 @@ six==1.17.0
     # via python-dateutil
 termcolor==2.5.0
     # via idefix-cli
-urllib3==2.2.3
+urllib3==2.3.0
     # via requests
 watchdog==6.0.0
     # via mkdocs
