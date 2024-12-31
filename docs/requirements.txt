@@ -18,7 +18,7 @@ colorama==0.4.6
     #   mkdocs-material
 ghp-import==2.1.0
     # via mkdocs
-griffe==1.5.1
+griffe==1.5.4
     # via mkdocstrings-python
 .
     # via -r docs/requirements.in
