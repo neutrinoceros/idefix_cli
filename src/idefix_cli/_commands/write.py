@@ -2,6 +2,7 @@
 
 import json
 import sys
+from argparse import ArgumentParser
 from contextlib import ExitStack
 from io import TextIOBase
 from pathlib import Path
@@ -11,7 +12,7 @@ import inifix
 from idefix_cli.lib import print_error
 
 
-def add_arguments(parser) -> None:
+def add_arguments(parser: ArgumentParser) -> None:
     parser.add_argument("dest", type=str, help="dest inifile")
     parser.add_argument(
         "source",

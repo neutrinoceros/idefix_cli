@@ -5,14 +5,14 @@ import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from time import monotonic_ns
-from typing import Any
+from typing import Any, TextIO
 
 from idefix_cli.lib import print_error
 
 _LOG_LINE_REGEXP = re.compile(r"^(?P<trailer>TimeIntegrator:)(?P<data>.*\|.*)")
 
 
-def _log_to_data(log: list[str]):
+def _log_to_data(log: list[str]) -> dict[str, list[Any]]:
     columns: dict[str, list[Any]] = {name.strip(): [] for name in log[0].split("|")}
     tokenized_log = [line.replace("N/A", "NaN").split("|") for line in log[1:]]
     for i, name in enumerate(columns.keys()):
@@ -87,11 +87,11 @@ def add_arguments(parser: ArgumentParser) -> None:
 def command(
     dir: str,
     input_: list[str] | None = None,
-    output=sys.stdout,
+    output: TextIO = sys.stdout,
     all_files: bool = False,
     timeit: bool = False,
     *,
-    _log_line_regexp=_LOG_LINE_REGEXP,
+    _log_line_regexp: re.Pattern[str] = _LOG_LINE_REGEXP,
 ) -> int:
     pdir = Path(dir)
     if not pdir.is_dir():

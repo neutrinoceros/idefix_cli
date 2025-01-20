@@ -111,11 +111,10 @@ exclude_lines = [
 
 [tool.mypy]
 python_version = '3.10'
+strict = true
 show_error_codes = true
-warn_unused_configs = true
-warn_unused_ignores = true
-warn_unreachable = true
 show_error_context = true
+warn_unused_ignores = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"

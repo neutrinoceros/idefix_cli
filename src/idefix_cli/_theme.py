@@ -1,5 +1,6 @@
 import sys
 import unicodedata
+from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Literal, TypedDict
@@ -34,7 +35,7 @@ class ThemeRegistry:
         symbols: SymbolSet,
         enter: str | None = None,
         exit: str | None = None,
-    ):
+    ) -> None:
         self._registry[name] = Theme(
             name=name, symbols=symbols, enter_msg=enter, exit_msg=exit
         )
@@ -79,7 +80,7 @@ def get_symbol(key: Literal["LAUNCH", "SUCCESS", "WARNING", "ERROR", "HINT"]) ->
 
 
 @contextmanager
-def theme_ctx(name: str):
+def theme_ctx(name: str) -> Generator[None, None, None]:
     global THEME
     old_name = THEME.name
     THEME = themes[name]

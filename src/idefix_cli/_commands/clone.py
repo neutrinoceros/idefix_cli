@@ -5,6 +5,8 @@ from __future__ import annotations
 import os
 import shutil
 import sys
+from argparse import ArgumentParser
+from collections.abc import Generator, Sequence
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
@@ -81,14 +83,14 @@ else:
             return self._path.exists()
 
         @property
-        def parent(self):
+        def parent(self) -> Path:
             return self._path.parent
 
         @property
-        def parents(self):
+        def parents(self) -> Sequence[Path]:
             return self._path.parents
 
-        def glob(self, *args):
+        def glob(self, *args: str) -> Generator[Path, None, None]:
             return self._path.glob(*args)
 
         def __str__(self) -> str:
@@ -105,7 +107,7 @@ def get_include_from_conf() -> list[str]:
     return raw.split()
 
 
-def add_arguments(parser) -> None:
+def add_arguments(parser: ArgumentParser) -> None:
     parser.add_argument(
         "source",
         default="",
@@ -156,7 +158,7 @@ def command(
         include = []
 
     files_and_dirs_to_copy = files_from_patterns(
-        str(source),
+        Path(str(source)),
         *BASE_INCLUDE,
         *include,
         *get_include_from_conf(),

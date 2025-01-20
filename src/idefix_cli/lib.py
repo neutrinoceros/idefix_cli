@@ -22,7 +22,7 @@ from idefix_cli._theme import get_symbol
 if sys.version_info >= (3, 11):
     from enum import StrEnum
 else:
-    from idefix_cli._backports import StrEnum
+    from idefix_cli._backports import StrEnum  # type: ignore[attr-defined]
 
 # workaround mypy not being confortable around decorator preserving signatures
 # adapted from
@@ -53,14 +53,14 @@ __all__ = [
 __all__.append("chdir")
 
 
-class _WindowsTree(StrEnum):
+class _WindowsTree(StrEnum):  # type: ignore [misc]
     TRUNK = "|"
     FORK = "|-"
     ANGLE = "'-"
     BRANCH = "-"
 
 
-class _PosixTree(StrEnum):
+class _PosixTree(StrEnum):  # type: ignore [misc]
     TRUNK = "│"
     FORK = "├"
     ANGLE = "└"
@@ -102,7 +102,7 @@ class requires_idefix:
 
     def __call__(self, f: TFun) -> TFun:
         @wraps(f)
-        def wrapper(*args, **kwargs) -> Any:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             if (IDEFIX_DIR := os.getenv("IDEFIX_DIR")) is None:
                 print_error(
                     "this functionality requires $IDEFIX_DIR to be defined",
@@ -260,8 +260,8 @@ def run_subcommand(
 
 
 def files_from_patterns(
-    source,
-    *patterns,
+    source: os.PathLike[str],
+    *patterns: str,
     recursive: bool = False,
     excludes: list[str] | None = None,
 ) -> list[str]:
@@ -447,17 +447,17 @@ def prompt_ask(prompt: str, /) -> bool:
         print("Please enter y or n", file=sys.stderr)
 
 
-def __getattr__(attr: str):
+def __getattr__(attr: str) -> Any:
     # avoid leaking more than intended from the standard library
     if attr == "chdir":
         if sys.version_info >= (3, 11):
             from contextlib import chdir
         else:
-            from idefix_cli._backports import chdir
+            from idefix_cli._backports import chdir  # type: ignore [attr-defined]
         return chdir
     else:
         raise AttributeError(f"Unknown attribute {attr!r}")
 
 
-def __dir__():
+def __dir__() -> list[str]:
     return list(globals()) + ["chdir"]

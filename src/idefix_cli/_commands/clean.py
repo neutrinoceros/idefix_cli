@@ -66,7 +66,7 @@ def add_arguments(parser: ArgumentParser) -> None:
 
 
 def command(
-    directory, clean_all: bool = False, dry: bool = False, confirm: bool = True
+    directory: str, clean_all: bool = False, dry: bool = False, confirm: bool = True
 ) -> int:
     origin = os.path.abspath(os.curdir)
     with chdir(directory):
