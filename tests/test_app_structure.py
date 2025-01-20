@@ -81,7 +81,9 @@ def test_plugins(isolated_conf_dir, tmp_path, capsys):
             dedent(
                 """
                 'test extension command'
-                def add_arguments(parser) -> None:
+                from argparse import ArgumentParser
+
+                def add_arguments(parser: ArgumentParser) -> None:
                     return
 
                 def command() -> int:

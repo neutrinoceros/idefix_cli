@@ -1,12 +1,13 @@
 """switch git branch in $IDEFIX_DIR using git checkout"""
 
 import os
+from argparse import ArgumentParser
 from pathlib import Path
 
 from idefix_cli.lib import print_error, requires_idefix, run_subcommand
 
 
-def add_arguments(parser):
+def add_arguments(parser: ArgumentParser) -> None:
     parser.add_argument(
         "branch",
         default="-",

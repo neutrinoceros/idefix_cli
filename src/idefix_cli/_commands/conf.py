@@ -224,7 +224,7 @@ def substitute_cmake_args(args: list[str]) -> list[str]:
     return args
 
 
-def add_arguments(parser) -> None:
+def add_arguments(parser: ArgumentParser) -> None:
     parser.add_argument("--dir", dest="directory", default=".", help="target directory")
 
     parser.add_argument(

@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+from argparse import ArgumentParser
 from copy import deepcopy
 from enum import auto
 from math import prod
@@ -38,7 +39,7 @@ if sys.version_info >= (3, 11):
 else:
     from typing_extensions import assert_never
 
-    from idefix_cli._backports import StrEnum
+    from idefix_cli._backports import StrEnum  # type: ignore [attr-defined]
     from idefix_cli.lib import chdir
 
 MAIN_LOG_FILE = "idefix.0.log"
@@ -124,7 +125,7 @@ def get_command(
     return cmd
 
 
-class RebuildMode(StrEnum):
+class RebuildMode(StrEnum):  # type: ignore [misc]
     ALWAYS = auto()
     PROMPT = auto()
 
@@ -156,11 +157,11 @@ def get_cpu_count() -> int:
 
 
 def get_highest_power_of_two(n_max: int) -> int:
-    return 2 ** (n_max.bit_length() - 1)
+    return 1 << (n_max.bit_length() - 1)
 
 
 @requires_idefix()
-def build_idefix(directory) -> int:
+def build_idefix(directory: str) -> int:
     ncpus = min(8, get_highest_power_of_two(get_cpu_count()))
     cmd = ["make", "-j", str(ncpus)]
     return run_subcommand(cmd, loc=Path(directory), err="failed to build idefix")
@@ -189,7 +190,7 @@ def parse_ncycles(unknown_args: tuple[str, ...], ncycles: int) -> tuple[str, ...
         return unknown_args
 
 
-def add_arguments(parser) -> None:
+def add_arguments(parser: ArgumentParser) -> None:
     parser.add_argument("--dir", dest="directory", default=".", help="target directory")
     parser.add_argument(
         "-i",
@@ -358,11 +359,11 @@ def command(
         rebuild_mode = RebuildMode(rebuild_mode_str)
     except ValueError:
         print_warning(
-            f"Expected [idfx run].recompile to be any of {[str(_) for _ in RebuildMode]}"
+            f"Expected [idfx run].recompile to be any of {[str(_) for _ in RebuildMode]}"  # type: ignore [attr-defined]
             f"Got {rebuild_mode_str!r} from {get_config_file()}\n"
         )
         print_warning("Falling back to 'prompt' mode.")
-        rebuild_mode = RebuildMode.PROMPT
+        rebuild_mode = RebuildMode.PROMPT  # type: ignore [assignment]
 
     build_is_required: bool = True
     if rebuild_mode is RebuildMode.ALWAYS:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from argparse import ArgumentParser
 from pathlib import Path
 
 import inifix
@@ -10,7 +11,7 @@ import inifix
 from idefix_cli.lib import print_error
 
 
-def add_arguments(parser) -> None:
+def add_arguments(parser: ArgumentParser) -> None:
     parser.add_argument("inifile", type=str, help="target inifile")
     parser.add_argument(
         "--indent", type=int, help="indentation in spaces (default is flat output)"
