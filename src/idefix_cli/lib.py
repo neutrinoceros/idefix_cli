@@ -424,12 +424,12 @@ def make_file_tree(file_list: list[str], parent_dir: str, origin: str) -> str:
 
     for file in file_list[:-1]:
         ret.append(
-            f"{_Tree.FORK}{_Tree.BRANCH*2} {os.path.relpath(file, start=parent_dir)}"
+            f"{_Tree.FORK}{_Tree.BRANCH * 2} {os.path.relpath(file, start=parent_dir)}"
         )
         if os.path.isdir(file):
-            ret.append(f"{_Tree.TRUNK}   {_Tree.ANGLE}{_Tree.BRANCH*2} (...)")
+            ret.append(f"{_Tree.TRUNK}   {_Tree.ANGLE}{_Tree.BRANCH * 2} (...)")
     ret.append(
-        f"{_Tree.ANGLE}{_Tree.BRANCH*2} {os.path.relpath(file_list[-1], start=parent_dir)}"
+        f"{_Tree.ANGLE}{_Tree.BRANCH * 2} {os.path.relpath(file_list[-1], start=parent_dir)}"
     )
     return indent("\n".join(ret), " ")
 
