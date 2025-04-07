@@ -156,5 +156,5 @@ def command(
 
     if timeit:
         tstop = monotonic_ns()
-        print(f"took {(tstop-tstart)/1e6:.3f} ms", file=sys.stderr)
+        print(f"took {(tstop - tstart) / 1e6:.3f} ms", file=sys.stderr)
     return 0
