@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - BUG: fix an incoming incompatibility with argparse (address a deprecation
   warning in CPython 3.14)
+- BUG: fix compatibility with inifix>=6.1 in `idfx write`
 
 ## [6.0.1] - 2024-12-15
 

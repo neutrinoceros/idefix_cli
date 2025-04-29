@@ -16,6 +16,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "exceptiongroup>=1.0.0 ; python_full_version < '3.11'", # keep in sync with typecheck group
     "inifix>=5.1.0",
     "packaging>=21.0",
     "termcolor>=2.3.0",
@@ -47,6 +48,7 @@ covcheck = [
     "coverage>=6.5.0 ; python_version >= '3.11'",
 ]
 typecheck = [
+    "exceptiongroup>=1.0.0", # TODO: remove when python 3.11 is minimum
     "mypy>=1.11.2",
     "pyright>=1.1.390",
 ]
