@@ -11,6 +11,9 @@ import inifix
 
 from idefix_cli.lib import print_error
 
+if sys.version_info < (3, 11):
+    from exceptiongroup import ExceptionGroup
+
 
 def add_arguments(parser: ArgumentParser) -> None:
     parser.add_argument("dest", type=str, help="dest inifile")
@@ -41,9 +44,10 @@ def command(dest: str, source: str | TextIOBase, force: bool = False) -> int:
             print_error("input is not valid json.")
             return 1
 
+    tocatch = ExceptionGroup if inifix.__version_tuple__ >= (6, 1) else ValueError
     try:
         inifix.validate_inifile_schema(data, sections="require")
-    except ValueError:
+    except tocatch:
         print_error("input is not Pluto inifile format compliant.")
         return 1
 
