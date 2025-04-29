@@ -49,8 +49,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Configure uv
       run: |
-        echo "UV_PYTHON_PREFERENCE=only-system" >> $GITHUB_ENV
-        echo "UV_PYTHON=${{ matrix.python-version }}" >> $GITHUB_ENV
         echo "UV_PRERELEASE=allow" >> $GITHUB_ENV
     - run: uv lock --upgrade
     - name: Run tests
