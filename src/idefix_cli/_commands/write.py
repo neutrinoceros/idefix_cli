@@ -44,6 +44,7 @@ def command(dest: str, source: str | TextIOBase, force: bool = False) -> int:
             print_error("input is not valid json.")
             return 1
 
+    # TODO: rewrite with except* when Python 3.10 is dropped
     tocatch = ExceptionGroup if inifix.__version_tuple__ >= (6, 1) else ValueError
     try:
         inifix.validate_inifile_schema(data, sections="require")
