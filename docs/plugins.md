@@ -90,7 +90,7 @@ from contextlib import chdir
 from idefix_cli.lib import chdir
 ```
 
-### files_from_pattenrs
+### files_from_patterns
 ::: idefix_cli.lib.files_from_patterns
 
 ### make_file_tree
