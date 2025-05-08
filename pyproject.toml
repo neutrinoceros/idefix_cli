@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["flit_core >=3.11,<4"]
+build-backend = "flit_core.buildapi"
 
 [project]
 name = "idefix_cli"
@@ -10,7 +10,6 @@ authors = [
     { name = "C.M.T. Robert" },
 ]
 classifiers = [
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
     "Typing :: Typed",
 ]
@@ -37,6 +36,9 @@ baballe = "idefix_cli.__main__:baballe_entry_point"
 [project.urls]
 Homepage = "https://github.com/neutrinoceros/idefix_cli"
 
+[tool.flit.sdist]
+include = ["tests"]
+
 [dependency-groups]
 test = [
     "pytest-check>=2.1.2",
@@ -57,13 +59,6 @@ docs = [
     "mkdocs-include-markdown-plugin>=6.0.1",
     "mkdocs-material>=9.4.2",
     "mkdocstrings[python]>=0.23.0",
-]
-
-[tool.hatch.build.targets.sdist]
-exclude = [
-    ".*",  # exclude dot files (.gitignore is still included)
-    "uv.lock",
-    "renovate.json",
 ]
 
 [tool.ruff.lint]
