@@ -116,6 +116,11 @@ def cli(caller: Literal["idfx", "baballe"], argv: list[str] | None = None) -> An
     # the return value is deleguated to sub commands so its type is arbitrary
     # In practice it should be either 'int' or 'typing.NoReturn'
     parser = ArgumentParser(prog=caller, allow_abbrev=False)
+
+    # TODO: pass this as a kwarg when support for Python 3.13 is dropped
+    # https://docs.python.org/3.14/library/argparse.html#color
+    parser.color = True  # type: ignore [attr-defined]
+
     parser.add_argument(
         "-v", "--version", action="version", version=version("idefix-cli")
     )
