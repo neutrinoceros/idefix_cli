@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+- BLD: migrate build backend from `hatchling` to `flit-core`
 - ENH: enable color in help messages with CPython >= 3.14
+- ENH: enable suggestions on typos with CPython >= 3.14
 
 ## [6.0.2] - 2025-04-29
 
