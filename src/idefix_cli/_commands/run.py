@@ -7,13 +7,14 @@ import re
 import subprocess
 import sys
 from argparse import ArgumentParser
+from contextlib import chdir
 from copy import deepcopy
-from enum import auto
+from enum import StrEnum, auto
 from math import prod
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from time import sleep, time, time_ns
-from typing import Final
+from typing import Final, assert_never
 
 import inifix
 from packaging.version import Version
@@ -31,16 +32,6 @@ from idefix_cli.lib import (
     requires_idefix,
     run_subcommand,
 )
-
-if sys.version_info >= (3, 11):
-    from contextlib import chdir
-    from enum import StrEnum
-    from typing import assert_never
-else:
-    from typing_extensions import assert_never
-
-    from idefix_cli._backports import StrEnum  # type: ignore [attr-defined]
-    from idefix_cli.lib import chdir
 
 MAIN_LOG_FILE = "idefix.0.log"
 TIME_INTEGRATOR_LOG_LINE = re.compile(
@@ -125,7 +116,7 @@ def get_command(
     return cmd
 
 
-class RebuildMode(StrEnum):  # type: ignore [misc]
+class RebuildMode(StrEnum):
     ALWAYS = auto()
     PROMPT = auto()
 
@@ -359,11 +350,11 @@ def command(
         rebuild_mode = RebuildMode(rebuild_mode_str)
     except ValueError:
         print_warning(
-            f"Expected [idfx run].recompile to be any of {[str(_) for _ in RebuildMode]}"  # type: ignore [attr-defined]
+            f"Expected [idfx run].recompile to be any of {[str(_) for _ in RebuildMode]}"
             f"Got {rebuild_mode_str!r} from {get_config_file()}\n"
         )
         print_warning("Falling back to 'prompt' mode.")
-        rebuild_mode = RebuildMode.PROMPT  # type: ignore [assignment]
+        rebuild_mode = RebuildMode.PROMPT
 
     build_is_required: bool = True
     if rebuild_mode is RebuildMode.ALWAYS:

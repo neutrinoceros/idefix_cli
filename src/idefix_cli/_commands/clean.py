@@ -4,17 +4,12 @@ from __future__ import annotations
 
 import os
 import subprocess
-import sys
 from argparse import ArgumentParser
+from contextlib import chdir
 from pathlib import Path
 from shutil import rmtree, which
 
 from idefix_cli.lib import files_from_patterns, make_file_tree, prompt_ask
-
-if sys.version_info >= (3, 11):
-    from contextlib import chdir
-else:
-    from idefix_cli.lib import chdir
 
 # bpatterns are those targeted by `make clean`, which is equivalent to
 # rm -f *.o *.cuda *.host

@@ -1,6 +1,6 @@
 import json
 import re
-import sys
+from contextlib import chdir
 from pathlib import Path
 
 import pytest
@@ -8,10 +8,6 @@ import pytest
 from idefix_cli.__main__ import idfx_entry_point as main
 from idefix_cli._commands.digest import command as digest
 
-if sys.version_info >= (3, 11):
-    from contextlib import chdir
-else:
-    from idefix_cli.lib import chdir
 DATADIR = Path(__file__).parent / "data"
 BASE_SETUP = DATADIR / "OrszagTang3D"
 
