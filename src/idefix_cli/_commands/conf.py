@@ -23,11 +23,11 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 from argparse import ArgumentParser
+from contextlib import chdir
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, NoReturn
+from typing import Any, NoReturn, assert_never
 
 from packaging.version import Version
 
@@ -40,15 +40,6 @@ from idefix_cli.lib import (
     print_warning,
     requires_idefix,
 )
-
-if sys.version_info >= (3, 11):
-    from contextlib import chdir
-    from typing import assert_never
-else:
-    from typing_extensions import assert_never
-
-    from idefix_cli.lib import chdir
-
 
 VERSION_REGEXP = re.compile(r"\d+\.\d+\.\d+")
 

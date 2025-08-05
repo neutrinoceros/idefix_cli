@@ -17,7 +17,6 @@ classifiers = [
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -26,13 +25,11 @@ classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Typing :: Typed",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
-    "exceptiongroup>=1.0.0 ; python_full_version < '3.11'", # keep in sync with typecheck group
     "inifix>=5.1.0",
     "packaging>=21.0",
     "termcolor>=2.3.0",
-    "typing-extensions>=4.1.0;python_version < '3.11'",
 ]
 
 [project.license]
@@ -63,7 +60,6 @@ covcheck = [
     "coverage>=6.5.0 ; python_version >= '3.11'",
 ]
 typecheck = [
-    "exceptiongroup>=1.0.0", # TODO: remove when python 3.11 is minimum
     "mypy>=1.11.2",
     "pyright>=1.1.390",
 ]
@@ -120,7 +116,7 @@ exclude_lines = [
 ]
 
 [tool.mypy]
-python_version = '3.10'
+python_version = '3.11'
 strict = true
 show_error_codes = true
 show_error_context = true

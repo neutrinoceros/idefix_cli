@@ -77,19 +77,6 @@ The `idefix_cli.lib` module contains some common utility functions that can be i
 ### run_subcommand
 ::: idefix_cli.lib.run_subcommand
 
-### chdir
-
-This function is backported [from the standard library](https://docs.python.org/3/library/contextlib.html?highlight=chdir#contextlib.chdir), and is provided for portability.
-
-If you are running Python 3.11 or newer, you may import this directly from the standard library,
-
-```python
-# with Python 3.11
-from contextlib import chdir
-# with any Python
-from idefix_cli.lib import chdir
-```
-
 ### files_from_patterns
 ::: idefix_cli.lib.files_from_patterns
 

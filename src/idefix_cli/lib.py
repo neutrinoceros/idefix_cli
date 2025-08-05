@@ -7,6 +7,8 @@ import sys
 import warnings
 from collections.abc import Callable
 from configparser import ConfigParser
+from contextlib import chdir
+from enum import StrEnum
 from functools import wraps
 from glob import glob
 from itertools import chain
@@ -18,11 +20,6 @@ from packaging.version import Version
 from termcolor import cprint
 
 from idefix_cli._theme import get_symbol
-
-if sys.version_info >= (3, 11):
-    from enum import StrEnum
-else:
-    from idefix_cli._backports import StrEnum  # type: ignore[attr-defined]
 
 # workaround mypy not being confortable around decorator preserving signatures
 # adapted from
@@ -49,18 +46,15 @@ __all__ = [
     "make_file_tree",
 ]
 
-# done as a separate statement to avoid adding a noqa to the whole __all__ def
-__all__.append("chdir")
 
-
-class _WindowsTree(StrEnum):  # type: ignore [misc]
+class _WindowsTree(StrEnum):
     TRUNK = "|"
     FORK = "|-"
     ANGLE = "'-"
     BRANCH = "-"
 
 
-class _PosixTree(StrEnum):  # type: ignore [misc]
+class _PosixTree(StrEnum):
     TRUNK = "│"
     FORK = "├"
     ANGLE = "└"
@@ -243,7 +237,6 @@ def run_subcommand(
     """
     from subprocess import CalledProcessError, run
 
-    chdir = __getattr__("chdir")
     if loc is None:
         loc = Path.cwd()
     print_subcommand(cmd, loc=loc)
@@ -445,19 +438,3 @@ def prompt_ask(prompt: str, /) -> bool:
         if v == "n":
             return False
         print("Please enter y or n", file=sys.stderr)
-
-
-def __getattr__(attr: str) -> Any:
-    # avoid leaking more than intended from the standard library
-    if attr == "chdir":
-        if sys.version_info >= (3, 11):
-            from contextlib import chdir
-        else:
-            from idefix_cli._backports import chdir  # type: ignore [attr-defined]
-        return chdir
-    else:
-        raise AttributeError(f"Unknown attribute {attr!r}")
-
-
-def __dir__() -> list[str]:
-    return list(globals()) + ["chdir"]
