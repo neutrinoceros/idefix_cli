@@ -37,7 +37,7 @@ def command(dest: str, source: str | TextIOBase, force: bool = False) -> int:
 
         try:
             data = json.load(stream)
-        except json.decoder.JSONDecodeError:
+        except json.JSONDecodeError:
             print_error("input is not valid json.")
             return 1
 
