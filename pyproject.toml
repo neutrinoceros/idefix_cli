@@ -53,7 +53,7 @@ include = ["tests"]
 [dependency-groups]
 test = [
     "pytest-check>=2.1.2",
-    "pytest>=7.2.1",
+    "pytest>=9.0.0",
 ]
 covcheck = [
     {include-group = "test"},
@@ -123,9 +123,10 @@ show_error_codes = true
 show_error_context = true
 warn_unused_ignores = true
 
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-ra --doctest-modules"
+[tool.pytest]
+minversion = "9.0"
+strict = true
+addopts = ["-ra", "--doctest-modules"]
 filterwarnings = [
     "error",
 ]

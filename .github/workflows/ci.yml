@@ -74,7 +74,7 @@ jobs:
     - run: |
         echo "UV_PYTHON_PREFERENCE=only-system" >> "$GITHUB_ENV"
     - name: Run tests
-      run: uv run --resolution=lowest-direct --no-editable --group test pytest --color=yes
+      run: uv run --resolution=lowest --no-editable --group test pytest --color=yes
 
   type-check:
     strategy:
