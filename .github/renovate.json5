@@ -8,9 +8,9 @@
   ],
   schedule: [
     // Quarterly updates
-    "* * 1 */3 *",
-    automerge = true,
+    "* * 1 */3 *"
   ],
+  automerge = true,
   minimumReleaseAge = "14 days",
   lockFileMaintenance: {
     enabled: true,
