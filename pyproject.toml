@@ -56,8 +56,7 @@ test = [
 ]
 covcheck = [
     {include-group = "test"},
-    "coverage[toml]>=6.5.0 ; python_version < '3.11'",
-    "coverage>=6.5.0 ; python_version >= '3.11'",
+    "coverage>=6.5.0",
 ]
 typecheck = [
     "mypy>=1.11.2",
