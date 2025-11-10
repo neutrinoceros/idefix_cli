@@ -2,30 +2,29 @@ import os
 
 import pytest
 from packaging.version import Version
-from pytest_check import check
 
 from idefix_cli.__main__ import idfx_entry_point as main
 from idefix_cli._commands.conf import substitute_cmake_args
 
 
-def test_conf_without_setup_cpp(capsys, tmp_path, monkeypatch):
+def test_conf_without_setup_cpp(capsys, monkeypatch, subtests, tmp_path):
     tmp_idefix_dir = tmp_path / "idefix"
     os.makedirs(tmp_idefix_dir / ".git")
     monkeypatch.setenv("IDEFIX_DIR", str(tmp_idefix_dir))
 
     monkeypatch.chdir(tmp_path)
     ret = main(["conf"])
-    with check:
+    with subtests.test():
         assert ret != 0
 
     out, err = capsys.readouterr()
-    with check:
+    with subtests.test():
         assert out == ""
-    with check:
+    with subtests.test():
         assert "💥 Cannot configure a directory that doesn't contain a setup.cpp" in err
 
 
-def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
+def test_setup_requiring_cmake_in_bad_env(capsys, monkeypatch, subtests, tmp_path):
     tmp_idefix_dir = tmp_path / "idefix"
     os.makedirs(tmp_idefix_dir / ".git")
     monkeypatch.setenv("IDEFIX_DIR", str(tmp_idefix_dir))
@@ -45,13 +44,13 @@ def test_setup_requiring_cmake_in_bad_env(capsys, tmp_path, monkeypatch):
     (tmp_path / "setup.cpp").touch()
 
     ret = main(["conf"])
-    with check:
+    with subtests.test():
         assert ret != 0
 
     out, err = capsys.readouterr()
-    with check:
+    with subtests.test():
         assert out == ""
-    with check:
+    with subtests.test():
         assert f"💥 cmake is required from {usr_config.absolute()}, but " in err
 
 

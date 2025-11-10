@@ -1,5 +1,4 @@
 import pytest
-from pytest_check import check
 
 from idefix_cli.__main__ import idfx_entry_point as main
 
@@ -33,12 +32,12 @@ def get_lines(help_message: str) -> list[str]:
 
 
 @pytest.mark.usefixtures("isolated_conf_dir")
-def test_no_command_passed(capsys):
+def test_no_command_passed(capsys, subtests):
     ret = main([])
-    with check:
+    with subtests.test():
         assert ret != 0
     out, err = capsys.readouterr()
-    with check:
+    with subtests.test():
         assert out == ""
-    with check:
+    with subtests.test():
         assert get_lines(err) == get_lines(HELP_MESSAGE)

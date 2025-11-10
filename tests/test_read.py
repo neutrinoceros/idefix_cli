@@ -1,31 +1,29 @@
 import json
 
-from pytest_check import check
-
 from idefix_cli.__main__ import idfx_entry_point as main
 
 
-def test_read_not_a_file(tmp_path, capsys):
+def test_read_not_a_file(capsys, subtests, tmp_path):
     target = tmp_path / "not_a_file"
     ret = main(["read", str(target.absolute())])
-    with check:
+    with subtests.test():
         assert ret != 0
 
     out, err = capsys.readouterr()
-    with check:
+    with subtests.test():
         assert out == ""
-    with check:
+    with subtests.test():
         assert err == f"💥 no such file {target.absolute()}\n"
 
 
-def test_read(inifile, capsys):
+def test_read(inifile, capsys, subtests):
     ret = main(["read", str(inifile.absolute())])
-    with check:
+    with subtests.test():
         assert ret == 0
 
     out, err = capsys.readouterr()
 
     # json validation
     json.loads(out)
-    with check:
+    with subtests.test():
         assert err == ""

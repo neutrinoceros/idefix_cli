@@ -262,7 +262,6 @@ dependencies = [
 covcheck = [
     { name = "coverage" },
     { name = "pytest" },
-    { name = "pytest-check" },
 ]
 docs = [
     { name = "mkdocs" },
@@ -272,7 +271,6 @@ docs = [
 ]
 test = [
     { name = "pytest" },
-    { name = "pytest-check" },
 ]
 typecheck = [
     { name = "mypy" },
@@ -291,7 +289,6 @@ covcheck = [
     { name = "coverage", marker = "python_full_version >= '3.11'", specifier = ">=6.5.0" },
     { name = "coverage", extras = ["toml"], marker = "python_full_version < '3.11'", specifier = ">=6.5.0" },
     { name = "pytest", specifier = ">=9.0.0" },
-    { name = "pytest-check", specifier = ">=2.1.2" },
 ]
 docs = [
     { name = "mkdocs", specifier = ">=1.5.3" },
@@ -299,10 +296,7 @@ docs = [
     { name = "mkdocs-material", specifier = ">=9.4.2" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=0.23.0" },
 ]
-test = [
-    { name = "pytest", specifier = ">=9.0.0" },
-    { name = "pytest-check", specifier = ">=2.1.2" },
-]
+test = [{ name = "pytest", specifier = ">=9.0.0" }]
 typecheck = [
     { name = "mypy", specifier = ">=1.11.2" },
     { name = "pyright", specifier = ">=1.1.390" },
@@ -721,18 +715,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/da/1d/eb34f286b164c5e431a810a38697409cca1112cee04b287bb56ac486730b/pytest-9.0.0.tar.gz", hash = "sha256:8f44522eafe4137b0f35c9ce3072931a788a21ee40a2ed279e817d3cc16ed21e", size = 1562764, upload-time = "2025-11-08T17:25:33.34Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/72/99/cafef234114a3b6d9f3aaed0723b437c40c57bdb7b3e4c3a575bc4890052/pytest-9.0.0-py3-none-any.whl", hash = "sha256:e5ccdf10b0bac554970ee88fc1a4ad0ee5d221f8ef22321f9b7e4584e19d7f96", size = 373364, upload-time = "2025-11-08T17:25:31.811Z" },
-]
-
-[[package]]
-name = "pytest-check"
-version = "2.6.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/12/76/735a11f0119eb1f8855a95c38fdc6899f7bac3b681a2a71125fd3f806cfc/pytest_check-2.6.0.tar.gz", hash = "sha256:9be4c59a09827129109148c85d7b5964b57f0a5ced1b619459ca30e6f463ca42", size = 27882, upload-time = "2025-10-07T03:48:01.166Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/b8/5ff76c282ad70d4910664a03e789d358539fba3aaec523ec31cba3c85c6a/pytest_check-2.6.0-py3-none-any.whl", hash = "sha256:a9735020dc0f0219b8a5298d7f90cf6d1f6fe34b709b9ecbb9e0f49393ebab38", size = 16059, upload-time = "2025-10-07T03:47:59.864Z" },
 ]
 
 [[package]]

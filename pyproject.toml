@@ -52,7 +52,6 @@ include = ["tests"]
 
 [dependency-groups]
 test = [
-    "pytest-check>=2.1.2",
     "pytest>=9.0.0",
 ]
 covcheck = [
