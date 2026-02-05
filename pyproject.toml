@@ -114,6 +114,9 @@ exclude_lines = [
     "-> ['\"]?NoReturn['\"]?:",
 ]
 
+[tool.ty.rules]
+unused-type-ignore-comment = "ignore"
+
 [tool.mypy]
 python_version = '3.11'
 strict = true
