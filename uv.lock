@@ -321,11 +321,11 @@ wheels = [
 
 [[package]]
 name = "inifix"
-version = "6.1.1"
+version = "7.0.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a4/f4/78dba28215b7ba1c489c7e6ccaf6fe3fbc88cd394b6c0193fe3622c31b12/inifix-6.1.1.tar.gz", hash = "sha256:31770998f6fb6c5faf708f64a01986d8f3f641b2d663dc6ca4782ec9222e1899", size = 39108, upload-time = "2025-04-14T10:00:34.616Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8f/88/d11b308d8b9594a608e65ee54594fd0429a73460fc0036bbe560396343ff/inifix-7.0.1.tar.gz", hash = "sha256:1a396f77860f68ee0a1be77d7d2f1bb703583402f4019275a0ffe0acec44cef3", size = 41182, upload-time = "2026-06-11T10:10:28.147Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8b/eb/064be5405b5fd53bed5864f0f8c782c0144331ff43c7ecddbf5250b83282/inifix-6.1.1-py3-none-any.whl", hash = "sha256:defa6bbfeef815e1db6456e62b83956aeeffb449b0aa348307634019567cc4c8", size = 28829, upload-time = "2025-04-14T10:00:33.123Z" },
+    { url = "https://files.pythonhosted.org/packages/d0/7f/b6cd2d636a7a8681b676dbce5b126af69e4aeb97d1ce984fe925d98451fe/inifix-7.0.1-py3-none-any.whl", hash = "sha256:d62418703055f4fcf2dbedefc63aad1a9e7e26c4670385582bf9e6f9a846f77f", size = 29546, upload-time = "2026-06-11T10:10:26.742Z" },
 ]
 
 [[package]]
