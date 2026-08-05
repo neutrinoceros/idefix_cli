@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API: remove `idefix_cli.lib.chdir`. Use `contextlib.chdir` instead.
 - BUG: fix incorrect exception handling in `idfx write` (use public exception name instead of leaked private one)
 - TST: add support for Python 3.15 (alpha)
+- BLD: adjust build time requirement on `flit-core`
 
 ## [6.0.3] - 2025-05-09
 
