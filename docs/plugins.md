@@ -40,7 +40,7 @@ def add_arguments(parser) -> None:
     )
 
 
-def command(nrepeat:int) -> int:
+def command(nrepeat: int) -> int:
     # Define the actual script
     #
     # this function is required and its return type must be int

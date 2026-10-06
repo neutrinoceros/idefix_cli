@@ -33,8 +33,10 @@ from idefix_cli.lib import print_error
                 "def command():\n",
                 "    return\n",
             ),
-            ".add_arguments function's signature is invalid. "
-            "Expected a single argument named 'parser', found []",
+            (
+                ".add_arguments function's signature is invalid. "
+                "Expected a single argument named 'parser', found []"
+            ),
         ),
         (
             (
