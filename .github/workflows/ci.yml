@@ -22,15 +22,16 @@ jobs:
         - '3.12'
         - '3.13'
         - '3.14'
+        - '3.15'
         include:
         - os: macos-latest
           python-version: '3.11'
         - os: macos-latest
-          python-version: '3.14'
+          python-version: '3.15'
         - os: windows-latest
           python-version: '3.11'
         - os: windows-latest
-          python-version: '3.14'
+          python-version: '3.15'
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -50,8 +51,8 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-        - '3.15'
-        - 3.15t
+        - '3.16'
+        - 3.16t
 
     steps:
     - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -89,7 +90,7 @@ jobs:
       matrix:
         python-version:
         - '3.11'
-        - '3.13'
+        - '3.15'
         typechecker:
         - mypy
         - pyright
